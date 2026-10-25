@@ -125,6 +125,13 @@ Install your build with `python modtool.py refresh <folder> --with-probe`
    (and `saves/` if relevant) to an issue with a line on what happened and
    where.
 
+## AI-assisted work
+
+This project is built with AI tools (see [Credits](README.md#credits)), and
+AI-assisted contributions are welcome. The bar is the same as for any change:
+evidence for every address, passing tests, a real-game check, and a PR that
+says which parts were AI-generated.
+
 ## Pull requests
 
 - One change per PR, with what it does, the evidence behind any new address,

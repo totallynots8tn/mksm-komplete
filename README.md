@@ -13,6 +13,11 @@ over time a real postgame.
 Short name: **MKSMK**. Every mod is original Lua and metadata; no game files or
 assets are included.
 
+**Made with AI, openly.** One modder directs, designs and playtests it; AI
+writes most of the code and does much of the reverse-engineering: Claude
+(Anthropic) and Qwen (via Qoder). Every change is checked against the real
+game. See [Credits](#credits).
+
 ---
 
 ## What's in v1
@@ -137,6 +142,13 @@ send a bug report. It all keeps the project alive.
 
 ## Credits
 
+- **totallynots8tn**: idea, design, direction and QA (every full playthrough).
+- **AI tools**: **Claude** (Anthropic, through Claude Code) wrote most of the
+  Lua, the reverse-engineering, the tools and the docs. **Qwen** (through
+  Qoder) did fenced analysis tasks: QA log and save-file analysis, roster and
+  release checks. Nothing ships on an AI's word: hooks need disassembly or
+  memory evidence, scripts pass offline tests, and builds are played through
+  in the real game.
 - **[Shaolin Monks Recomp](https://github.com/OAleex/ShaolinMonksRecomp) by
   OAleex**: the PC port this pack runs on, and its routine-mod support. None
   of this exists without it.
