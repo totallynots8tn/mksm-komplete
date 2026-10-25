@@ -59,3 +59,7 @@ release/dist/
 # (their .git history also carries the maintainer's personal account)
 analysis/MKSMHook/
 analysis/ShaolinMonks-Android/
+
+# --- Personal drafts kept off the public repo ---
+MKSMK-overview.pdf
+donate.html
