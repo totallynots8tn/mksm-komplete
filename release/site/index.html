@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MKSM Komplete+</title>
+<meta name="description" content="Free unofficial fan mods for Mortal Kombat: Shaolin Monks on Shaolin Monks Recomp.">
+<style>
+  /* ============================================================
+     The pack name lives HERE and nowhere else. Rename in one spot.
+     ============================================================ */
+  :root{
+    --pack-name: "MKSM Komplete+";
+
+    /* Dark theme: the page is dark for everyone */
+    color-scheme:dark;
+    --bg:#0f0f12;
+    --bg-alt:#15151a;
+    --card:#1a1a20;
+    --text:#f4f4f5;
+    --muted:#a1a1aa;
+    --border:#2a2a32;
+    --accent:#f5b942;      /* generic gold, not a trademark */
+    --accent-soft:#3a2f14;
+    --hero-a:#141419;
+    --hero-b:#2a2110;
+    --shadow:0 1px 3px rgba(0,0,0,.4),0 10px 30px rgba(0,0,0,.35);
+    --works:#5fd39a;  --works-bg:#12291f;
+    --exp:#e3b341;    --exp-bg:#2a2410;
+    --proto:#f0975a;  --proto-bg:#2c1c10;
+    --diag:#7fb2e6;   --diag-bg:#12202c;
+    --blood:#c0392b;
+  }
+
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:var(--bg);
+    color:var(--text);
+    line-height:1.6;
+    -webkit-text-size-adjust:100%;
+  }
+  .wrap{max-width:960px;margin:0 auto;padding:0 20px;}
+  a{color:var(--accent);}
+  a:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px;}
+
+  /* Hero */
+  header.hero{
+    background:linear-gradient(135deg,var(--hero-a),var(--hero-b));
+    color:#fff;
+    padding:clamp(48px,9vw,96px) 0 clamp(40px,7vw,72px);
+    border-bottom:1px solid var(--border);
+  }
+  .hero .wrap{text-align:center;}
+  .eyebrow{
+    display:inline-block;letter-spacing:.18em;text-transform:uppercase;
+    font-size:.72rem;font-weight:700;color:var(--accent);
+    background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.14);
+    padding:6px 14px;border-radius:999px;margin-bottom:20px;
+  }
+  h1.brand-title{
+    font-size:clamp(2.4rem,8vw,4rem);
+    line-height:1.05;margin:0 0 6px;font-weight:800;letter-spacing:.02em;
+  }
+  h1.brand-title .pack::before{content:var(--pack-name);}
+  .tagline{
+    font-size:clamp(1rem,2.6vw,1.2rem);color:#e8e6e1;max-width:44ch;
+    margin:0 auto 28px;
+  }
+  .cta{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;}
+  .btn{
+    display:inline-block;padding:13px 24px;border-radius:10px;font-weight:700;
+    text-decoration:none;font-size:.95rem;border:1px solid transparent;transition:transform .1s ease;
+  }
+  .btn:hover{transform:translateY(-2px);}
+  .btn-primary{background:var(--accent);color:#1a1206;}
+  .btn-ghost{background:transparent;color:#fff;border-color:rgba(255,255,255,.4);}
+
+  section{padding:clamp(40px,7vw,68px) 0;border-bottom:1px solid var(--border);}
+  section:last-of-type{border-bottom:0;}
+  h2{font-size:clamp(1.5rem,4vw,2rem);margin:0 0 6px;font-weight:800;letter-spacing:.01em;}
+  .lead{color:var(--muted);margin:0 0 28px;max-width:62ch;}
+  .alt{background:var(--bg-alt);}
+
+  /* Mod cards */
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(268px,1fr));gap:16px;}
+  .card{
+    background:var(--card);border:1px solid var(--border);border-radius:14px;
+    padding:18px 18px 16px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:8px;
+  }
+  .card .top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;}
+  .card h3{margin:0;font-size:1.05rem;font-weight:700;line-height:1.3;}
+  .card .id{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.75rem;color:var(--muted);}
+  .card p{margin:2px 0 0;font-size:.9rem;color:var(--muted);flex:1;}
+  .meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:6px;}
+  .ver{
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.75rem;font-weight:700;
+    background:var(--accent-soft);color:var(--accent);padding:3px 9px;border-radius:999px;
+  }
+  .badge{font-size:.72rem;font-weight:700;padding:3px 10px;border-radius:999px;letter-spacing:.02em;white-space:nowrap;}
+  .b-works{color:var(--works);background:var(--works-bg);}
+  .b-exp{color:var(--exp);background:var(--exp-bg);}
+  .b-proto{color:var(--proto);background:var(--proto-bg);}
+  .b-diag{color:var(--diag);background:var(--diag-bg);}
+  .legend{display:flex;gap:14px;flex-wrap:wrap;margin-top:20px;font-size:.8rem;color:var(--muted);}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .dot{width:9px;height:9px;border-radius:50%;display:inline-block;}
+
+  /* Steps */
+  ol.steps{counter-reset:s;list-style:none;padding:0;margin:0;display:grid;gap:12px;}
+  ol.steps li{
+    counter-increment:s;position:relative;padding:14px 16px 14px 56px;
+    background:var(--card);border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow);
+  }
+  ol.steps li::before{
+    content:counter(s);position:absolute;left:16px;top:50%;transform:translateY(-50%);
+    width:28px;height:28px;border-radius:50%;background:var(--accent);color:#1a1206;
+    display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.9rem;
+  }
+  code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;background:var(--accent-soft);color:var(--accent);padding:1px 6px;border-radius:5px;font-size:.85em;}
+
+  /* Requirements */
+  .req{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;}
+  .req .card{gap:4px;}
+  .req strong{font-size:1rem;}
+
+  /* FAQ */
+  details{
+    background:var(--card);border:1px solid var(--border);border-radius:12px;
+    padding:4px 18px;margin-bottom:10px;box-shadow:var(--shadow);
+  }
+  summary{cursor:pointer;font-weight:700;padding:14px 0;list-style:none;position:relative;padding-right:28px;}
+  summary::-webkit-details-marker{display:none;}
+  summary::after{content:"+";position:absolute;right:2px;top:50%;transform:translateY(-50%);font-size:1.3rem;color:var(--accent);font-weight:700;}
+  details[open] summary::after{content:"\2013";}
+  details p{margin:0 0 14px;color:var(--muted);font-size:.92rem;}
+
+  /* Donate */
+  .donate-card{
+    background:linear-gradient(135deg,var(--hero-a),var(--hero-b));color:#fff;
+    border-radius:16px;padding:clamp(24px,5vw,40px);text-align:center;box-shadow:var(--shadow);
+  }
+  .donate-card h2{color:#fff;}
+  .donate-card p{color:#e8e6e1;max-width:56ch;margin:0 auto 18px;}
+  .donate-card{border:1px solid rgba(245,185,66,.35);position:relative;overflow:hidden;}
+  .continue{font-family:Impact,"Arial Black",system-ui,sans-serif;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--blood);font-size:clamp(1rem,3vw,1.3rem);margin-bottom:4px;}
+  .count{font-family:Impact,"Arial Black",system-ui,sans-serif;font-size:clamp(3.4rem,12vw,5.5rem);line-height:1;
+    color:var(--accent);text-shadow:0 0 24px rgba(245,185,66,.45);margin:0 0 10px;font-variant-numeric:tabular-nums;}
+  .count.coin{font-size:clamp(1.8rem,6vw,2.6rem);animation:blink 1s steps(2,start) infinite;}
+  @keyframes blink{to{visibility:hidden;}}
+  @media (prefers-reduced-motion: reduce){.count.coin{animation:none;}}
+  .story{font-size:1.02rem;}
+  .impact{list-style:none;padding:0;margin:0 auto 22px;max-width:520px;display:grid;gap:8px;text-align:left;}
+  .impact li{background:rgba(0,0,0,.28);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:10px 14px;color:#f1efe9;font-size:.92rem;}
+  .impact strong{color:var(--accent);}
+  .btn-coin{font-size:1.05rem;padding:15px 30px;box-shadow:0 0 0 0 rgba(245,185,66,.6);animation:pulse 2.2s infinite;}
+  @keyframes pulse{70%{box-shadow:0 0 0 14px rgba(245,185,66,0);}100%{box-shadow:0 0 0 0 rgba(245,185,66,0);}}
+  @media (prefers-reduced-motion: reduce){.btn-coin{animation:none;}}
+  .free-help{font-size:.85rem;color:#cfcac0;margin-top:16px !important;}
+  .note{font-size:.88rem;color:var(--muted);margin-top:18px;}
+
+  /* Credits / footer */
+  .credits{font-size:.9rem;color:var(--muted);}
+  .credits ul{padding-left:20px;margin:10px 0 0;}
+  .credits li{margin-bottom:6px;}
+  footer{padding:32px 0 48px;text-align:center;color:var(--muted);font-size:.82rem;}
+  footer .pack::before{content:var(--pack-name);}
+  .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <span class="eyebrow">Unofficial fan mod pack</span>
+    <h1 class="brand-title"><span class="pack"></span></h1>
+    <p class="tagline"><strong>Mortal Kombat: Shaolin Monks</strong>, Komplete+: bigger fights, XP that rewards style, co-op routes in single player, and a real postgame on the way. Free, for Shaolin Monks Recomp.</p>
+    <div class="cta">
+      <a class="btn btn-primary" href="#install">Download v1</a>
+      <a class="btn btn-ghost" href="#mods">The mods</a>
+      <a class="btn btn-ghost" href="#vision">Where it's going</a>
+    </div>
+  </div>
+</header>
+
+<main>
+  <!-- MOD LIST -->
+  <section id="mods">
+    <div class="wrap">
+      <h2>The mods</h2>
+      <p class="lead">Five mods in v1, all free. Enable only what you want: each one changes game memory while active and reverts cleanly when you disable it. No mod edits your save files. QA'd with a full campaign run through Shao Kahn: no crashes, no failed spawns, no stuck waves.</p>
+      <div class="grid">
+
+        <article class="card">
+          <div class="top"><h3>Legendary Dark Knight Mode</h3></div>
+          <div class="id">ldk_x3</div>
+          <p>Three times the enemies in every spawn group, as reinforcements. Boss fights stay vanilla. Every extra must fit in the memory the area has spare, so the game doesn't crash.</p>
+          <div class="meta"><span class="ver">v3.9.6</span><span class="badge b-works">Works</span></div>
+        </article>
+
+        <article class="card">
+          <div class="top"><h3>Shaolin Shuffle</h3></div>
+          <div class="id">randomizer</div>
+          <p>Enemy randomizer. Permutes enemy types across every spawn slot in an area, using exactly the same enemy memory as the vanilla game.</p>
+          <div class="meta"><span class="ver">v0.6.6</span><span class="badge b-works">Works</span></div>
+        </article>
+
+        <article class="card">
+          <div class="top"><h3>Unlock All</h3></div>
+          <div class="id">unlock_all</div>
+          <p>Unlocks the full roster and bonus content while enabled, by reproducing the game's own complete-unlock mask in memory. Reverts when disabled.</p>
+          <div class="meta"><span class="ver">v1.1.0</span><span class="badge b-works">Works</span></div>
+        </article>
+
+        <article class="card">
+          <div class="top"><h3>Environmental Kill XP</h3></div>
+          <div class="id">env_kill_xp</div>
+          <p>Hazard kills (pits, spikes, saws, throws off the map) pay XP exactly like normal kills, with combo multiplier and popup. No more losing your combo's XP to an environmental kill.</p>
+          <div class="meta"><span class="ver">v2.0.0</span><span class="badge b-works">Works</span></div>
+        </article>
+
+        <article class="card">
+          <div class="top"><h3>Solo Co-op Paths</h3></div>
+          <div class="id">coop_solo</div>
+          <p>Opens co-op-only routes and secret areas in single player. Co-op plates work solo: either color activates, and a plate stays pressed for about 15 seconds.</p>
+          <div class="meta"><span class="ver">v0.6.2</span><span class="badge b-works">Works</span></div>
+        </article>
+
+      </div>
+      <div class="legend" aria-hidden="true">
+        <span><i class="dot" style="background:var(--works)"></i> Works</span>
+        <span><i class="dot" style="background:var(--exp)"></i> Experimental</span>
+        <span><i class="dot" style="background:var(--proto)"></i> Prototype</span>
+        <span><i class="dot" style="background:var(--diag)"></i> Diagnostic</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- INSTALL -->
+  <section id="install" class="alt">
+    <div class="wrap">
+      <h2>Install</h2>
+      <p class="lead">One download, one button. No Python, no file editing.</p>
+      <ol class="steps">
+        <li>Start <strong>Shaolin Monks Recomp</strong> once with your game, then close it.</li>
+        <li>Download <a href="https://github.com/totallynots8tn/mksm-komplete/releases/latest"><code>MKSM-Komplete-v1.zip</code></a> from the latest release and unzip it.</li>
+        <li>Double-click <strong>MKSM Komplete Installer</strong>. Windows may say "unknown publisher" the first time: choose <em>More info &gt; Run anyway</em>.</li>
+        <li>Press <strong>Install</strong>, then <strong>Play</strong>.</li>
+      </ol>
+      <p class="note">Prefer doing it by hand? In the Recomp launcher choose <strong>Mods &gt; Install from file...</strong> and pick each <code>.tar.xz</code> from the zip's <code>packages</code> folder. Testers and contributors: the diagnostics probe and QA tools are a separate download, <code>MKSM-Komplete-v1-contributor-tools.zip</code>, on the same release page.</p>
+    </div>
+  </section>
+
+  <!-- REQUIREMENTS -->
+  <section id="requirements">
+    <div class="wrap">
+      <h2>Requirements</h2>
+      <p class="lead">These mods add to the game; they do not replace or include it.</p>
+      <div class="req">
+        <article class="card">
+          <strong>The game</strong>
+          <p>A legally obtained copy of <em>Mortal Kombat: Shaolin Monks</em> (USA / Europe, Xbox).</p>
+        </article>
+        <article class="card">
+          <strong>The recomp</strong>
+          <p><em>Shaolin Monks Recomp</em> <strong>0.2.0 or later</strong>. These mods need its routine-mod support.</p>
+        </article>
+        <article class="card">
+          <strong>A Windows PC</strong>
+          <p>The one-click installer is for Windows. On Linux, install the packages by hand from the Recomp launcher.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section id="faq" class="alt">
+    <div class="wrap">
+      <h2>FAQ</h2>
+      <p class="lead">Quick answers before you install.</p>
+
+      <details>
+        <summary>Do I need to own the original game?</summary>
+        <p>Yes. This pack ships no game files, emulator, or assets. You must supply your own legally obtained copy of Mortal Kombat: Shaolin Monks and run it through Shaolin Monks Recomp 0.2.0+.</p>
+      </details>
+      <details>
+        <summary>Will these mods corrupt my save?</summary>
+        <p>No. Every mod changes game memory only while it is enabled and never writes to your save files. Disable a mod and the game returns to its original behavior on the next load.</p>
+      </details>
+      <details>
+        <summary>Can I run more than one mod at a time?</summary>
+        <p>Generally yes. Legendary Dark Knight Mode and Shaolin Shuffle are designed to work together. Avoid enabling two mods that do the same job, and read each mod's notes for specifics.</p>
+      </details>
+      <details>
+        <summary>What does "Experimental" or "Prototype" mean?</summary>
+        <p><strong>Experimental</strong> mods work but are incomplete - some cases are still being investigated. <strong>Prototype</strong> mods are scaffolding: the framework runs, but the gameplay effects are not wired up yet, so you will not see a change in game.</p>
+      </details>
+      <details>
+        <summary>What is the MKSMK Probe for?</summary>
+        <p>A diagnostic tool for testers. It changes nothing in the game and writes reports to the Recomp session log. It is not in the player download; it comes with the contributor tools for anyone helping track down a bug.</p>
+      </details>
+      <details>
+        <summary>Will it add more characters?</summary>
+        <p>Not in v1: it changes how the game plays, not who is in it, and it needs nothing extra. More Mortal Kombat characters as enemies and bosses are a later goal (see the roadmap); if that ever builds on another project's work, it will happen only with its author's permission and full credit.</p>
+      </details>
+      <details>
+        <summary>Does it cost anything?</summary>
+        <p>No. Every mod is and will stay 100% free, with no paywalls or locked features. Donations are welcome but entirely optional.</p>
+      </details>
+    </div>
+  </section>
+
+  <!-- VISION -->
+  <section id="vision" class="alt">
+    <div class="wrap">
+      <h2>Where it's going</h2>
+      <p class="lead"><strong>Komplete</strong> is the game you remember, finished the way it deserved. <strong>The +</strong> is everything on top: quality-of-life fixes, enhancements and additions, up to a Kingdom Hearts 2-style postgame.</p>
+      <div class="grid">
+        <article class="card">
+          <div class="top"><h3>v1: Komplete</h3></div>
+          <p>Legendary Dark Knight x3, Environmental Kill XP, Solo Co-op Paths, Shaolin Shuffle, Unlock All.</p>
+          <div class="meta"><span class="badge b-works">Released</span></div>
+        </article>
+        <article class="card">
+          <div class="top"><h3>v1.1: Extended Upgrades</h3></div>
+          <p>An XP shop in the existing upgrade menu (weapons, health and stamina, combo extenders, new combos, EX moves, fatalities; no refills). EX specials on L2. Shuffle+ with outsider enemies and Normal / Wild / Chaos.</p>
+          <div class="meta"><span class="badge b-proto">In progress</span></div>
+        </article>
+        <article class="card">
+          <div class="top"><h3>v2: the +</h3></div>
+          <p>New Game+ alternate realities: portals in co-op-only areas reload the area as another timeline, leading to super boss fights, boss rushes and enemy rushes. A postgame with Mortal Kombat characters as real bosses, ending in a boss rush.</p>
+          <div class="meta"><span class="badge b-exp">Planned</span></div>
+        </article>
+      </div>
+      <p class="lead" style="margin-top:24px">Want to help? Playtesting, reverse-engineering and Lua are all welcome: see <code>CONTRIBUTING.md</code> in the repository.</p>
+    </div>
+  </section>
+
+  <!-- DONATE -->
+  <section id="donate">
+    <div class="wrap">
+      <div class="donate-card">
+        <div class="continue">Continue?</div>
+        <div class="count" id="count" aria-hidden="true">9</div>
+        <h2>Keep the Kombat going</h2>
+        <p class="story">I played Shaolin Monks so much I knew every fight by heart, and I always wished for a mod that made it feel new. Nobody made one, so I'm building it: one function, one memory address, one full playthrough at a time.</p>
+        <p>Everything here is free and stays free. No paywalls, no locked features, no early access. What keeps it moving is time, and that's what a coffee buys:</p>
+        <ul class="impact">
+          <li><strong>A coffee</strong>: a late night of reverse-engineering, the kind that turned hazard kills into XP.</li>
+          <li><strong>A few coffees</strong>: a full QA playthrough, so an update ships without crashing your run.</li>
+          <li><strong>Next unlock</strong>: v1.1, the XP shop. Spend your XP on weapons, combos, EX moves and fatalities.</li>
+        </ul>
+        <a class="btn btn-primary btn-coin" href="https://buymeacoffee.com/S8tn" target="_blank" rel="noopener">Insert coin: buy me a coffee</a>
+        <p class="free-help">Can't chip in? That's fine. Star the repo, share a clip of a 3x fight, or send a bug report. It all keeps the project alive.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- CREDITS -->
+  <section id="credits" class="alt">
+    <div class="wrap">
+      <h2>Credits &amp; legal</h2>
+      <div class="credits">
+        <ul>
+          <li><strong>Unofficial fan mods.</strong> Not affiliated with, endorsed by, or sponsored by Midway or Warner Bros. <em>Mortal Kombat</em> and <em>Shaolin Monks</em> are trademarks of their respective owners. No logos or game assets are used.</li>
+          <li><strong>Built on <a href="https://github.com/OAleex/ShaolinMonksRecomp" target="_blank" rel="noopener">Shaolin Monks Recomp</a> by OAleex.</strong> The PC port these mods run on, and its routine-mod support. None of this exists without it.</li>
+          <li><strong>Roster idea:</strong> the future-roster ideas are inspired by <strong>RelaxDirk's UMKSM</strong>. Nothing from UMKSM is implemented or included: v1 is only our own mods on top of the Recomp. No affiliation is implied.</li>
+          <li>Requires a <strong>legally obtained</strong> copy of the game. This package redistributes only original Lua scripts and metadata.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p><span class="pack"></span>: free forever. Thank you for playing.</p>
+  </div>
+</footer>
+
+<script>
+  // In-page links scroll by script, so they also work where the page is
+  // shown without a normal URL (file previews, embeds).
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest('a[href^="#"]');
+    if (!a) return;
+    var target = document.getElementById(a.getAttribute('href').slice(1));
+    if (!target) return;
+    e.preventDefault();
+    target.scrollIntoView({behavior: 'smooth', block: 'start'});
+  });
+  // The Mortal Kombat "Continue?" countdown, once the support box is on screen.
+  (function () {
+    var el = document.getElementById('count');
+    if (!el || !('IntersectionObserver' in window)) return;
+    var started = false;
+    new IntersectionObserver(function (entries, obs) {
+      if (started || !entries[0].isIntersecting) return;
+      started = true; obs.disconnect();
+      var n = 9;
+      var t = setInterval(function () {
+        n -= 1;
+        if (n > 0) { el.textContent = n; return; }
+        clearInterval(t);
+        el.textContent = 'Insert coin';
+        el.classList.add('coin');
+      }, 800);
+    }, {threshold: 0.5}).observe(el);
+  })();
+  // Derive the document title from the single --pack-name source of truth.
+  (function () {
+    var name = getComputedStyle(document.documentElement)
+      .getPropertyValue('--pack-name').replace(/["']/g, '').trim();
+    if (name) { document.title = name; }
+  })();
+</script>
+</body>
+</html>

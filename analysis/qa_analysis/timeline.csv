@@ -1,0 +1,57 @@
+log_num,start,duration,n_saves,save_ts,errors,exceptions,last_map_guess,file,tags
+46,10-23 10:38:47,98s,1,44,0,1,-,shaolin-recomp_046.log,none
+47,10-23 10:39:57,59s,2,"13,15",0,1,-,shaolin-recomp_047.log,none
+48,10-23 13:16:13,142s,1,59,0,1,-,shaolin-recomp_048.log,none
+50,10-23 16:40:38,262s,1,34,0,1,-,shaolin-recomp_050.log,none
+51,10-23 16:45:29,14s,0,-,0,0,-,shaolin-recomp_051.log,none
+52,10-23 17:42:29,198s,1,81,0,0,-,shaolin-recomp_052.log,none
+53,10-23 17:45:06,462s,3,"37,425,428",0,0,-,shaolin-recomp_053.log,none
+55,10-23 18:39:52,186s,4,"108,148,148,152",0,0,-,shaolin-recomp_055.log,none
+57,10-23 18:47:12,104s,1,53,0,0,-,shaolin-recomp_057.log,none
+58,10-23 18:48:26,1297s,8,"19,21,96,96,717,718,842,845",0,1,-,shaolin-recomp_058.log,none
+59,10-23 19:28:53,773s,7,"152,283,283,286,350,350,353",0,1,-,shaolin-recomp_059.log,PROBE25 x1 PROBE90 x1
+61,10-23 19:59:38,666s,12,"89,128,128,131,439,440,458,458,461,612,612,615",0,0,-,shaolin-recomp_061.log,PROBE25 x1 TRACE x1
+62,10-23 20:35:09,1011s,4,"20,31,1007,1008",0,0,-,shaolin-recomp_062.log,PROBE25 x1 PROBE90 x1 TRACE x1
+64,10-23 21:10:00,290s,4,"14,16,270,273",0,0,-,shaolin-recomp_064.log,PLATE x1 PROBE25 x1
+65,10-23 22:33:42,178s,2,"16,21",0,0,-,shaolin-recomp_065.log,PLATE x1 PROBE25 x1 SHUFFLE x1
+66,10-23 23:01:58,134s,2,"44,46",0,0,-,shaolin-recomp_066.log,PLATE x1 SHUFFLE x1
+67,10-24 05:47:47,983s,4,"128,132,980,982",0,0,-,shaolin-recomp_067.log,PLATE x1 PROBE25 x1 PROBE90 x1 SHUFFLE x1
+68,10-24 06:21:32,357s,4,"13,15,355,356",0,0,-,shaolin-recomp_068.log,PLATE x1 PROBE25 x1 SHUFFLE x1 UPGRADE x1
+69,10-24 08:54:57,390s,4,"53,82,385,387",0,0,-,shaolin-recomp_069.log,PLATE x1 PLATE051 x1 PROBE25 x1 SHUFFLE x1 UPGRADE x1
+70,10-24 09:24:05,340s,4,"18,21,329,332",0,0,-,shaolin-recomp_070.log,none
+71,10-24 09:48:32,328s,4,"13,19,322,324",0,0,-,shaolin-recomp_071.log,EVENTS x1 PLATE x1 PLATE052 x1 SHUFFLE x1 UPGRADE x1
+72,10-24 10:27:02,308s,7,"13,26,225,227,232,232,240",0,0,-,shaolin-recomp_072.log,EVENTS x1 PLATE x1 PLATE060 x1 SHUFFLE x1 UPGRADE x1
+73,10-24 10:45:17,341s,7,"10,12,46,46,50,333,335",0,0,-,shaolin-recomp_073.log,EVENTS x1 PLATE x1 PLATE060 x1 SHUFFLE x1 UPGRADE x1
+74,10-24 11:53:28,301s,7,"12,13,260,261,266,266,269",0,0,-,shaolin-recomp_074.log,EVENTS x1 PLATE x1 SHUFFLE x1 UPGRADE x1
+75,10-24 12:06:38,313s,9,"44,46,145,150,156,156,262,262,266",0,0,-,shaolin-recomp_075.log,EVENTS x1 PLATE x1 SHUFFLE x1 UPGRADE x1
+76,10-24 12:25:41,529s,5,"43,423,425,524,526",0,0,101,shaolin-recomp_076.log,EVENTS x2 PLATE x1 SAVEDIFF x2 SHUFFLE x1 UPGRADE x2
+78,10-24 12:54:04,1621s,7,"35,454,458,547,550,1167,1170",0,0,107,shaolin-recomp_078.log,EVENTS x3 PLATE x1 SAVEDIFF x3 SHUFFLE x1 UPGRADE x2
+80,10-24 13:47:43,36s,0,-,0,0,-,shaolin-recomp_080.log,none
+81,10-24 15:13:45,1447s,6,"48,52,777,781,1439,1443",0,0,194,shaolin-recomp_081.log,EVENTS x2 PLATE x1 SAVEDIFF x2 SHUFFLE x1 UPGRADE x2
+82,10-24 15:56:37,34s,0,-,0,0,-,shaolin-recomp_082.log,none
+83,10-24 16:06:01,1s,0,-,0,0,-,shaolin-recomp_083.log,none
+84,10-24 16:09:59,1966s,1,70,0,0,-,shaolin-recomp_084.log,none
+85,10-24 17:00:19,706s,1,59,0,0,-,shaolin-recomp_085.log,none
+86,10-24 17:15:08,652s,6,"29,373,373,376,645,649",0,0,128,shaolin-recomp_086.log,EVENTS x2 PLATE x1 SAVEDIFF x2 SHUFFLE x1 UPGRADE x2
+87,10-24 17:37:33,1484s,1,43,0,0,-,shaolin-recomp_087.log,none
+88,10-24 20:28:17,860s,1,23,0,0,-,shaolin-recomp_088.log,none
+89,10-24 20:44:36,1598s,9,"33,394,398,488,489,1151,1152,1567,1569",0,1,107,shaolin-recomp_089.log,EVENTS x3 PLATE x1 SAVEDIFF x3 SHUFFLE x1 UPGRADE x2
+90,10-24 21:18:31,353s,4,"22,28,348,350",0,0,194,shaolin-recomp_090.log,EVENTS x1 PLATE x1 SAVEDIFF x1 SHUFFLE x1 UPGRADE x1
+91,10-24 21:26:29,1220s,6,"11,13,262,264,523,525",0,0,137,shaolin-recomp_091.log,EVENTS x2 PLATE x1 SAVEDIFF x2 SHUFFLE x1 UPGRADE x2
+92,10-24 21:53:11,419s,2,"16,18",0,0,-,shaolin-recomp_092.log,none
+94,10-24 22:00:48,624s,4,"11,12,155,157",0,0,137,shaolin-recomp_094.log,EVENTS x1 PLATE x1 SAVEDIFF x1 SHUFFLE x1 UPGRADE x1
+95,10-24 22:14:07,371s,2,"16,19",0,0,-,shaolin-recomp_095.log,none
+96,10-24 22:20:47,1283s,8,"12,14,704,707,923,926,1276,1279",0,0,128,shaolin-recomp_096.log,EVENTS x3 PLATE x1 SAVEDIFF x3 SHUFFLE x1 UPGRADE x2
+97,10-24 22:43:41,673s,7,"13,14,43,46,47,668,671",0,0,-,shaolin-recomp_097.log,EVENTS x3 PLATE x1 SAVEDIFF x3 SHUFFLE x1 UPGRADE x2
+98,10-24 22:58:37,2856s,12,"11,14,669,673,1351,1353,1638,1641,1892,1894,2773,2775",0,0,-,shaolin-recomp_098.log,EVENTS x3 PLATE x1 SAVEDIFF x3 SHUFFLE x1 UPGRADE x2
+99,10-25 11:13:24,20s,0,-,0,0,-,shaolin-recomp_099.log,none
+100,10-25 11:18:23,805s,4,"26,35,725,728",2,0,-,shaolin-recomp_100.log,EVENTS x1 PLATE x1 SAVEDIFF x1 SHUFFLE x1 UPGRADE x1
+101,10-25 11:32:26,5941s,21,"50,52,1458,1459,2175,2177,2196,2197,2449,2450,2653,2654,3233,3235,3745,3746,4242,4243,5867,5867,5883",18,0,160,shaolin-recomp_101.log,EVENTS x3 PLATE x1 SAVEDIFF x3 SHUFFLE x1 UPGRADE x2
+49,EMPTY (0 bytes),-,0,-,0,0,-,shaolin-recomp_049.log,-
+54,EMPTY (0 bytes),-,0,-,0,0,-,shaolin-recomp_054.log,-
+56,EMPTY (0 bytes),-,0,-,0,0,-,shaolin-recomp_056.log,-
+60,EMPTY (0 bytes),-,0,-,0,0,-,shaolin-recomp_060.log,-
+63,EMPTY (0 bytes),-,0,-,0,0,-,shaolin-recomp_063.log,-
+77,EMPTY (0 bytes),-,0,-,0,0,-,shaolin-recomp_077.log,-
+79,EMPTY (0 bytes),-,0,-,0,0,-,shaolin-recomp_079.log,-
+93,EMPTY (0 bytes),-,0,-,0,0,-,shaolin-recomp_093.log,-

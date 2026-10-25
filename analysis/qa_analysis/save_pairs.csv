@@ -1,0 +1,38 @@
+old,new,changed_bytes,runs,regions
+save_20261024-122504.dat,save_20261024-123221.dat,276,173,footer header slot8
+save_20261024-123221.dat,save_20261024-123403.dat,101,49,footer header slot8
+save_20261024-125350.dat,save_20261024-130133.dat,159,107,footer header slot8
+save_20261024-130133.dat,save_20261024-130307.dat,100,48,footer header slot8
+save_20261024-130307.dat,save_20261024-131326.dat,293,218,footer header slot8
+save_20261024-151302.dat,save_20261024-152627.dat,213,99,footer header slot8
+save_20261024-152627.dat,save_20261024-153728.dat,191,83,footer header slot8
+save_20261024-171426.dat,save_20261024-172539.dat,135,57,footer header slot8
+save_20261024-204413.dat,save_20261024-205053.dat,265,161,footer header slot5
+save_20261024-205053.dat,save_20261024-205225.dat,96,49,footer header slot5
+save_20261024-205225.dat,save_20261024-210328.dat,290,218,footer header slot5
+save_20261024-210328.dat,save_20261024-211026.dat,163,94,footer header slot5
+save_20261024-211812.dat,save_20261024-211820.dat,0,0,
+save_20261024-211820.dat,save_20261024-212412.dat,128,79,footer header slot5
+save_20261024-212627.dat,save_20261024-213053.dat,130,55,footer header slot5
+save_20261024-213053.dat,save_20261024-213515.dat,104,39,footer header slot5
+save_20261024-222042.dat,save_20261024-223234.dat,221,119,footer header slot5
+save_20261024-223234.dat,save_20261024-223614.dat,98,24,footer header slot5
+save_20261024-223614.dat,save_20261024-224206.dat,99,26,footer header slot5
+save_20261024-224337.dat,save_20261024-224428.dat,866,712,footer header slot4 slot5
+save_20261024-224428.dat,save_20261024-225449.dat,116,55,footer header slot5
+save_20261024-225836.dat,save_20261024-230951.dat,166,110,footer header slot5
+save_20261024-230951.dat,save_20261024-232110.dat,232,119,footer header slot5
+save_20261024-232110.dat,save_20261024-232559.dat,102,32,footer header slot5
+save_20261024-232559.dat,save_20261024-233011.dat,101,46,footer header slot5
+save_20261024-233011.dat,save_20261024-234453.dat,198,100,footer header slot5
+save_20261025-111801.dat,save_20261025-111816.dat,0,0,
+save_20261025-111816.dat,save_20261025-113027.dat,165,74,footer header slot5
+save_20261025-113027.dat,save_20261025-115606.dat,148,70,footer header slot5
+save_20261025-115606.dat,save_20261025-120806.dat,177,81,footer header slot5
+save_20261025-120806.dat,save_20261025-120825.dat,48,13,footer header slot5
+save_20261025-120825.dat,save_20261025-121237.dat,99,31,footer header slot5
+save_20261025-121237.dat,save_20261025-121601.dat,90,33,footer header slot5
+save_20261025-121601.dat,save_20261025-122542.dat,127,76,footer header slot5
+save_20261025-122542.dat,save_20261025-123413.dat,128,64,footer header slot5
+save_20261025-123413.dat,save_20261025-124232.dat,132,69,footer header slot5
+save_20261025-124232.dat,save_20261025-130936.dat,58,5,footer header

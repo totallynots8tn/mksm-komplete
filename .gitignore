@@ -1,0 +1,61 @@
+# --- Game content: never redistribute ---
+# Disc images and executables (includes the root default.xbe)
+*.iso
+*.xbe
+*.xiso
+
+# Extracted / mounted game directories
+Mortal Kombat - Shaolin Monks*/
+
+# --- Third-party mods and upstream projects: link, don't ship ---
+# RelaxDirk's UMKSM (roster idea is credited; no files redistributed)
+UMKSM VERSION II 2.6/
+# Shaolin Monks Recomp upstream (we build on it, we don't vendor it)
+ShaolinMonksRecomp-0.2.0*/
+
+# --- Analysis build artifacts ---
+analysis/umksm_port/out/*.elf
+analysis/luaenv/
+
+# --- Python caches ---
+__pycache__/
+pycache/
+*.pyc
+
+# --- Local editor/backup state ---
+mods/.mksmk-backup/
+
+# --- Crash dumps ---
+*.dmp
+
+# QA recordings (personal saves and logs)
+qa/
+
+# --- Other people's projects kept here for reference: link, don't ship ---
+analysis/ShaolinMonks-Android/
+analysis/MKSMHook/
+# PS2-side UMKSM study: holds disc files and data from RelaxDirk's mod
+analysis/umksm_port/
+analysis/xbox_roster/umksm_table_edits.csv
+# Game text dumped from the disc (copyrighted dialogue)
+analysis/upgrade_design/out/
+
+# --- Build outputs: rebuilt by mods/_build/build.py, shipped as release assets ---
+mods/*/dist/
+mods/*/pack/
+!mods/unlock_all_mod/pack/
+mods/_shelved/
+release/snapshots/
+release/v1/*.tar.xz
+release/v1.1-dev/*.tar.xz
+release/stable/*.tar.xz
+release/v1-retired/*.tar.xz
+mods/*/zips/
+
+# --- Built release downloads (attach to the GitHub Release, don't commit) ---
+release/dist/
+
+# --- Third-party clones used for research: link them, don't ship them ---
+# (their .git history also carries the maintainer's personal account)
+analysis/MKSMHook/
+analysis/ShaolinMonks-Android/

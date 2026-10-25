@@ -1,0 +1,1755 @@
+[
+ {
+  "id": 0,
+  "name": "Liu Kang (player)",
+  "row_va": "0x4fa9f0",
+  "slots": 1,
+  "f08": 1,
+  "model": "0x17a1",
+  "texwad": "0x17a0",
+  "alt_model": "0x1b30",
+  "alt_texwad": "0x1b2f",
+  "fx": "0x179d",
+  "model_strings": [
+   "Kung Lao",
+   "wCW$",
+   "vC(z",
+   "vC(z",
+   "*lAh",
+   "\"F :"
+  ]
+ },
+ {
+  "id": 1,
+  "name": "Kung Lao (player)",
+  "row_va": "0x4faa20",
+  "slots": 1,
+  "f08": 1,
+  "model": "0x17ad",
+  "texwad": "0x17ac",
+  "alt_model": "0x1b36",
+  "alt_texwad": "0x1b35",
+  "fx": "0x17a9",
+  "model_strings": [
+   "Kung Lao",
+   ")\\-A",
+   "CqR3",
+   "?|)K"
+  ]
+ },
+ {
+  "id": 2,
+  "name": "",
+  "row_va": "0x4faa50",
+  "slots": 1,
+  "f08": 34,
+  "model": "0x17b9",
+  "texwad": "0x17b8",
+  "alt_model": null,
+  "alt_texwad": null,
+  "fx": "0x17b5",
+  "model_strings": [
+   "body",
+   "C#y%",
+   "TGBA",
+   "lAsXJ",
+   "~J1C/",
+   "f4?n"
+  ]
+ },
+ {
+  "id": 3,
+  "name": "",
+  "row_va": "0x4faa80",
+  "slots": 1,
+  "f08": 10,
+  "model": "0x17c3",
+  "texwad": "0x17c2",
+  "alt_model": null,
+  "alt_texwad": null,
+  "fx": "0x17bf",
+  "model_strings": [
+   "lids_end",
+   "_end",
+   "flap_start",
+   "flap_01",
+   "flap_02",
+   "flap_03"
+  ]
+ },
+ {
+  "id": 4,
+  "name": "",
+  "row_va": "0x4faab0",
+  "slots": 1,
+  "f08": 12,
+  "model": "0x17cd",
+  "texwad": "0x17cc",
+  "alt_model": null,
+  "alt_texwad": null,
+  "fx": "0x17c9",
+  "model_strings": [
+   "F!FB",
+   "67By",
+   "8<jJZ"
+  ]
+ },
+ {
+  "id": 5,
+  "name": "",
+  "row_va": "0x4faae0",
+  "slots": 1,
+  "f08": 7,
+  "model": "0x17d7",
+  "texwad": "0x17d6",
+  "alt_model": null,
+  "alt_texwad": null,
+  "fx": "0x17d3",
+  "model_strings": [
+   "2w=d",
+   "nf\"A",
+   "1w=>",
+   "d1w=H",
+   "Bd+7",
+   "4<C0"
+  ]
+ },
+ {
+  "id": 6,
+  "name": "",
+  "row_va": "0x4fab10",
+  "slots": 1,
+  "f08": 7,
+  "model": "0x17e1",
+  "texwad": "0x17e0",
+  "alt_model": null,
+  "alt_texwad": null,
+  "fx": "0x17dd",
+  "model_strings": [
+   "|el@",
+   "mtl@",
+   ">\\BO",
+   "dR_A"
+  ]
+ },
+ {
+  "id": 7,
+  "name": "",
+  "row_va": "0x4fab40",
+  "slots": 1,
+  "f08": 12,
+  "model": "0x17eb",
+  "texwad": "0x17ea",
+  "alt_model": null,
+  "alt_texwad": null,
+  "fx": "0x17e7",
+  "model_strings": [
+   "Mutant Texture",
+   "Material #335",
+   "A`|%C",
+   "Jk.C",
+   "Ab|%CB>.B",
+   "BNi4B"
+  ]
+ },
+ {
+  "id": 8,
+  "name": "",
+  "row_va": "0x4fab70",
+  "slots": 1,
+  "f08": 15,
+  "model": "0x17f5",
+  "texwad": "0x17f4",
+  "alt_model": null,
+  "alt_texwad": null,
+  "fx": "0x17f1",
+  "model_strings": [
+   "Material #109",
+   "1 - Default",
+   "kama_r",
+   "kama_l",
+   "|P'P",
+   "mA(jt"
+  ]
+ },
+ {
+  "id": 9,
+  "name": "",
+  "row_va": "0x4faba0",
+  "slots": 1,
+  "f08": 17,
+  "model": "0x17ff",
+  "texwad": "0x17fe",
+  "alt_model": null,
+  "alt_texwad": null,
+  "fx": "0x17fb",
+  "model_strings": [
+   "naginata",
+   "MA^A",
+   "mA(jt",
+   "KR-A",
+   "]DAT",
+   "KR-A"
+  ]
+ },
+ {
+  "id": 10,
+  "name": "",
+  "row_va": "0x4fabd0",
+  "slots": 1,
+  "f08": 15,
+  "model": "0x1809",
+  "texwad": "0x1808",
+  "alt_model": null,
+  "alt_texwad": null,
+  "fx": "0x1805",
+  "model_strings": [
+   "Material #109",
+   "1 - Default",
+   "xbow",
+   "mA(jt",
+   "f4_~",
+   "KR-A"
+  ]
+ },
+ {
+  "id": 11,
+  "name": "",
+  "row_va": "0x4fac00",
+  "slots": 1,
+  "f08": 15,
+  "model": "0x1813",
+  "texwad": "0x1812",
+  "alt_model": null,
+  "alt_texwad": null,
+  "fx": "0x180f",
+  "model_strings": [
+   "Material #109",
+   "snakewarrior",
+   "c_prod",
+   "mA(jt",
+   "KR-A",
+   "f4?T"
+  ]
+ },
+ {
+  "id": 12,
+  "name": "",
+  "row_va": "0x4fac30",
+  "slots": 1,
+  "f08": 15,
+  "model": "0x181d",
+  "texwad": "0x181c",
+  "alt_model": null,
+  "alt_texwad": null,
+  "fx": "0x1819",
+  "model_strings": [
+   "Mutant Texture",
+   "|el@",
+   "mtl@",
+   "BEaF",
+   ">\\BO",
+   "dR_A"
+  ]
+ },
+ {
+  "id": 13,
+  "name": "",
+  "row_va": "0x4fac60",
+  "slots": 1,
+  "f08": 15,
+  "model": "0x1827",
+  "texwad": "0x1826",
+  "alt_model": null,
+  "alt_texwad": null,
+  "fx": "0x1823",
+  "model_strings": [
+   "dokaebi",
+   "A(jt",
+   "KR-A",
+   "KR-A",
+   "CLvH",
+   "U\\FA"
+  ]
+ },
+ {
+  "id": 14,
+  "name": "",
+  "row_va": "0x4fac90",
+  "slots": 1,
+  "f08": 15,
+  "model": "0x1831",
+  "texwad": "0x1830",
+  "alt_model": null,
+  "alt_texwad": null,
+  "fx": "0x182d",
+  "model_strings": [
+   "Material #335",
+   "=4L=",
+   "utl@",
+   "dR_A"
+  ]
+ },
+ {
+  "id": 15,
+  "name": "",
+  "row_va": "0x4facc0",
+  "slots": 1,
+  "f08": 10,
+  "model": "0x183b",
+  "texwad": "0x183a",
+  "alt_model": null,
+  "alt_texwad": null,
+  "fx": "0x1837",
+  "model_strings": [
+   "body",
+   "scythe",
+   "_cap",
+   "Cylinder01",
+   "|el@",
+   "mtl@"
+  ]
+ },
+ {
+  "id": 16,
+  "name": "",
+  "row_va": "0x4facf0",
+  "slots": 1,
+  "f08": 9,
+  "model": "0x1845",
+  "texwad": "0x1844",
+  "alt_model": null,
+  "alt_texwad": null,
+  "fx": "0x1841",
+  "model_strings": [
+   "Material #347",
+   "rel@",
+   "ctl@",
+   "fT*r",
+   "fR_A"
+  ]
+ },
+ {
+  "id": 17,
+  "name": "",
+  "row_va": "0x4fad20",
+  "slots": 1,
+  "f08": 9,
+  "model": "0x184f",
+  "texwad": "0x184e",
+  "alt_model": null,
+  "alt_texwad": null,
+  "fx": "0x184b",
+  "model_strings": [
+   "F!FB",
+   " p_CG",
+   "d_end",
+   "F!FB",
+   " p_CG",
+   "d_end"
+  ]
+ },
+ {
+  "id": 18,
+  "name": "",
+  "row_va": "0x4fad50",
+  "slots": 1,
+  "f08": 15,
+  "model": "0x1859",
+  "texwad": "0x1858",
+  "alt_model": null,
+  "alt_texwad": null,
+  "fx": "0x1855",
+  "model_strings": [
+   "V!Bp",
+   "mask",
+   "KR-A",
+   "95 A",
+   "vCLvH",
+   "U\\FA"
+  ]
+ },
+ {
+  "id": 19,
+  "name": "",
+  "row_va": "0x4fad80",
+  "slots": 1,
+  "f08": 18,
+  "model": "0x1863",
+  "texwad": "0x1862",
+  "alt_model": null,
+  "alt_texwad": null,
+  "fx": "0x185f",
+  "model_strings": [
+   "38`EbD",
+   "mouth",
+   "mouth_end",
+   "fangs",
+   "fangs_end",
+   "8ixeD"
+  ]
+ },
+ {
+  "id": 20,
+  "name": "",
+  "row_va": "0x4fadb0",
+  "slots": 1,
+  "f08": 14,
+  "model": "0x186d",
+  "texwad": "0x186c",
+  "alt_model": null,
+  "alt_texwad": null,
+  "fx": "0x1869",
+  "model_strings": [
+   "Material #347",
+   "rel@",
+   "ctl@",
+   "fT*r",
+   "fR_A"
+  ]
+ },
+ {
+  "id": 21,
+  "name": "",
+  "row_va": "0x4fade0",
+  "slots": 1,
+  "f08": 8,
+  "model": "0x1877",
+  "texwad": "0x1876",
+  "alt_model": null,
+  "alt_texwad": null,
+  "fx": "0x1873",
+  "model_strings": [
+   "?+ ^p",
+   "?+ ^p",
+   "w=AX-4",
+   "rsword",
+   "@PyvC&",
+   "1?}A"
+  ]
+ },
+ {
+  "id": 22,
+  "name": "",
+  "row_va": "0x4fae10",
+  "slots": 1,
+  "f08": 12,
+  "model": "0x1881",
+  "texwad": "0x1880",
+  "alt_model": null,
+  "alt_texwad": null,
+  "fx": "0x187d",
+  "model_strings": [
+   "Cylinder01",
+   "8<N<O",
+   "AHfa",
+   "utl@",
+   "dR_A",
+   "@0y\""
+  ]
+ },
+ {
+  "id": 23,
+  "name": "",
+  "row_va": "0x4fae40",
+  "slots": 1,
+  "f08": 11,
+  "model": "0x188b",
+  "texwad": "0x188a",
+  "alt_model": null,
+  "alt_texwad": null,
+  "fx": "0x1887",
+  "model_strings": [
+   "W-x@",
+   "katana",
+   "vicle",
+   "pD0>",
+   "vicle",
+   "pD0>"
+  ]
+ },
+ {
+  "id": 24,
+  "name": "",
+  "row_va": "0x4fae70",
+  "slots": 1,
+  "f08": 12,
+  "model": "0x1895",
+  "texwad": "0x1894",
+  "alt_model": null,
+  "alt_texwad": null,
+  "fx": "0x1891",
+  "model_strings": [
+   "default",
+   "KAB`",
+   "/BP1",
+   "BCk6",
+   "scabbard",
+   "_BDnJ"
+  ]
+ },
+ {
+  "id": 25,
+  "name": "",
+  "row_va": "0x4faea0",
+  "slots": 1,
+  "f08": 2,
+  "model": "0x189f",
+  "texwad": "0x189e",
+  "alt_model": null,
+  "alt_texwad": null,
+  "fx": "0x189b",
+  "model_strings": [
+   "none",
+   "vicle",
+   "=W|G",
+   "vicle",
+   "flap60",
+   "x;+A"
+  ]
+ },
+ {
+  "id": 26,
+  "name": "",
+  "row_va": "0x4faed0",
+  "slots": 1,
+  "f08": 8,
+  "model": "0x18a9",
+  "texwad": "0x18a8",
+  "alt_model": null,
+  "alt_texwad": null,
+  "fx": "0x18a5",
+  "model_strings": [
+   "O\"1^",
+   "O\"1O*",
+   "O\"1^",
+   "O\"1O*",
+   "|el@",
+   "O\"1^"
+  ]
+ },
+ {
+  "id": 27,
+  "name": "",
+  "row_va": "0x4faf00",
+  "slots": 1,
+  "f08": 8,
+  "model": "0x18b3",
+  "texwad": "0x18b2",
+  "alt_model": null,
+  "alt_texwad": null,
+  "fx": "0x18af",
+  "model_strings": [
+   "rel@",
+   "ctl@",
+   "fR_A"
+  ]
+ },
+ {
+  "id": 28,
+  "name": "",
+  "row_va": "0x4faf30",
+  "slots": 1,
+  "f08": 2,
+  "model": "0x18bd",
+  "texwad": "0x18bc",
+  "alt_model": null,
+  "alt_texwad": null,
+  "fx": "0x18b9",
+  "model_strings": [
+   "orochi",
+   "vicle",
+   "vicle",
+   "face",
+   "upper_mouth",
+   "upper_mouth_end"
+  ]
+ },
+ {
+  "id": 29,
+  "name": "",
+  "row_va": "0x4faf60",
+  "slots": 1,
+  "f08": 12,
+  "model": "0x18c7",
+  "texwad": "0x18c6",
+  "alt_model": null,
+  "alt_texwad": null,
+  "fx": "0x18c3",
+  "model_strings": [
+   "CD4C",
+   "CD4C",
+   "_end",
+   "_end",
+   "_end",
+   "_end"
+  ]
+ },
+ {
+  "id": 30,
+  "name": "",
+  "row_va": "0x4faf90",
+  "slots": 1,
+  "f08": 4,
+  "model": "0x18d1",
+  "texwad": "0x18d0",
+  "alt_model": null,
+  "alt_texwad": null,
+  "fx": "0x18cd",
+  "model_strings": [
+   "vicle",
+   "vicle",
+   "face",
+   "upper_mouth",
+   "upper_mouth_end",
+   "_end"
+  ]
+ },
+ {
+  "id": 31,
+  "name": "",
+  "row_va": "0x4fafc0",
+  "slots": 1,
+  "f08": 16,
+  "model": "0x18db",
+  "texwad": "0x18da",
+  "alt_model": null,
+  "alt_texwad": null,
+  "fx": "0x18d7",
+  "model_strings": [
+   "vicle",
+   "vicle",
+   "face",
+   "upper_mouth",
+   "upper_mouth_end",
+   "_end"
+  ]
+ },
+ {
+  "id": 32,
+  "name": "",
+  "row_va": "0x4faff0",
+  "slots": 1,
+  "f08": 16,
+  "model": "0x18e5",
+  "texwad": "0x18e4",
+  "alt_model": null,
+  "alt_texwad": null,
+  "fx": "0x18e1",
+  "model_strings": [
+   "Arrow01",
+   "C.#>",
+   "quiver",
+   "&:Bx",
+   ":S#?",
+   "ES#?n"
+  ]
+ },
+ {
+  "id": 33,
+  "name": "",
+  "row_va": "0x4fb020",
+  "slots": 1,
+  "f08": 16,
+  "model": "0x18ef",
+  "texwad": "0x18ee",
+  "alt_model": null,
+  "alt_texwad": null,
+  "fx": "0x18eb",
+  "model_strings": [
+   "Arrow01",
+   "C.#>",
+   "quiver",
+   "&:Bx",
+   ":S#?",
+   "ES#?n"
+  ]
+ },
+ {
+  "id": 34,
+  "name": "",
+  "row_va": "0x4fb050",
+  "slots": 1,
+  "f08": 7,
+  "model": "0x18f9",
+  "texwad": "0x18f8",
+  "alt_model": null,
+  "alt_texwad": null,
+  "fx": "0x18f5",
+  "model_strings": [
+   "warlord",
+   "club",
+   "61|C",
+   "@2$DL",
+   "JD~`",
+   "d_end"
+  ]
+ },
+ {
+  "id": 35,
+  "name": "",
+  "row_va": "0x4fb080",
+  "slots": 1,
+  "f08": 7,
+  "model": "0x1903",
+  "texwad": "0x1902",
+  "alt_model": null,
+  "alt_texwad": null,
+  "fx": "0x18ff",
+  "model_strings": [
+   "61|C",
+   "@2$DL",
+   "JD~`",
+   "d_end",
+   "ponytail01",
+   "ponytail02"
+  ]
+ },
+ {
+  "id": 36,
+  "name": "",
+  "row_va": "0x4fb0b0",
+  "slots": 1,
+  "f08": 4,
+  "model": "0x190d",
+  "texwad": "0x190c",
+  "alt_model": null,
+  "alt_texwad": null,
+  "fx": "0x1909",
+  "model_strings": [
+   ")\\-A",
+   "fD$\"",
+   "CqR3",
+   "?y)K"
+  ]
+ },
+ {
+  "id": 37,
+  "name": "",
+  "row_va": "0x4fb0e0",
+  "slots": 1,
+  "f08": 6,
+  "model": "0x1917",
+  "texwad": "0x1916",
+  "alt_model": null,
+  "alt_texwad": null,
+  "fx": "0x1913",
+  "model_strings": [
+   "8<N<O",
+   "AHfa",
+   "utl@",
+   "dR_A"
+  ]
+ },
+ {
+  "id": 38,
+  "name": "",
+  "row_va": "0x4fb110",
+  "slots": 1,
+  "f08": 2,
+  "model": "0x1921",
+  "texwad": "0x1920",
+  "alt_model": null,
+  "alt_texwad": null,
+  "fx": "0x191d",
+  "model_strings": [
+   "Q1-C",
+   "MIP_K"
+  ]
+ },
+ {
+  "id": 39,
+  "name": "",
+  "row_va": "0x4fb140",
+  "slots": 1,
+  "f08": 18,
+  "model": "0x192b",
+  "texwad": "0x192a",
+  "alt_model": null,
+  "alt_texwad": null,
+  "fx": "0x1927",
+  "model_strings": []
+ },
+ {
+  "id": 40,
+  "name": "",
+  "row_va": "0x4fb170",
+  "slots": 1,
+  "f08": 18,
+  "model": "0x1935",
+  "texwad": "0x1934",
+  "alt_model": null,
+  "alt_texwad": null,
+  "fx": "0x1931",
+  "model_strings": [
+   "7<u^",
+   "face",
+   "mandible",
+   ">NQx",
+   "m_lower_lip",
+   "m_lower_lip_end"
+  ]
+ },
+ {
+  "id": 41,
+  "name": "",
+  "row_va": "0x4fb1a0",
+  "slots": 1,
+  "f08": 20,
+  "model": "0x193f",
+  "texwad": "0x193e",
+  "alt_model": null,
+  "alt_texwad": null,
+  "fx": "0x193b",
+  "model_strings": [
+   "@n7u",
+   "?$@X",
+   "z?$@",
+   "z?$@7",
+   "z?$@SV",
+   "$@\\x7"
+  ]
+ },
+ {
+  "id": 42,
+  "name": "",
+  "row_va": "0x4fb1d0",
+  "slots": 1,
+  "f08": 18,
+  "model": "0x1949",
+  "texwad": "0x1948",
+  "alt_model": null,
+  "alt_texwad": null,
+  "fx": "0x1945",
+  "model_strings": []
+ },
+ {
+  "id": 43,
+  "name": "",
+  "row_va": "0x4fb200",
+  "slots": 1,
+  "f08": 18,
+  "model": "0x1953",
+  "texwad": "0x1952",
+  "alt_model": null,
+  "alt_texwad": null,
+  "fx": "0x194f",
+  "model_strings": [
+   "$(?D",
+   ":;C1",
+   "fangs01",
+   "fangs"
+  ]
+ },
+ {
+  "id": 44,
+  "name": "",
+  "row_va": "0x4fb230",
+  "slots": 1,
+  "f08": 20,
+  "model": "0x195d",
+  "texwad": "0x195c",
+  "alt_model": null,
+  "alt_texwad": null,
+  "fx": "0x1959",
+  "model_strings": []
+ },
+ {
+  "id": 45,
+  "name": "Goro (mace model)",
+  "row_va": "0x4fb260",
+  "slots": 1,
+  "f08": 18,
+  "model": "0x1967",
+  "texwad": "0x1966",
+  "alt_model": null,
+  "alt_texwad": null,
+  "fx": "0x1963",
+  "model_strings": [
+   "3 - Default",
+   "mace",
+   "efault",
+   "goro",
+   "efault",
+   "face"
+  ]
+ },
+ {
+  "id": 46,
+  "name": "tentacles",
+  "row_va": "0x4fb290",
+  "slots": 1,
+  "f08": 66,
+  "model": "0x1971",
+  "texwad": "0x1970",
+  "alt_model": null,
+  "alt_texwad": null,
+  "fx": "0x196d",
+  "model_strings": [
+   "tentacle01",
+   "tentacle02",
+   "/@E.",
+   "tentacle03",
+   "tentacle04",
+   "tentacle05"
+  ]
+ },
+ {
+  "id": 47,
+  "name": "(2-slot, unnamed)",
+  "row_va": "0x4fb2c0",
+  "slots": 2,
+  "f08": 2,
+  "model": "0x197b",
+  "texwad": "0x197a",
+  "alt_model": null,
+  "alt_texwad": null,
+  "fx": "0x1977",
+  "model_strings": [
+   "q@;%",
+   "B 9q@;%",
+   "d_end",
+   "d_end",
+   "hair00",
+   "hair01"
+  ]
+ },
+ {
+  "id": 48,
+  "name": "",
+  "row_va": "0x4fb2f0",
+  "slots": 1,
+  "f08": 34,
+  "model": "0x1985",
+  "texwad": "0x1984",
+  "alt_model": null,
+  "alt_texwad": null,
+  "fx": "0x1981",
+  "model_strings": [
+   "@cjF",
+   "5zI?,",
+   "fangs02",
+   "fangs03",
+   "np?@"
+  ]
+ },
+ {
+  "id": 49,
+  "name": "",
+  "row_va": "0x4fb320",
+  "slots": 1,
+  "f08": 3,
+  "model": "0x198f",
+  "texwad": "0x198e",
+  "alt_model": null,
+  "alt_texwad": null,
+  "fx": "0x198b",
+  "model_strings": [
+   "SfG8",
+   "face",
+   "<q+U",
+   "upper_mouth",
+   "<,;V",
+   "upper_mouth_end"
+  ]
+ },
+ {
+  "id": 50,
+  "name": "Scorpion",
+  "row_va": "0x4fb350",
+  "slots": 1,
+  "f08": 2,
+  "model": "0x1999",
+  "texwad": "0x1998",
+  "alt_model": null,
+  "alt_texwad": null,
+  "fx": "0x1995",
+  "model_strings": [
+   "scorpion",
+   "sc_01",
+   "sc_02",
+   "sc_03",
+   "sc_04",
+   "sc_05"
+  ]
+ },
+ {
+  "id": 51,
+  "name": "Noob Saibot",
+  "row_va": "0x4fb380",
+  "slots": 1,
+  "f08": 2,
+  "model": "0x19a3",
+  "texwad": "0x19a2",
+  "alt_model": null,
+  "alt_texwad": null,
+  "fx": "0x199f",
+  "model_strings": [
+   "noob",
+   "sc_01",
+   "sc_02",
+   "sc_03",
+   "sc_04",
+   "lids_end"
+  ]
+ },
+ {
+  "id": 52,
+  "name": "Kano",
+  "row_va": "0x4fb3b0",
+  "slots": 1,
+  "f08": 2,
+  "model": "0x19ad",
+  "texwad": "0x19ac",
+  "alt_model": null,
+  "alt_texwad": null,
+  "fx": "0x19a9",
+  "model_strings": [
+   "Material #11",
+   "Material #38",
+   "Kano",
+   "ial #38",
+   "Kano1",
+   "al #38"
+  ]
+ },
+ {
+  "id": 53,
+  "name": "Scorpion (alt)",
+  "row_va": "0x4fb3e0",
+  "slots": 1,
+  "f08": 2,
+  "model": "0x19b7",
+  "texwad": "0x19b6",
+  "alt_model": null,
+  "alt_texwad": null,
+  "fx": "0x19b3",
+  "model_strings": [
+   "scorpion",
+   "sc_01",
+   "sc_02",
+   "sc_03",
+   "sc_04",
+   "sc_05"
+  ]
+ },
+ {
+  "id": 54,
+  "name": "Baraka",
+  "row_va": "0x4fb410",
+  "slots": 1,
+  "f08": 2,
+  "model": "0x19c1",
+  "texwad": "0x19c0",
+  "alt_model": null,
+  "alt_texwad": null,
+  "fx": "0x19bd",
+  "model_strings": [
+   "baraka",
+   "wCV$",
+   "vC(z",
+   "vC(z",
+   "*lAh",
+   "lids_end"
+  ]
+ },
+ {
+  "id": 55,
+  "name": "Goro",
+  "row_va": "0x4fb440",
+  "slots": 1,
+  "f08": 2,
+  "model": "0x19cb",
+  "texwad": "0x19ca",
+  "alt_model": null,
+  "alt_texwad": null,
+  "fx": "0x19c7",
+  "model_strings": [
+   "3 - Default",
+   "mace",
+   "efault",
+   "goro",
+   "efault",
+   "face"
+  ]
+ },
+ {
+  "id": 56,
+  "name": "Kintaro",
+  "row_va": "0x4fb470",
+  "slots": 1,
+  "f08": 2,
+  "model": "0x19d5",
+  "texwad": "0x19d4",
+  "alt_model": null,
+  "alt_texwad": null,
+  "fx": "0x19d1",
+  "model_strings": [
+   "Kintaro Xbox",
+   "test_l_shoulder",
+   "test_r_shoulder",
+   "houlder",
+   "houlder",
+   "test_l_thigh"
+  ]
+ },
+ {
+  "id": 57,
+  "name": "Reptile (2-slot)",
+  "row_va": "0x4fb4a0",
+  "slots": 2,
+  "f08": 2,
+  "model": "0x19df",
+  "texwad": "0x19de",
+  "alt_model": null,
+  "alt_texwad": null,
+  "fx": "0x19db",
+  "model_strings": [
+   "reptile",
+   "atama",
+   "color",
+   "blackstuff",
+   "extra",
+   "tuff"
+  ]
+ },
+ {
+  "id": 58,
+  "name": "",
+  "row_va": "0x4fb4d0",
+  "slots": 1,
+  "f08": 2,
+  "model": "0x19e9",
+  "texwad": "0x19e8",
+  "alt_model": null,
+  "alt_texwad": null,
+  "fx": "0x19e5",
+  "model_strings": [
+   "<`B ^",
+   "vicle",
+   "A=A-",
+   "vicle",
+   "&@=A-",
+   "^CAH"
+  ]
+ },
+ {
+  "id": 59,
+  "name": "",
+  "row_va": "0x4fb500",
+  "slots": 1,
+  "f08": 2,
+  "model": "0x19f3",
+  "texwad": "0x19f2",
+  "alt_model": null,
+  "alt_texwad": null,
+  "fx": "0x19ef",
+  "model_strings": [
+   "vicle",
+   "vicle",
+   "8<6Pt",
+   "a(D3K",
+   "a(D3K",
+   "a(D3K"
+  ]
+ },
+ {
+  "id": 60,
+  "name": "Shang Tsung (young)",
+  "row_va": "0x4fb530",
+  "slots": 1,
+  "f08": 5,
+  "model": "0x19fd",
+  "texwad": "0x19fc",
+  "alt_model": null,
+  "alt_texwad": null,
+  "fx": "0x19f9",
+  "model_strings": [
+   "young shang tsung",
+   "Material #564",
+   "Material #564",
+   "Material #564",
+   "Material #564",
+   "lids_end"
+  ]
+ },
+ {
+  "id": 61,
+  "name": "Shang Tsung (old)",
+  "row_va": "0x4fb560",
+  "slots": 1,
+  "f08": 3,
+  "model": "0x1a07",
+  "texwad": "0x1a06",
+  "alt_model": null,
+  "alt_texwad": null,
+  "fx": "0x1a03",
+  "model_strings": [
+   "oldshang",
+   "shang",
+   "extra",
+   "skirt",
+   "skin",
+   "lids_end"
+  ]
+ },
+ {
+  "id": 62,
+  "name": "Shao Kahn",
+  "row_va": "0x4fb590",
+  "slots": 1,
+  "f08": 2,
+  "model": "0x1a11",
+  "texwad": "0x1a10",
+  "alt_model": null,
+  "alt_texwad": null,
+  "fx": "0x1a0d",
+  "model_strings": [
+   "shao kahn",
+   "Skin",
+   "kahn",
+   "Black stuff",
+   "Color stuff",
+   "noggin"
+  ]
+ },
+ {
+  "id": 63,
+  "name": "Kitana",
+  "row_va": "0x4fb5c0",
+  "slots": 1,
+  "f08": 2,
+  "model": "0x1a1b",
+  "texwad": "0x1a1a",
+  "alt_model": null,
+  "alt_texwad": null,
+  "fx": "0x1a17",
+  "model_strings": [
+   "kitana",
+   "bodyx",
+   "armlegs",
+   "extra",
+   "ponytail",
+   "fan01"
+  ]
+ },
+ {
+  "id": 64,
+  "name": "Mileena? (ninjagirl)",
+  "row_va": "0x4fb5f0",
+  "slots": 1,
+  "f08": 2,
+  "model": "0x1a25",
+  "texwad": "0x1a24",
+  "alt_model": null,
+  "alt_texwad": null,
+  "fx": "0x1a21",
+  "model_strings": [
+   "ninjagirl",
+   "body",
+   "girl",
+   "armlegs",
+   "atama",
+   "otherstuff"
+  ]
+ },
+ {
+  "id": 65,
+  "name": "Jade",
+  "row_va": "0x4fb620",
+  "slots": 1,
+  "f08": 2,
+  "model": "0x1a2f",
+  "texwad": "0x1a2e",
+  "alt_model": null,
+  "alt_texwad": null,
+  "fx": "0x1a2b",
+  "model_strings": [
+   "jade",
+   "body",
+   "armlegs",
+   "atama",
+   "otherstuff",
+   "Sphere02"
+  ]
+ },
+ {
+  "id": 66,
+  "name": "Ermac",
+  "row_va": "0x4fb650",
+  "slots": 1,
+  "f08": 2,
+  "model": "0x1a39",
+  "texwad": "0x1a38",
+  "alt_model": null,
+  "alt_texwad": null,
+  "fx": "0x1a35",
+  "model_strings": [
+   "ermac",
+   "lids_end",
+   "_end",
+   ")\\-A",
+   "CqR3",
+   "?y)K"
+  ]
+ },
+ {
+  "id": 67,
+  "name": "Sub-Zero",
+  "row_va": "0x4fb680",
+  "slots": 1,
+  "f08": 2,
+  "model": "0x1a43",
+  "texwad": "0x1a42",
+  "alt_model": null,
+  "alt_texwad": null,
+  "fx": "0x1a3f",
+  "model_strings": [
+   "subzero",
+   "color",
+   "black",
+   "extra",
+   "face",
+   "scar"
+  ]
+ },
+ {
+  "id": 68,
+  "name": "Smoke",
+  "row_va": "0x4fb6b0",
+  "slots": 1,
+  "f08": 2,
+  "model": "0x1a4d",
+  "texwad": "0x1a4c",
+  "alt_model": null,
+  "alt_texwad": null,
+  "fx": "0x1a49",
+  "model_strings": [
+   "smoke",
+   "sc_01",
+   "sc_02",
+   "sc_03",
+   "sc_04",
+   "lids_end"
+  ]
+ },
+ {
+  "id": 69,
+  "name": "",
+  "row_va": "0x4fb6e0",
+  "slots": 1,
+  "f08": 2,
+  "model": "0x1a57",
+  "texwad": "0x1a56",
+  "alt_model": null,
+  "alt_texwad": null,
+  "fx": "0x1a53",
+  "model_strings": [
+   "Material #87",
+   "face",
+   "ial #87",
+   "Skin",
+   "ial #87",
+   "Black stuff"
+  ]
+ },
+ {
+  "id": 70,
+  "name": "Raiden",
+  "row_va": "0x4fb710",
+  "slots": 1,
+  "f08": 2,
+  "model": "0x1a61",
+  "texwad": "0x1a60",
+  "alt_model": null,
+  "alt_texwad": null,
+  "fx": "0x1a5d",
+  "model_strings": [
+   "xbox_raiden",
+   "Material #430",
+   "Material #431",
+   "Material #432",
+   "Material #433",
+   "Material #462"
+  ]
+ },
+ {
+  "id": 71,
+  "name": "",
+  "row_va": "0x4fb740",
+  "slots": 1,
+  "f08": 2,
+  "model": "0x1a6b",
+  "texwad": "0x1a6a",
+  "alt_model": null,
+  "alt_texwad": null,
+  "fx": "0x1a67",
+  "model_strings": [
+   "Material #337",
+   "Material #353",
+   "Material #354",
+   "Material #355",
+   "Material #364",
+   "Material #365"
+  ]
+ },
+ {
+  "id": 72,
+  "name": "(grenade/revolver)",
+  "row_va": "0x4fb770",
+  "slots": 1,
+  "f08": 2,
+  "model": "0x1a75",
+  "texwad": "0x1a74",
+  "alt_model": null,
+  "alt_texwad": null,
+  "fx": "0x1a71",
+  "model_strings": [
+   "grenade01",
+   "grenade0103",
+   "grenade02",
+   "revolver",
+   "lids_end",
+   "_end"
+  ]
+ },
+ {
+  "id": 73,
+  "name": "",
+  "row_va": "0x4fb7a0",
+  "slots": 1,
+  "f08": 2,
+  "model": "0x1a7f",
+  "texwad": "0x1a7e",
+  "alt_model": null,
+  "alt_texwad": null,
+  "fx": "0x1a7b",
+  "model_strings": [
+   "Material #538",
+   "Material #479",
+   "Material #480",
+   "Material #481",
+   "Material #482",
+   "Material #483"
+  ]
+ },
+ {
+  "id": 74,
+  "name": "",
+  "row_va": "0x4fb7d0",
+  "slots": 1,
+  "f08": 2,
+  "model": "0x1a89",
+  "texwad": "0x1a88",
+  "alt_model": null,
+  "alt_texwad": null,
+  "fx": "0x1a85",
+  "model_strings": [
+   "8<N<O",
+   "AHfa",
+   "utl@",
+   "dR_A",
+   "KD\"<"
+  ]
+ },
+ {
+  "id": 75,
+  "name": "",
+  "row_va": "0x4fb800",
+  "slots": 1,
+  "f08": 2,
+  "model": "0x1a93",
+  "texwad": "0x1a92",
+  "alt_model": null,
+  "alt_texwad": null,
+  "fx": "0x1a8f",
+  "model_strings": [
+   "8<N<O",
+   "AHfa",
+   "utl@",
+   "dR_A"
+  ]
+ },
+ {
+  "id": 76,
+  "name": "Johnny Cage",
+  "row_va": "0x4fb830",
+  "slots": 1,
+  "f08": 8,
+  "model": "0x1a9d",
+  "texwad": "0x1a9c",
+  "alt_model": null,
+  "alt_texwad": null,
+  "fx": "0x1a99",
+  "model_strings": [
+   "johnny cage",
+   "lka1",
+   "y cage",
+   "lka2",
+   "y cage",
+   "lka3"
+  ]
+ },
+ {
+  "id": 77,
+  "name": "",
+  "row_va": "0x4fb860",
+  "slots": 1,
+  "f08": 8,
+  "model": "0x1aa7",
+  "texwad": "0x1aa6",
+  "alt_model": null,
+  "alt_texwad": null,
+  "fx": "0x1aa3",
+  "model_strings": [
+   "xtras",
+   "Material #484",
+   "erial #484",
+   "pants",
+   "al #484",
+   "armhands"
+  ]
+ },
+ {
+  "id": 78,
+  "name": "",
+  "row_va": "0x4fb890",
+  "slots": 1,
+  "f08": 2,
+  "model": "0x1ab1",
+  "texwad": "0x1ab0",
+  "alt_model": null,
+  "alt_texwad": null,
+  "fx": "0x1aad",
+  "model_strings": [
+   "v78<",
+   "~sl@"
+  ]
+ },
+ {
+  "id": 79,
+  "name": "",
+  "row_va": "0x4fb8c0",
+  "slots": 1,
+  "f08": 2,
+  "model": "0x1abb",
+  "texwad": "0x1aba",
+  "alt_model": null,
+  "alt_texwad": null,
+  "fx": "0x1ab7",
+  "model_strings": [
+   "i!\"4",
+   "morningstar",
+   "brokenpillar",
+   "lids_end",
+   "_end",
+   "flap_start"
+  ]
+ },
+ {
+  "id": 80,
+  "name": "Scorpion (enemy)",
+  "row_va": "0x4fb8f0",
+  "slots": 1,
+  "f08": 14,
+  "model": "0x1ac5",
+  "texwad": "0x1ac4",
+  "alt_model": null,
+  "alt_texwad": null,
+  "fx": "0x1ac1",
+  "model_strings": [
+   "scorpion",
+   "sc_01",
+   "sc_02",
+   "sc_03",
+   "sc_04",
+   "sc_05"
+  ]
+ },
+ {
+  "id": 81,
+  "name": "Baraka (VS)",
+  "row_va": "0x4fb920",
+  "slots": 1,
+  "f08": 1,
+  "model": "0x1acf",
+  "texwad": "0x1ace",
+  "alt_model": "0x1acf",
+  "alt_texwad": "0x1ace",
+  "fx": "0x1acb",
+  "model_strings": [
+   "baraka",
+   "wCV$",
+   "vC(z",
+   "vC(z",
+   "*lAh",
+   "lids_end"
+  ]
+ },
+ {
+  "id": 82,
+  "name": "Reptile (VS)",
+  "row_va": "0x4fb950",
+  "slots": 1,
+  "f08": 1,
+  "model": "0x1ad9",
+  "texwad": "0x1ad8",
+  "alt_model": "0x1b3c",
+  "alt_texwad": "0x1b3b",
+  "fx": "0x1ad5",
+  "model_strings": [
+   "reptile",
+   "atama",
+   "color",
+   "blackstuff",
+   "extra",
+   "tuff"
+  ]
+ },
+ {
+  "id": 83,
+  "name": "Kitana (VS)",
+  "row_va": "0x4fb980",
+  "slots": 1,
+  "f08": 1,
+  "model": "0x1ae3",
+  "texwad": "0x1ae2",
+  "alt_model": "0x1b42",
+  "alt_texwad": "0x1b41",
+  "fx": "0x1adf",
+  "model_strings": [
+   "Box02",
+   "lids_end",
+   "_end",
+   ")\\-A",
+   "CqR3",
+   "?y)K"
+  ]
+ },
+ {
+  "id": 84,
+  "name": "Johnny Cage (VS, stone)",
+  "row_va": "0x4fb9b0",
+  "slots": 1,
+  "f08": 1,
+  "model": "0x1aed",
+  "texwad": "0x1aec",
+  "alt_model": "0x1b48",
+  "alt_texwad": "0x1b47",
+  "fx": "0x1ae9",
+  "model_strings": [
+   "stonecage",
+   "face",
+   "cage",
+   "Skin",
+   "cage",
+   "Black stuff"
+  ]
+ },
+ {
+  "id": 85,
+  "name": "",
+  "row_va": "0x4fb9e0",
+  "slots": 1,
+  "f08": 1,
+  "model": "0x1af7",
+  "texwad": "0x1af6",
+  "alt_model": null,
+  "alt_texwad": null,
+  "fx": "0x1af3",
+  "model_strings": [
+   "fr_head_end",
+   "fl_head_end",
+   "|el@",
+   "fr_shoulder",
+   "fr_bicep",
+   "mtl@"
+  ]
+ },
+ {
+  "id": 86,
+  "name": "Sub-Zero (alt)",
+  "row_va": "0x4fba10",
+  "slots": 1,
+  "f08": 2,
+  "model": "0x1b01",
+  "texwad": "0x1b00",
+  "alt_model": null,
+  "alt_texwad": null,
+  "fx": "0x1afd",
+  "model_strings": [
+   "subzero",
+   "color",
+   "black",
+   "extra",
+   "face",
+   "scar"
+  ]
+ },
+ {
+  "id": 87,
+  "name": "Kitana (alt)",
+  "row_va": "0x4fba40",
+  "slots": 1,
+  "f08": 10,
+  "model": "0x1b0b",
+  "texwad": "0x1b0a",
+  "alt_model": null,
+  "alt_texwad": null,
+  "fx": "0x1b07",
+  "model_strings": [
+   "kitana",
+   "bodyx",
+   "armlegs",
+   "extra",
+   "ponytail",
+   "fan_etc"
+  ]
+ },
+ {
+  "id": 88,
+  "name": "",
+  "row_va": "0x4fba70",
+  "slots": 1,
+  "f08": 1,
+  "model": "0x1b15",
+  "texwad": "0x1b14",
+  "alt_model": "0x1b4e",
+  "alt_texwad": "0x1b4d",
+  "fx": "0x1b11",
+  "model_strings": [
+   "Material #87",
+   "face",
+   "ial #87",
+   "Skin",
+   "ial #87",
+   "Black stuff"
+  ]
+ },
+ {
+  "id": 89,
+  "name": "",
+  "row_va": "0x4fbaa0",
+  "slots": 1,
+  "f08": 1,
+  "model": "0x1b1f",
+  "texwad": "0x1b1e",
+  "alt_model": "0x1b54",
+  "alt_texwad": "0x1b53",
+  "fx": "0x1b1b",
+  "model_strings": []
+ },
+ {
+  "id": 90,
+  "name": "",
+  "row_va": "0x4fbad0",
+  "slots": 1,
+  "f08": 1,
+  "model": "0x1b29",
+  "texwad": "0x1b28",
+  "alt_model": "0x1b5a",
+  "alt_texwad": "0x1b59",
+  "fx": "0x1b25",
+  "model_strings": []
+ }
+]

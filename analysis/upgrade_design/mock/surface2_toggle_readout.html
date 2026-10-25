@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<!--
+  MOCKUP 2 - RANK 2 SURFACE: "C" (in-game toggle combos + native menu readout).
+  Self-contained: inline CSS only, NO external scripts, no network. Open in any
+  browser. Shows what the player sees, the EXACT replacement strings, and their
+  original-length budgets (a replacement must be <= the original entry length to
+  keep the fixed-width popup/menu layout).
+
+  Every index/length is from analysis/upgrade_design/out/text_game.csv
+  (game text table = GAMEDATA.WAD record 156). Glyphs: * = Square, ~ = Triangle,
+  | = Circle, ^ = throw/up, $ = special modifier (GUESS R1), # = Block/Lock-On
+  (GUESS L1), = = Accept/Start.  Proven via [466]<->[470] pairing (DESIGN.md A.2).
+
+  Mechanism (DESIGN.md F1): a routine mod CANNOT call the popup, so feedback is
+  (a) the pause-menu readout, produced by hooking cLIST::CopyTextEntry 0x1B5880
+  and substituting a re-purposed (PH) string index; and (b) an optional transient
+  combo-rank toast [1657-1659] (needs the combo-rank variable - RE).
+  Rewriting record 156 makes this a content mod => CONFLICTS with language packs.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Extended Upgrades - Surface C mockup (toggles + menu readout)</title>
+<style>
+  :root{ --gold:#c8a24a; --blood:#8e1b1b; --ink:#0b0b0d; --panel:#15151a;
+         --line:#2a2a33; --on:#5fd35f; --off:#6a6a76; --dim:#9a9aa6; }
+  *{box-sizing:border-box}
+  body{margin:0;background:radial-gradient(1200px 600px at 50% -10%,#1c1c24,#050506);
+       color:#e8e8ee;font-family:"Consolas","Courier New",monospace;padding:24px}
+  h1{font-size:18px;letter-spacing:2px;color:var(--gold);margin:0 0 4px}
+  h2{font-size:13px;letter-spacing:1px;color:var(--dim);margin:0 0 18px;font-weight:400}
+  .sec{margin:26px 0}
+  .sec > h3{font-size:12px;letter-spacing:2px;color:var(--gold);
+            border-bottom:1px solid var(--line);padding-bottom:6px;margin:0 0 14px}
+  .screen{background:linear-gradient(180deg,#101014,#0a0a0c);border:2px solid var(--line);
+          border-radius:6px;padding:0;max-width:720px;box-shadow:0 10px 40px #000a;overflow:hidden}
+  .titlebar{background:linear-gradient(90deg,var(--blood),#3a0d0d);color:#ffe9c9;
+            padding:8px 14px;font-size:13px;letter-spacing:3px;display:flex;justify-content:space-between}
+  .tabs{display:flex;gap:0;border-bottom:1px solid var(--line);background:#0d0d11}
+  .tab{padding:8px 16px;font-size:12px;color:var(--dim);letter-spacing:1px}
+  .tab.sel{color:var(--ink);background:var(--gold);font-weight:bold}
+  .cols{display:flex}
+  .list{width:210px;border-right:1px solid var(--line);padding:10px 0;background:#0c0c10}
+  .item{padding:6px 14px;font-size:12px;color:var(--dim)}
+  .item.sel{background:#20202a;color:#fff;border-left:3px solid var(--gold);padding-left:11px}
+  .detail{flex:1;padding:14px 16px}
+  .perk{display:flex;justify-content:space-between;align-items:baseline;
+        padding:7px 0;border-bottom:1px dashed #23232b}
+  .perk .nm{color:#fff;font-size:13px}
+  .perk .ds{color:var(--dim);font-size:11px;display:block;margin-top:2px}
+  .st{font-size:12px;font-weight:bold;letter-spacing:1px}
+  .st.on{color:var(--on)} .st.off{color:var(--off)}
+  .idx{color:#4a4a58;font-size:10px;margin-left:8px}
+  .toast{max-width:720px;margin-top:14px}
+  .combo{background:#000;border:1px solid var(--gold);border-radius:4px;
+         display:inline-block;padding:10px 22px;text-align:center}
+  .combo .big{color:var(--gold);font-size:22px;letter-spacing:3px}
+  .combo .sub{color:var(--dim);font-size:11px;margin-top:4px}
+  .card{max-width:720px;background:var(--panel);border:1px solid var(--line);
+        border-radius:6px;padding:14px 18px}
+  .card code{color:var(--gold)}
+  .keys{display:flex;gap:10px;flex-wrap:wrap;margin:10px 0}
+  .key{background:#000;border:1px solid #3a3a46;border-bottom-width:3px;border-radius:5px;
+       padding:6px 10px;font-size:12px;color:#fff}
+  .key b{color:var(--gold)}
+  table{border-collapse:collapse;width:100%;max-width:900px;font-size:11px}
+  th,td{border:1px solid var(--line);padding:5px 8px;text-align:left;vertical-align:top}
+  th{background:#1a1a22;color:var(--gold);letter-spacing:1px}
+  td.ok{color:var(--on)} td.bad{color:#e05555}
+  .mono{white-space:pre-wrap}
+  .note{color:var(--dim);font-size:11px;max-width:900px;line-height:1.6}
+  .legend{font-size:11px;color:var(--dim);margin-top:6px}
+</style>
+</head>
+<body>
+
+<h1>EXTENDED UPGRADES &mdash; SURFACE C</h1>
+<h2>in-game toggle combos + native pause-menu readout &middot; mockup (not the mod)</h2>
+
+<!-- ============ VIEW 1: the pause-menu readout ============ -->
+<div class="sec">
+  <h3>VIEW 1 &mdash; WHAT THE PLAYER SEES IN THE PAUSE MENU (Moves &rsaquo; Info pane)</h3>
+  <div class="screen">
+    <div class="titlebar"><span>MOVES</span><span>LIU KANG &nbsp; EXP 6,240</span></div>
+    <div class="tabs">
+      <div class="tab">Main</div>
+      <div class="tab sel">Moves</div>
+      <div class="tab">Info</div>
+      <div class="tab">Purchase</div>
+      <div class="tab">Fatalities</div>
+    </div>
+    <div class="cols">
+      <div class="list">
+        <div class="item">Specials</div>
+        <div class="item">Platform</div>
+        <div class="item">Combos</div>
+        <div class="item">Skill</div>
+        <div class="item sel">Perks&nbsp;&nbsp;&#9668;</div>
+        <div class="item">Team</div>
+      </div>
+      <div class="detail">
+        <!-- Each row = one re-purposed (PH) index. Right = live state the mod
+             writes; the string shown is the REPLACEMENT text (see audit below). -->
+        <div class="perk"><div><span class="nm">Decapitate</span><span class="idx">[574]</span>
+          <span class="ds">Blade finishers behead the enemy</span></div><span class="st on">ON</span></div>
+        <div class="perk"><div><span class="nm">Sever Limbs</span><span class="idx">[581]</span>
+          <span class="ds">Blade hits sever arms and legs</span></div><span class="st on">ON</span></div>
+        <div class="perk"><div><span class="nm">EX Finisher</span><span class="idx">[582]</span>
+          <span class="ds">Brutality anim as EX special</span></div><span class="st off">OFF</span></div>
+        <div class="perk"><div><span class="nm">Cleaver</span><span class="idx">[583]</span>
+          <span class="ds">Higher dismember chance on blades</span></div><span class="st on">ON</span></div>
+        <div class="perk"><div><span class="nm">Berserk</span><span class="idx">[584]</span>
+          <span class="ds">Longer brutality-mode window</span></div><span class="st off">OFF</span></div>
+        <div class="perk"><div><span class="nm">Endurance</span><span class="idx">[593]</span>
+          <span class="ds">Larger stamina/guard meter</span></div><span class="st on">ON</span></div>
+        <div class="perk"><div><span class="nm">Iron Lungs</span><span class="idx">[594]</span>
+          <span class="ds">Longer sprint and dodge</span></div><span class="st off">OFF</span></div>
+      </div>
+    </div>
+  </div>
+  <p class="note">The "Perks" row re-uses the existing category slot; the seven entries are
+  <b>(PH) placeholder indices</b> [574,581,582,583,584,593,594] rewritten by a content mod and
+  swapped in at runtime by a <code>cLIST::CopyTextEntry 0x1B5880</code> hook that reflects the
+  mod's live on/off state. GUESS: whether these indices render in this pane is the open RE
+  question (DESIGN.md A.5 / F.4).</p>
+</div>
+
+<!-- ============ VIEW 2: the toggle combo ============ -->
+<div class="sec">
+  <h3>VIEW 2 &mdash; THE TOGGLE COMBO (read from pad state at tick 0x1D23F0)</h3>
+  <div class="card">
+    <div class="keys">
+      <div class="key">HOLD <b>$</b> (R1)</div>
+      <div class="key">+ <b>&#9664; &#9654;</b> D-pad</div>
+      <div class="key">= focus a perk</div>
+    </div>
+    <div class="keys">
+      <div class="key">HOLD <b>$</b> (R1)</div>
+      <div class="key">+ <b>*</b> (Square)</div>
+      <div class="key">= toggle focused perk ON / OFF</div>
+    </div>
+    <p class="legend">Glyphs are the game's own button markers (DESIGN.md A.2). A perk can only be
+    toggled ON once its lifetime-XP threshold is met; below that it shows OFF and ignores the combo.
+    Pad-state address/layout is RE (DESIGN.md E, Rank 2).</p>
+  </div>
+</div>
+
+<!-- ============ VIEW 3: transient combo-word toast ============ -->
+<div class="sec">
+  <h3>VIEW 3 &mdash; TRANSIENT FEEDBACK VIA THE COMBO-RANK POPUP (optional)</h3>
+  <div class="toast">
+    <div class="combo">
+      <div class="big">DECAP ON</div>
+      <div class="sub">combo x7 &nbsp; +1,050 EXP</div>
+    </div>
+  </div>
+  <p class="note">On toggle, the mod forces the combo-rank word to a re-purposed entry so the next
+  combo popup briefly names the perk. Uses the three redundant <code>Impossible</code> slots
+  [1657/1658/1659] (same hash key <code>3d85cdbc</code> &rarr; two are free). Needs the combo-rank
+  variable (RE); the popup function itself is not hookable (DESIGN.md F1).</p>
+</div>
+
+<!-- ============ LENGTH AUDIT ============ -->
+<div class="sec">
+  <h3>EXACT REPLACEMENT STRINGS + LENGTH AUDIT (replacement must be &le; original)</h3>
+  <table>
+    <tr><th>idx</th><th>original text</th><th>orig len</th><th>replacement (\n = newline)</th><th>new len</th><th>fits?</th></tr>
+    <tr><td>574</td><td class="mono">(PH) Liu Kang Fireball 5 \nDescription\nKey Sequence</td><td>50</td>
+        <td class="mono">Decapitate\nBlade finishers behead the enemy\nON</td><td>44</td><td class="ok">OK</td></tr>
+    <tr><td>581</td><td class="mono">(PH) Sub-Zero Square 2\nDescription\nKey Sequence</td><td>47</td>
+        <td class="mono">Sever Limbs\nBlade hits sever arms and legs\nON</td><td>45</td><td class="ok">OK</td></tr>
+    <tr><td>582</td><td class="mono">(PH) Sub-Zero Square 3\nDescription\nKey Sequence</td><td>47</td>
+        <td class="mono">EX Finisher\nBrutality anim as EX special\nOFF</td><td>44</td><td class="ok">OK</td></tr>
+    <tr><td>583</td><td class="mono">(PH) Sub-Zero Square 4\nDescription\nKey Sequence</td><td>47</td>
+        <td class="mono">Cleaver\nHigher dismember chance on blades\nON</td><td>44</td><td class="ok">OK</td></tr>
+    <tr><td>584</td><td class="mono">(PH) Sub-Zero Square 5\nDescription\nKey Sequence</td><td>47</td>
+        <td class="mono">Berserk\nLonger brutality-mode window\nOFF</td><td>40</td><td class="ok">OK</td></tr>
+    <tr><td>593</td><td class="mono">(PH) Scorpion Square 4\nDescription\nKey Sequence</td><td>47</td>
+        <td class="mono">Endurance\nLarger stamina/guard meter\nON</td><td>39</td><td class="ok">OK</td></tr>
+    <tr><td>594</td><td class="mono">(PH) Scorpion Square 5\nDescription\nKey Sequence</td><td>47</td>
+        <td class="mono">Iron Lungs\nLonger sprint and dodge\nOFF</td><td>38</td><td class="ok">OK</td></tr>
+    <tr><td>1657</td><td class="mono">Impossible</td><td>10</td><td class="mono">DECAP ON</td><td>8</td><td class="ok">OK</td></tr>
+    <tr><td>1658</td><td class="mono">Impossible</td><td>10</td><td class="mono">SEVER ON</td><td>8</td><td class="ok">OK</td></tr>
+    <tr><td>1659</td><td class="mono">Impossible</td><td>10</td><td class="mono">EX FINISH</td><td>9</td><td class="ok">OK</td></tr>
+  </table>
+  <p class="note">Lengths counted from <code>out/text_game.csv</code>. The menu pane wraps on <code>\n</code>,
+  so each replacement keeps the original 3-line shape (Name\nDescription\nState). Popup words are a
+  single fixed-width line &mdash; the 10-char budget on [1657-1659] is the binding constraint; all
+  replacements fit. A replacement longer than the original would overflow the popup box, so the
+  content-mod build must assert <code>new_len &le; orig_len</code> for these indices.</p>
+</div>
+
+<p class="legend">Surface C cost: content mod (record 156) &rarr; conflicts with any installed language
+pack (DESIGN.md F2); RE for pad state, cLIST::CopyTextEntry args, combo-rank variable, and
+index&rarr;pane mapping. Effort M+M. Ranked 2 of 5; the recommended surface is the A+D hybrid
+(mockup 1), which needs no content mod and no menu RE.</p>
+
+</body>
+</html>

@@ -1,0 +1,128 @@
+================================================================================
+ MOCKUP 1 — RANK 1 SURFACE: "A+D HYBRID" (passive XP unlocks + package variants)
+ What the player actually sees. No text-table edits -> no length constraints,
+ no language-pack conflict. Three views: (1) Krypt catalog, (2) README card,
+ (3) in-game moment. Optional (4) the E1 "Fatality-Level dial" add-on.
+================================================================================
+
+--------------------------------------------------------------------------------
+(1) IN THE LAUNCHER  ->  Mods  (the only place the player PICKS a loadout)
+    The three variants are separate packages; `conflicts` keeps one enabled.
+--------------------------------------------------------------------------------
+  Mods                                            [ Check for updates ]
+  ------------------------------------------------------------------------
+  LANGUAGE PACKS
+    (none installed)
+
+  GAMEPLAY MODS
+  > Extended Upgrades: Brutal            1.0.0     [ Enabled ]
+      All 18 perks. Legendary Dark Knight XP unlocks blade dismemberment,
+      EX brutality moves, stamina and economy perks as you bank XP.
+
+    Extended Upgrades: Classic           1.0.0     [ Install ]
+      Tiers 1-2 only (8 perks), vanilla pacing. A little extra blood,
+      no EX moves, no capstones.
+
+    Extended Upgrades: Hardcore          1.0.0     [ Install ]
+      Dismemberment + EX only, 0.7x XP curve. Fast, lethal, no QoL.
+
+  ------------------------------------------------------------------------
+  i  Variants conflict: enabling one disables the others.
+     Perks unlock PASSIVELY as lifetime XP rises. No in-game menu.
+     Requires Shaolin Monks Recomp 0.2.0.  Original game files unchanged.
+
+  Player action: highlight "Brutal" -> Enable -> Play.  Choice is made HERE,
+  once, out of game.  (This is surface D; the passive layer is surface A.)
+
+
+--------------------------------------------------------------------------------
+(2) README.txt (inside the package)  ->  the perk card the player reads to know
+    what they have and what is coming.  This IS the discoverability surface.
+--------------------------------------------------------------------------------
+  EXTENDED UPGRADES: BRUTAL
+  -------------------------
+  Legendary Dark Knight spawns more enemies -> more XP -> more perks.
+  Perks unlock automatically as your LIFETIME XP (this session) crosses
+  each threshold. There is no menu; watch your character get deadlier.
+
+   TIER 1  (1,500-3,000 XP)
+     1,500  Endurance ......... larger stamina/guard meter
+     2,000  Decapitate ......... blade finishing hits behead
+     2,500  Bloodlust .......... small health on kill
+     3,000  EX Finisher ........ a brutality anim as an enhanced special  *
+   TIER 2  (4,000-8,000 XP)
+     4,000  Recuperate ......... faster stamina recovery
+     5,000  Sever Limbs ........ blade hits sever arms and legs
+     6,000  Combo Master ....... slower combo-meter decay
+     7,000  EX Combo Breaker ... brutality anim as a combo-ending EX     *
+     8,000  XP Boost ........... larger XP multiplier on kills
+   TIER 3  (9,000-15,000 XP)
+     9,000  Cleaver ............ higher dismember chance on blades
+    11,000  EX Launcher ........ enhanced launcher from the brutality set *
+    12,000  Iron Lungs ......... longer sprint and dodge
+    13,000  Bone Breaker ....... power attacks can dismember too
+    14,000  Warrior's Fortune .. bonus XP from fatalities
+   TIER 4  (16,000-25,000 XP)
+    16,000  Berserk ............ longer brutality-mode window           *
+    18,000  Second Wind ........ burst stamina/health when nearly dead
+    20,000  Air Juggle+ ........ extra air-combo hits
+    25,000  Quick Recovery ..... faster wake-up after knockdown
+
+   * EX/brutality perks need the enhanced-move switch (RE pending). If it
+     is not found this release ships 14 perks and the four * lines are
+     omitted from the card.
+
+  Thresholds are relative; a real LDK run calibrates them. Versus has no XP.
+
+
+--------------------------------------------------------------------------------
+(3) IN GAME  ->  what the player sees while a perk unlocks (PASSIVE = silent)
+    The vanilla XP/combo popup is UNCHANGED (we cannot call it, and we do not
+    need to).  The perk simply takes effect on the next qualifying hit.
+--------------------------------------------------------------------------------
+        normal fight, LDK (more enemies on screen)
+        +-----------------------------------------------+
+        |                    combo x7                     |
+        |                  +1,050 EXP                     |   <- vanilla popup
+        |               (multiplier rising)               |      (unchanged)
+        +-----------------------------------------------++
+                                                          |
+   lifetime XP crosses 2,000  --------------------------+
+        |
+        v   [Decapitate unlocked - SILENT]
+        next blade finisher:  enemy head detaches (game does it via
+        enemy_detach_bone 0x1A33E0, forced by our before-hook)
+
+        +-----------------------------------------------+
+        |  (no new text, no toast - the effect is the    |
+        |   feedback: the body comes apart)              |
+        +-----------------------------------------------+
+
+  Trade-off the player accepts for zero risk / zero language-pack conflict:
+  unlocks are not announced in-game.  The README card is the reference.
+
+
+--------------------------------------------------------------------------------
+(4) OPTIONAL ADD-ON  ->  surface E1: the native "Fatality Level" dial
+    IF RE shows the [1632]-[1637] selector is reachable and its value is
+    readable, it becomes a zero-content-mod perk-tier dial.  The player uses
+    a menu that ALREADY EXISTS; we only read the chosen level.
+--------------------------------------------------------------------------------
+   existing VS options row (text untouched):
+        P1 Fatality Level      <  Level 2 >        [1632],[1636]
+        P2 Fatality Level      <  Level 2 >        [1633],[1636]
+
+   mod reads the selected level as a perk cap:
+        Level 0 -> perks OFF
+        Level 1 -> Tier 1 only
+        Level 2 -> Tiers 1-2          (default)
+        Level 3 -> all unlocked tiers
+
+   No strings are rewritten, so no length limits and no language-pack
+   conflict.  Caveat: reads as a VS-mode row; story/LDK reachability is
+   the open RE question (DESIGN.md F.4 / E1).
+
+================================================================================
+ END MOCKUP 1.  Strings shown in (4) are the ORIGINAL table entries
+ ([1632] 'P1 Fatality Level', [1636] 'Fatality Level 2'); nothing is replaced.
+================================================================================

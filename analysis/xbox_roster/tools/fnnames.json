@@ -1,0 +1,5337 @@
+{
+"names": {
+"0x1cc00": [
+"SoftwareTimer::SoftwareTimer"
+],
+"0x1cc80": [
+"SoftwareTimer::Update"
+],
+"0x1e490": [
+"pxSarray<class G_Object_Type *,10>::push_back"
+],
+"0x1e6a0": [
+"pxSarray<class G_Object_Type *,10>::push_back"
+],
+"0x1e750": [
+"MutalityManager::MutalityManager"
+],
+"0x1ef00": [
+"MutalityPlayerInfo::MutalityPlayerInfo"
+],
+"0x1f1d0": [
+"QueuedTeleportManager::QueuedTeleportManager"
+],
+"0x1f2a0": [
+"QueuedTeleportManager::Update"
+],
+"0x1f5a0": [
+"RespawnManager::RespawnManager"
+],
+"0x1ff60": [
+"RespawnManager::Update"
+],
+"0x20850": [
+"SpaceChecker::CheckSpace"
+],
+"0x20c30": [
+"pxMtAddStonePower::EventFired"
+],
+"0x20d00": [
+"TetherManager::TetherManager"
+],
+"0x21040": [
+"pxMtEnableTether::EventFired"
+],
+"0x21780": [
+"pxMtVSPlayerFall::EventFired"
+],
+"0x21ee0": [
+"VSModeManager::SetStage"
+],
+"0x22150": [
+"VSModeManager::GetVictoryAnimation"
+],
+"0x22e20": [
+"VSModeManager::AdvanceToNextStage"
+],
+"0x22f40": [
+"VSModeManager::ApplyQueuedWin"
+],
+"0x23080": [
+"VSModeManager::VSModeManager"
+],
+"0x23530": [
+"VSModeManager::PlayerJustDied"
+],
+"0x235e0": [
+"VSState::VSState"
+],
+"0x23c80": [
+"VSStateDisplayRound::PlayNewRoundSound"
+],
+"0x24110": [
+"VSStateDisplayWinner::PlayWinSound"
+],
+"0x24720": [
+"SoftwareTimer::Reset"
+],
+"0x36300": [
+"ButtonThroughImp::UpdateNotInSequence"
+],
+"0x36a10": [
+"HiddenBackgroundImp::ShouldCharacterBeHidden"
+],
+"0x36fd0": [
+"Container::SpawnPickup"
+],
+"0x378f0": [
+"pxSarray<class SpawnParams *,10>::push_back"
+],
+"0x37950": [
+"pxSarray<class TriggerTimer *,20>::push_back"
+],
+"0x379b0": [
+"pxSarray<class Container *,10>::push_back"
+],
+"0x37b30": [
+"SoftwareTimer::Update"
+],
+"0x37bd0": [
+"SoftwareTimer::Update"
+],
+"0x37f70": [
+"pxSarray<class SpawnParams *,10>::push_back"
+],
+"0x38020": [
+"pxSarray<class TriggerTimer *,20>::push_back"
+],
+"0x380d0": [
+"pxSarray<class Container *,10>::push_back"
+],
+"0x382f0": [
+"SoftwareTimer::Reset"
+],
+"0x38720": [
+"ContainerManager::SpawnContainersWithRefID"
+],
+"0x3ab00": [
+"pxMtRandomTrigger::StoreTrigger"
+],
+"0x3ac00": [
+"pxMtRandomTrigger::EventFired"
+],
+"0x3b030": [
+"QueuedTriggersManager::AddTrigger"
+],
+"0x452c0": [
+"cMapLoadInfo::SetCurrentGameMap"
+],
+"0x45390": [
+"cMapLoadInfo::SetCurrentGameMap"
+],
+"0x45460": [
+"cMapLoadInfo::SetCurrentGameMap"
+],
+"0x45720": [
+"cMapLoadInfo::SetCurrentGameMap"
+],
+"0x54d60": [
+"BaseCamera::operator new"
+],
+"0x54dc0": [
+"BaseCamera::operator delete"
+],
+"0x54f20": [
+"CameraManager::operator new"
+],
+"0x54f80": [
+"CameraManager::operator delete"
+],
+"0x55080": [
+"MKACameraBox::SetLookAheadType"
+],
+"0x552e0": [
+"MKABaseCamera::SetTwoPlayerMinZoom"
+],
+"0x55360": [
+"MKABaseCamera::SetTwoPlayerMaxZoom"
+],
+"0x55580": [
+"CameraManager::operator new"
+],
+"0x569f0": [
+"CameraManager::operator delete"
+],
+"0x56a40": [
+"BaseCamera::operator new",
+"MKACameraManager::SetupCameraIDs"
+],
+"0x58860": [
+"MKACameraManager::SetCurrentCameraForOnePlayer"
+],
+"0x592f0": [
+"MKACameraManager::SetCurrentCameraForTwoPlayers"
+],
+"0x59f20": [
+"CameraTargets::operator new"
+],
+"0x59f80": [
+"CameraTargets::operator delete"
+],
+"0x5a000": [
+"CameraTargetsManager::operator new"
+],
+"0x5a060": [
+"CameraTargetsManager::operator delete"
+],
+"0x5a130": [
+"CameraTargetsManager::operator new"
+],
+"0x5a500": [
+"CameraTargetsManager::operator delete"
+],
+"0x5b1b0": [
+"MKABaseCamera::GetCameraBoxByID"
+],
+"0x5e400": [
+"MKABaseCamera::GetPointUsedToComputeFocus"
+],
+"0x5e500": [
+"BaseCamera::operator delete"
+],
+"0x600a7": [
+"MKA2PlayerVsCamera::MKA2PlayerVsCamera"
+],
+"0x674b0": [
+"MKAPanoramicCamera::MKAPanoramicCamera"
+],
+"0x67ca0": [
+"MKARailCamera::MKARailCamera"
+],
+"0x70750": [
+"CameraTargets::operator delete"
+],
+"0xa89b0": [
+"Pickup::Pickup"
+],
+"0xa8b60": [
+"Pickup::CanPickup"
+],
+"0xa90c0": [
+"pxSarray<class DisplayedPickup *,10>::operator`[]'"
+],
+"0xa9120": [
+"pxSarray<class DisplayedPickup *,10>::push_back"
+],
+"0xa91a0": [
+"SoftwareTimer::Update",
+"pxSarray<class DisplayedPickup *,10>::operator`[]'"
+],
+"0xa9460": [
+"pxSarray<class DisplayedPickup *,10>::operator`[]'"
+],
+"0xa9700": [
+"pxSarray<class DisplayedPickup *,10>::push_back"
+],
+"0xaa8b0": [
+"AddNewPickup"
+],
+"0xab350": [
+"TryToCreateWeaponPickup"
+],
+"0xab510": [
+"TryToCreateWeaponPickup"
+],
+"0xab6d0": [
+"TryToCreateWeaponPickup"
+],
+"0xab890": [
+"TryToCreateWeaponPickup"
+],
+"0xaca50": [
+"RecycledObjectTracker::GetNextFreeObjNum"
+],
+"0xacae0": [
+"RecycledObjectTracker::GetIndex"
+],
+"0xad790": [
+"UnlockableArgs::UnlockableArgs"
+],
+"0xadb40": [
+"UnlockableArgs::GetArg"
+],
+"0xadbd0": [
+"PickupTypeUnlockable::PickupTypeUnlockable"
+],
+"0xadea0": [
+"pxSarray<class ParticleInfo,5>::push_back"
+],
+"0xadfd0": [
+"pxSarray<class ParticleInfo,5>::push_back"
+],
+"0xaf5a0": [
+"PickupExperience::PickupExperience"
+],
+"0xb7640": [
+"UnlockableTune_GetText"
+],
+"0xb76a0": [
+"UnlockableTune_GetArenaArt1"
+],
+"0xb7710": [
+"UnlockableTune_GetArenaArt2"
+],
+"0xb7780": [
+"UnlockableTune_GetArenaArt3"
+],
+"0xb77f0": [
+"UnlockableTune_GetArenaArt4"
+],
+"0xb7860": [
+"UnlockableTune_GetArenaArt5"
+],
+"0xb78d0": [
+"UnlockableTune_GetArenaArt6"
+],
+"0xb7940": [
+"UnlockableTune_GetArenaArt7"
+],
+"0xb79b0": [
+"UnlockableTune_GetArenaArt8"
+],
+"0xb7a20": [
+"UnlockableTune_GetArenaArt9"
+],
+"0xb7a90": [
+"UnlockableTune_GetConceptArt1"
+],
+"0xb7b00": [
+"UnlockableTune_GetConceptArt2"
+],
+"0xb7b70": [
+"UnlockableTune_GetConceptArt3"
+],
+"0xb7be0": [
+"UnlockableTune_GetConceptArt4"
+],
+"0xb7c50": [
+"UnlockableTune_GetConceptArt5"
+],
+"0xb7cc0": [
+"UnlockableTune_GetConceptArt6"
+],
+"0xb7d30": [
+"UnlockableTune_GetConceptArt7"
+],
+"0xb7da0": [
+"UnlockableTune_GetConceptArt8"
+],
+"0xb7e10": [
+"UnlockableTune_GetCharacter"
+],
+"0xb7e80": [
+"UnlockableTune_GetMap"
+],
+"0xb7ef0": [
+"UnlockableTune_GetMovie"
+],
+"0xb7f60": [
+"UnlockableTune_GetPhoto1"
+],
+"0xb7fd0": [
+"UnlockableTune_GetPhoto2"
+],
+"0xb8040": [
+"UnlockableTune_GetPhoto3"
+],
+"0xb80b0": [
+"UnlockableTune_GetPhoto4"
+],
+"0xb8120": [
+"UnlockableTune_GetPhoto5"
+],
+"0xb8190": [
+"UnlockableTune_GetPhoto6"
+],
+"0xb8200": [
+"UnlockableTune_GetPhoto7"
+],
+"0xb8270": [
+"UnlockableTune_GetPhoto8"
+],
+"0xb9c70": [
+"pxSarray<class WeaponInfo *,35>::push_back"
+],
+"0xb9ec0": [
+"pxSarray<class WeaponInfo *,35>::push_back"
+],
+"0xba300": [
+"PmeWeapon::GetMemBlocks"
+],
+"0xba480": [
+"PmeWeapons::GetAvailable"
+],
+"0xbafc0": [
+"PxDynamicRigidBodyInterface::SetExpirationTimer"
+],
+"0xbb300": [
+"ToolManager::IsPickupTool"
+],
+"0xda620": [
+"FindMax"
+],
+"0x102be0": [
+"PxNewFunction"
+],
+"0x102ea0": [
+"Memory_AssignBlock"
+],
+"0x102f10": [
+"Memory_UnAssignBlock"
+],
+"0x1030c0": [
+"Memory_CurrentBlock"
+],
+"0x1031a0": [
+"Memory_FreeBlock"
+],
+"0x103800": [
+"Memory_BlockSize"
+],
+"0x103920": [
+"Memory_ResetPosition",
+"Memory_StorePosition",
+"Memory_ValidatePointer"
+],
+"0x1050a0": [
+"Memory_AllocBlock"
+],
+"0x105710": [
+"Memory_SetBlock"
+],
+"0x105a50": [
+"Array_Initialise"
+],
+"0x106220": [
+"cGameMemInterface::ReInitialiseMemoryBlock"
+],
+"0x106310": [
+"cGameMemInterface::InitialiseMultipleMemoryBlocks"
+],
+"0x106690": [
+"cGameMemInterface::ReAllocateGameMemoryBlocks"
+],
+"0x1067d0": [
+"cGameMemInterface::AssignGameCustomMemoryBlock"
+],
+"0x106930": [
+"cGameMemInterface::GetGamePlayerMemoryBlockID"
+],
+"0x106980": [
+"cGameMemInterface::GetGameCharacterMemoryBlockID"
+],
+"0x1069d0": [
+"cGameMemInterface::GetGameBackgroundMemoryBlockID"
+],
+"0x106a20": [
+"cGameMemInterface::GetGameCustomCharacterMemoryBlockID"
+],
+"0x106a70": [
+"cGameMemInterface::GetGameCustomBackgroundMemoryBlockID"
+],
+"0x107090": [
+"PxVec4LengthSq"
+],
+"0x107100": [
+"PxVec4Dot"
+],
+"0x1072c0": [
+"GetEngineScreen"
+],
+"0x107510": [
+"GetTextureManager"
+],
+"0x107a00": [
+"Update_Sub_Position"
+],
+"0x107b50": [
+"Update_Sub_Position_Forced"
+],
+"0x108320": [
+"tgtGet_Sub_Object_Matrix"
+],
+"0x108410": [
+"tgtSet_Sub_Object_Matrix"
+],
+"0x108560": [
+"Get_Sub_Object_Vectors"
+],
+"0x1086c0": [
+"tgtGet_Sub_Object_Position"
+],
+"0x108890": [
+"tgtSet_Sub_Object_Position"
+],
+"0x108a00": [
+"tgtGet_Sub_Object_Rotation"
+],
+"0x108b30": [
+"tgtSet_Sub_Object_Rotation"
+],
+"0x108e00": [
+"CEngineRenderer::GetCurrentCamera",
+"GetEngineRenderer"
+],
+"0x108f10": [
+"tgtSet_Sub_Object_Matrix_World"
+],
+"0x1090b0": [
+"GetEngineRenderer",
+"tgtSet_Sub_Object_Matrix_World_Only"
+],
+"0x1091d0": [
+"tgtGet_Sub_Object_Matrix_Pointer_Before_IK"
+],
+"0x109280": [
+"tgtSet_Sub_Object_Scale"
+],
+"0x1093a0": [
+"CEngineRenderer::GetCurrentCamera",
+"GetEngineRenderer"
+],
+"0x109430": [
+"CEngineRenderer::GetCurrentCamera",
+"GetEngineRenderer"
+],
+"0x1094c0": [
+"CEngineRenderer::GetCurrentCamera",
+"GetEngineRenderer",
+"GetEngineScreen"
+],
+"0x1095e0": [
+"GetEngineRenderer"
+],
+"0x109620": [
+"GetEngineScreen"
+],
+"0x109670": [
+"GetEngineScreen"
+],
+"0x1096c0": [
+"GetEngineScreen"
+],
+"0x109710": [
+"GetEngineScreen"
+],
+"0x10c860": [
+"PxVec3Length"
+],
+"0x10c8d0": [
+"PxVec3LengthSq"
+],
+"0x10c940": [
+"PxVec3Dot"
+],
+"0x10c9a0": [
+"PxVec4Scale"
+],
+"0x10cca0": [
+"GameToNativeVec4"
+],
+"0x10cd30": [
+"NativeToGameVec4"
+],
+"0x10d8c0": [
+"xbCrossProduct"
+],
+"0x10e310": [
+"GetEngineScreen"
+],
+"0x10e3b0": [
+"tgtSet_Object_Brightness",
+"tgtSet_Transparency"
+],
+"0x10e480": [
+"tgtGet_Object_Brightness"
+],
+"0x10e530": [
+"GetEngineScreen"
+],
+"0x10e620": [
+"tgtReAssociate"
+],
+"0x10e670": [
+"GetEngineRenderer"
+],
+"0x10e6d0": [
+"GetEngineRenderer"
+],
+"0x10e750": [
+"tgtGetBoneCollisionManager"
+],
+"0x10e7a0": [
+"tgtResetHiddenInfo"
+],
+"0x10e7f0": [
+"tgtDisableHiding"
+],
+"0x10e870": [
+"tgtEnableHiding"
+],
+"0x10e8f0": [
+"tgtHide_Bone"
+],
+"0x10ea40": [
+"tgtUnHide_Bone"
+],
+"0x10eb80": [
+"GetEngineRenderer"
+],
+"0x10ebd0": [
+"GetEngineRenderer"
+],
+"0x10ec50": [
+"tgtIsHidden_Bone"
+],
+"0x10f140": [
+"tgtHideSectionByMaterialName"
+],
+"0x10f1a0": [
+"tgtHideSectionByMaterialNameCRC",
+"tgtShowSectionByMaterialName"
+],
+"0x10f260": [
+"tgtShowSectionByMaterialNameCRC"
+],
+"0x10f3c0": [
+"GetEngineSpriteManager"
+],
+"0x10f520": [
+"MODEL_TYPE::GetSectionByIndex"
+],
+"0x1104a0": [
+"tgtSet_Elements"
+],
+"0x110510": [
+"GetEngineRenderer"
+],
+"0x110590": [
+"GetEngineRenderer",
+"GetEngineScreen"
+],
+"0x110980": [
+"GetEngineRenderer"
+],
+"0x110af1": [
+"Add_Effects_Mesh",
+"GetEngineRenderer"
+],
+"0x110ec0": [
+"tgtNew_LoadModel"
+],
+"0x111370": [
+"MODEL_TYPE::GetSectionByIndex"
+],
+"0x111540": [
+"Set_Animation_Usage2"
+],
+"0x1116e0": [
+"GetEngineRenderer"
+],
+"0x111800": [
+"CModelSetup::ProcessChunk"
+],
+"0x111aa0": [
+"MODEL_TYPE::GetSectionByIndex"
+],
+"0x111b60": [
+"CModelSetup::ProcessChunk"
+],
+"0x111c40": [
+"CModelSetup::ProcessChunk"
+],
+"0x111cf0": [
+"CModelSetup::ProcessChunk"
+],
+"0x111e50": [
+"CPxBinList<int,class cPxDrawObject *>::addItem"
+],
+"0x1123a0": [
+"GetEngineRenderer"
+],
+"0x112480": [
+"GetEngineRenderer"
+],
+"0x112530": [
+"GetEngineRenderer",
+"GetTextureManager"
+],
+"0x112b60": [
+"GetEngineRenderer",
+"GetTextureManager"
+],
+"0x1130d0": [
+"GetEngineRenderer",
+"GetTextureManager",
+"Process_Character"
+],
+"0x113790": [
+"Associate_CharacterModel",
+"GetEngineRenderer"
+],
+"0x113b50": [
+"GetEngineRenderer",
+"tgtProcessObjectModel"
+],
+"0x113ef0": [
+"AssignModelInstance"
+],
+"0x114240": [
+"Associate_InstanceModel"
+],
+"0x114840": [
+"GetEngineMemory"
+],
+"0x114930": [
+"GetEngineMemory"
+],
+"0x1183e0": [
+"CEngineRenderer::GetCamera"
+],
+"0x118440": [
+"CShaderConst::SetVertexConstant",
+"GetEngineScreen"
+],
+"0x118fc0": [
+"CEngScreen::CEngScreen"
+],
+"0x1190d0": [
+"CEngScreen::DrawEffects"
+],
+"0x1192b4": [
+"CEngineRenderer::GetCurrentCamera",
+"GetEngineRenderer"
+],
+"0x119510": [
+"GetEngineRenderer",
+"GetEngineScreen"
+],
+"0x1195e0": [
+"GetEngineScreen"
+],
+"0x1196f0": [
+"GetEngineScreen"
+],
+"0x119740": [
+"GetEngineScreen"
+],
+"0x119885": [
+"GetEngineScreen"
+],
+"0x1198a1": [
+"GetEngineScreen"
+],
+"0x119ef0": [
+"GetEngineScreen"
+],
+"0x119f80": [
+"GetEngineScreen"
+],
+"0x11a0a0": [
+"CEngineRenderer::GetCurrentCamera",
+"GetEngineRenderer",
+"GetEngineScreen"
+],
+"0x11a270": [
+"GetEngineRenderer"
+],
+"0x11b290": [
+"CEngineRenderer::GetCamera",
+"GetEngineRenderer"
+],
+"0x11b620": [
+"GetEngineScreen"
+],
+"0x11b690": [
+"GetEngineScreen"
+],
+"0x11b7c0": [
+"CEngScreen::Init"
+],
+"0x11bca0": [
+"CSpriteManager::CSpriteManager"
+],
+"0x11bdb0": [
+"CSpriteManager::AddSprite"
+],
+"0x11be80": [
+"GetEngineScreen"
+],
+"0x11c460": [
+"CSpriteManager::SortSprites"
+],
+"0x11c6d0": [
+"GetEngineScreen"
+],
+"0x11c730": [
+"GetEngineScreen"
+],
+"0x11d140": [
+"GetEngineScreen"
+],
+"0x11d4b0": [
+"tgtLoadModel"
+],
+"0x11e130": [
+"PxVec4Length"
+],
+"0x11e1a0": [
+"PxVec4Add"
+],
+"0x11e210": [
+"PxVec4Subtract"
+],
+"0x11e370": [
+"cPxArena::GetVisibilityBinID"
+],
+"0x11e480": [
+"CEngineRenderer::SetPxRenderState"
+],
+"0x11e510": [
+"CEngineRenderer::GetPxRenderState"
+],
+"0x11e700": [
+"GetTrailSystem"
+],
+"0x11e770": [
+"cPxDrawObject::SetState"
+],
+"0x11e7d0": [
+"cPxDrawObject::GetState"
+],
+"0x11e840": [
+"GetEngineScreen"
+],
+"0x11e9f0": [
+"GetEngineScreen"
+],
+"0x11eab0": [
+"GetTextureManager"
+],
+"0x11ebd0": [
+"CEngineRenderer::GetBoneFromID"
+],
+"0x11ec60": [
+"CEngineRenderer::GetCamera"
+],
+"0x11ef50": [
+"GetEngineRenderer"
+],
+"0x11f020": [
+"GetEngineScreen"
+],
+"0x11f120": [
+"CEngineRenderer::GetCurrentCamera",
+"GetEngineScreen"
+],
+"0x11f960": [
+"CEngineRenderer::GetAvailableTDU"
+],
+"0x11fb00": [
+"CEngineRenderer::GetCurrentCamera"
+],
+"0x11ff60": [
+"CEngineRenderer::GetCurrentCamera",
+"GetEngineShadow"
+],
+"0x120110": [
+"CEngineRenderer::GetAvailableAlphaUnit"
+],
+"0x120250": [
+"GetEngineRenderer",
+"ProcessLoadedTexture"
+],
+"0x1202f0": [
+"CEngineRenderer::ProcessWeaponHilight",
+"GetEngineRenderer"
+],
+"0x120440": [
+"PxSortedList<class cPxDrawUnit>::Iterate"
+],
+"0x120500": [
+"PxSortedList<class cPxDrawUnit>::Iterate"
+],
+"0x1205f0": [
+"PxSortedList<class cPxTransformDrawUnit>::Iterate"
+],
+"0x1206b0": [
+"PxSortedList<class cPxTransformDrawUnit>::Iterate"
+],
+"0x120790": [
+"PxSortedList<class cPxAlphaUnit>::Add"
+],
+"0x120880": [
+"PxSortedList<class cPxAlphaUnit>::Iterate"
+],
+"0x120a40": [
+"GetEngineScreen"
+],
+"0x120ae0": [
+"GetEngineScreen"
+],
+"0x120b50": [
+"CEngineRenderer::CEngineRenderer"
+],
+"0x121350": [
+"GetEngineRenderer"
+],
+"0x1213c0": [
+"GetEngineRenderer"
+],
+"0x121430": [
+"GetEngineRenderer"
+],
+"0x1214a0": [
+"CEngineRenderer::GetCamera"
+],
+"0x12163e": [
+"CEngineRenderer::GetCamera",
+"CEngineRenderer::GetCurrentCamera"
+],
+"0x121713": [
+"GetEngineScreen"
+],
+"0x121b50": [
+"CEngineRenderer::GetCurrentCamera",
+"GetEngineRenderer",
+"GetEngineScreen"
+],
+"0x121d00": [
+"CEngineRenderer::GetCurrentCamera"
+],
+"0x122050": [
+"CEngineRenderer::GetCurrentCamera",
+"cPxArena::GetVisibilityBinID"
+],
+"0x1221c0": [
+"GetEngineScreen",
+"GetEngineShadow"
+],
+"0x122b40": [
+"GetEngineRenderer"
+],
+"0x122b90": [
+"GetEngineRenderer"
+],
+"0x122be0": [
+"GetEngineRenderer"
+],
+"0x122c60": [
+"CEngineRenderer::GetCurrentCamera",
+"GetEngineScreen"
+],
+"0x123090": [
+"CEngineRenderer::RenderScene",
+"GetEngineRenderer",
+"GetEngineScreen"
+],
+"0x123280": [
+"CEngineRenderer::GetCurrentCamera",
+"GetEngineScreen"
+],
+"0x12337b": [
+"GetEngineScreen",
+"GetEngineShadow"
+],
+"0x1234f0": [
+"CEngineRenderer::GetCamera",
+"GetEngineScreen",
+"GetEngineShadow",
+"GetTrailSystem"
+],
+"0x123920": [
+"GetEngineScreen"
+],
+"0x123b40": [
+"GetEngineRenderer"
+],
+"0x123cd0": [
+"CEngineRenderer::GetCurrentCamera",
+"GetEngineRenderer"
+],
+"0x123d70": [
+"CEngineRenderer::GetCurrentCamera",
+"GetEngineRenderer"
+],
+"0x123e10": [
+"CEngineRenderer::GetCurrentCamera",
+"GetEngineRenderer"
+],
+"0x1244f0": [
+"GetEngineScreen"
+],
+"0x127140": [
+"HardDisk_CheckSaveSpace"
+],
+"0x127b10": [
+"CEngineRenderer::GetCurrentCamera",
+"GetEngineRenderer"
+],
+"0x127e70": [
+"tgtOptimize_Particle_Command"
+],
+"0x127ed0": [
+"GetEngineRenderer",
+"GetEngineScreen"
+],
+"0x1282f0": [
+"ParticleSystemImpl::ProcessParticle"
+],
+"0x1287f0": [
+"ParticleSystemImpl::Render"
+],
+"0x129200": [
+"JoyPad_SetShockValue"
+],
+"0x12af70": [
+"GetEngineRenderer",
+"GetEngineShadow"
+],
+"0x12b3b0": [
+"GetEngineRenderer"
+],
+"0x12b430": [
+"GetEngineRenderer"
+],
+"0x12b510": [
+"pxSarray<class cPxLight *,3>::push_back"
+],
+"0x12b560": [
+"pxSarray<class cPxCharacter *,20>::push_back"
+],
+"0x12b5e0": [
+"GetEngineScreen"
+],
+"0x12b630": [
+"GetEngineScreen"
+],
+"0x12b680": [
+"GetEngineScreen"
+],
+"0x12b6d0": [
+"GetEngineScreen"
+],
+"0x12b720": [
+"GetEngineScreen"
+],
+"0x12b7d0": [
+"CEngineRenderer::GetCurrentCamera",
+"GetEngineRenderer",
+"cPxCharacter::Update"
+],
+"0x12baa0": [
+"cPxCharacter::RenderSkins"
+],
+"0x12c0e0": [
+"CEngineRenderer::GetCurrentCamera",
+"GetEngineRenderer",
+"GetEngineScreen"
+],
+"0x12c540": [
+"GetEngineRenderer",
+"GetEngineShadow"
+],
+"0x12c850": [
+"GetEngineRenderer",
+"GetEngineShadow"
+],
+"0x12cbf0": [
+"pxSarray<class cPxLight *,3>::push_back"
+],
+"0x12cc80": [
+"pxSarray<class cPxCharacter *,20>::push_back"
+],
+"0x12d3b0": [
+"GetEngineRenderer"
+],
+"0x12da10": [
+"cPxCharacterManager::UpdateCharacters"
+],
+"0x12dcd0": [
+"cPxCharacterManager::RenderSimpleAndQueueAlpha"
+],
+"0x12e1d0": [
+"CEngMemory::GetMemoryTypeFromVRAM"
+],
+"0x12e2f0": [
+"CEngMemory::AllocatePhysicalMemory"
+],
+"0x12e590": [
+"CEngMemory::CEngMemory"
+],
+"0x12f340": [
+"CStateManager::SetTexture",
+"GetEngineScreen"
+],
+"0x12f3e0": [
+"CStateManager::SetMaterial"
+],
+"0x12f450": [
+"GetEngineScreen"
+],
+"0x12f5a0": [
+"GetEngineScreen"
+],
+"0x12f800": [
+"GetEngineScreen"
+],
+"0x12fbe0": [
+"GetEngineScreen"
+],
+"0x12fcc0": [
+"GetEngineScreen"
+],
+"0x1301b0": [
+"cBlurEffect::CreateTextureBuffer"
+],
+"0x130370": [
+"GetEngineScreen"
+],
+"0x130680": [
+"GetEngineScreen"
+],
+"0x130770": [
+"GetEngineScreen"
+],
+"0x130870": [
+"GetEngineScreen"
+],
+"0x130c60": [
+"SetObjectRenderType"
+],
+"0x130ed0": [
+"cPacketBuilder::StoreVertexNormal"
+],
+"0x130fa0": [
+"cPacketBuilder::StoreVertexColor"
+],
+"0x131070": [
+"cPacketBuilder::StitchStrips"
+],
+"0x1312b0": [
+"cPacketBuilder::CreateRenderPrimitives"
+],
+"0x131520": [
+"cPacketBuilder::CreateRenderPrimitives"
+],
+"0x131780": [
+"cPacketBuilder::CreateRenderPrimitives"
+],
+"0x1319e0": [
+"cPacketBuilder::CreateRenderPrimitives"
+],
+"0x131c30": [
+"cPacketBuilder::CreateRenderPrimitives"
+],
+"0x131e90": [
+"cPacketBuilder::CreateRenderPrimitives"
+],
+"0x1320e0": [
+"cPacketBuilder::CreateRenderPrimitives"
+],
+"0x132340": [
+"cPacketBuilder::CreateRenderPrimitivesFromSkin"
+],
+"0x132620": [
+"cPacketBuilder::CreateRenderPrimitivesFromSkin"
+],
+"0x1328f0": [
+"cPacketBuilder::CreateRenderPrimitivesFromSkin"
+],
+"0x132bd0": [
+"cPacketBuilder::CreateRenderPrimitivesFromSkin"
+],
+"0x132ea0": [
+"PxVec3LengthSq",
+"SetupInfoFromChunk"
+],
+"0x133110": [
+"GetEngineMemory",
+"GetEngineRenderer",
+"cPacketBuilder::CreateObjectFromChunk"
+],
+"0x1336c0": [
+"GetEngineRenderer",
+"cPacketBuilder::CreateObjectFromChunk",
+"cPxBoneRef::SetBoneIndex"
+],
+"0x133a60": [
+"MakeObject"
+],
+"0x133bf0": [
+"cPxMaterial::SetGlossinessMap"
+],
+"0x133c50": [
+"cPxMaterial::SetReflectionMap"
+],
+"0x133cd0": [
+"CreateMaterial"
+],
+"0x133ee0": [
+"GetEngineRenderer"
+],
+"0x134130": [
+"GetEngineRenderer",
+"GetTextureManager"
+],
+"0x134380": [
+"GetEngineRenderer"
+],
+"0x134530": [
+"tgtGet_Number_Of_MeshFrames"
+],
+"0x134570": [
+"CMeshManager::New_ProcessMesh",
+"GetEngineRenderer"
+],
+"0x134b30": [
+"CEngineRenderer::GetCurrentCamera",
+"CMeshManager::RenderMesh",
+"GetEngineRenderer"
+],
+"0x135eb0": [
+"cSpringManager::GetBoneIndexFromBonePtr"
+],
+"0x135f20": [
+"cSpringManager::GetBonePtrFromBoneIndex"
+],
+"0x135fa0": [
+"cSpringManager::CreateSpringsFromHierarachy"
+],
+"0x1369f0": [
+"CEngShadow::CEngShadow"
+],
+"0x136a60": [
+"CEngShadow::CreateShadowBuffer"
+],
+"0x136b20": [
+"GetEngineScreen"
+],
+"0x136d30": [
+"GetEngineScreen"
+],
+"0x136e80": [
+"GetEngineScreen"
+],
+"0x1372c0": [
+"GetEngineRenderer"
+],
+"0x137570": [
+"GetTextureManager"
+],
+"0x137e90": [
+"GetEngineScreen"
+],
+"0x137f30": [
+"GetEngineScreen",
+"cHDR::ExtractHot"
+],
+"0x138610": [
+"GetEngineScreen",
+"cHDR::FilterCopy"
+],
+"0x13ab30": [
+"GetEngineScreen",
+"ShaderManager::LoadPixelShader"
+],
+"0x13ad40": [
+"GetEngineScreen",
+"ShaderManager::CreatePixelShaderFromMemory"
+],
+"0x13ae40": [
+"GetEngineScreen",
+"ShaderManager::CreateVertexShaderFromMemory"
+],
+"0x13af40": [
+"GetEngineScreen",
+"ShaderManager::LoadVertexShader"
+],
+"0x13b1b0": [
+"ShaderManager::CreateShaderGroup"
+],
+"0x13b8d0": [
+"PxSortedList<class cPxDrawUnit>::Add"
+],
+"0x13b9b0": [
+"PxSortedList<class cPxTransformDrawUnit>::Add"
+],
+"0x13ba90": [
+"GetEngineScreen"
+],
+"0x13bae0": [
+"GetEngineScreen"
+],
+"0x13bb30": [
+"GetEngineScreen"
+],
+"0x13bc40": [
+"GetEngineRenderer",
+"cPxDrawUnit::PreRenderTransparencySetup"
+],
+"0x13bec0": [
+"GetEngineRenderer"
+],
+"0x13c020": [
+"cPxDrawUnit::RenderDynamicallyLit"
+],
+"0x13c550": [
+"GetEngineRenderer",
+"cPxDrawUnit::RenderToShadowBuffer"
+],
+"0x13c9a0": [
+"GetEngineRenderer"
+],
+"0x13cb10": [
+"GetEngineRenderer",
+"GetEngineShadow"
+],
+"0x13cf20": [
+"cPxDrawUnit::Render"
+],
+"0x13d510": [
+"GetEngineRenderer",
+"GetEngineScreen"
+],
+"0x13d740": [
+"CShaderConst::SetVertexConstant",
+"GetEngineScreen"
+],
+"0x13d8b0": [
+"CShaderConst::SetPointLight",
+"CShaderConst::SetVertexConstant",
+"GetEngineScreen"
+],
+"0x13da80": [
+"CShaderConst::SetPointLightViaYBias",
+"CShaderConst::SetVertexConstant",
+"GetEngineScreen"
+],
+"0x13dc80": [
+"CEngineRenderer::GetCurrentCamera",
+"CShaderConst::SetDirectionalLight",
+"CShaderConst::SetVertexConstant",
+"GetEngineRenderer",
+"GetEngineScreen"
+],
+"0x13df80": [
+"GetEngineScreen"
+],
+"0x13e040": [
+"GetEngineRenderer"
+],
+"0x13e2d0": [
+"GetEngineRenderer",
+"GetEngineScreen"
+],
+"0x13e590": [
+"GetEngineRenderer",
+"GetEngineScreen"
+],
+"0x13ea00": [
+"CPxBinList<class cPxMaterial *,class cPxDrawUnit *>::addItem"
+],
+"0x13eae0": [
+"CPxBinList<class cPxMaterial *,class cPxDrawUnit *>::removeItem"
+],
+"0x13ec10": [
+"CPxBinList<class cPxMaterial *,class cPxDrawUnit *>::CPxBinList"
+],
+"0x13ecc0": [
+"drawSceneList::drawSceneList"
+],
+"0x13f380": [
+"GetEngineScreen"
+],
+"0x13f4c0": [
+"GetEngineScreen"
+],
+"0x13ffb0": [
+"DrawTextured2DTriangles_Matrix",
+"GetEngineScreen",
+"GetTextureManager"
+],
+"0x140500": [
+"GetEngineRenderer",
+"GetEngineShadow"
+],
+"0x140750": [
+"GetEngineRenderer",
+"GetEngineShadow"
+],
+"0x141df0": [
+"GetEngineScreen"
+],
+"0x141f10": [
+"GetEngineScreen"
+],
+"0x142420": [
+"GetEngineScreen"
+],
+"0x142840": [
+"AddDrawObjectToRenderObject",
+"GetTextureManager"
+],
+"0x142a10": [
+"CPxBinList<int,class cPxDrawObject *>::CPxBinList"
+],
+"0x142d90": [
+"CEngPrimitive::LockVertexBufferBump"
+],
+"0x142de0": [
+"CEngPrimitive::LockVertexBuffer"
+],
+"0x142f80": [
+"GetEngineMemory"
+],
+"0x142fe0": [
+"CEngPrimitive::CreateVertexBufferBump"
+],
+"0x1430e0": [
+"CEngPrimitive::CreateVertexBuffer"
+],
+"0x143210": [
+"CEngPrimitive::CreateIndexBuffer"
+],
+"0x143290": [
+"CEngPrimitive::CreateVertexBufferCustom"
+],
+"0x1441a0": [
+"cModelInterface::SetObjectMemory"
+],
+"0x1442b0": [
+"cModelInterface::GetObjectMemory"
+],
+"0x144300": [
+"cModelInterface::SetObjectPointer"
+],
+"0x144350": [
+"cModelInterface::GetObjectPointer"
+],
+"0x1443a0": [
+"cModelInterface::SetModelPointer"
+],
+"0x1443f0": [
+"cModelInterface::GetModelPointer"
+],
+"0x144440": [
+"cModelInterface::GetSubObjectWithinModelPositionPointer"
+],
+"0x1444c0": [
+"cModelInterface::SetCurrentObjectToProcess"
+],
+"0x144530": [
+"cModelInterface::SetObjectMemory"
+],
+"0x144580": [
+"cModelInterface::GetObjectMemory"
+],
+"0x1445d0": [
+"cModelInterface::SetObjectPointer"
+],
+"0x144620": [
+"cModelInterface::GetObjectPointer"
+],
+"0x144670": [
+"cModelInterface::SetModelPointer"
+],
+"0x1446c0": [
+"cModelInterface::GetModelPointer"
+],
+"0x144740": [
+"cModelInterface::GetModelPointer"
+],
+"0x144a30": [
+"pxSarray<class PmeModelImp,100>::push_back"
+],
+"0x144ad0": [
+"PmeModelsImp::OneTimeInit"
+],
+"0x144e30": [
+"pxSarray<class PmeModelImp,100>::push_back"
+],
+"0x1478c0": [
+"CEngineRenderer::GetCurrentCamera",
+"GetEngineRenderer"
+],
+"0x147cb0": [
+"CShaderConst::SetSkinningMatrix",
+"CShaderConst::SetVertexConstant",
+"GetEngineScreen"
+],
+"0x148130": [
+"cPxBoneRef::GetBoneIndex"
+],
+"0x148570": [
+"cPxDrawObject::CreateDuplicate"
+],
+"0x148db0": [
+"cPxContainer::Add"
+],
+"0x149170": [
+"cPxBone::cPxBone"
+],
+"0x149230": [
+"cPxBone::Create"
+],
+"0x149420": [
+"cPxBone::Create"
+],
+"0x149ed0": [
+"cPxLightManager::InsertLight"
+],
+"0x14a6b0": [
+"cPxLightManager::CleanSceneLightReferences"
+],
+"0x14b900": [
+"cPxContainer::Set"
+],
+"0x14b9f0": [
+"MODEL_TYPE::GetBoneRefByIndex",
+"cPxBoneRef::GetBoneIndex",
+"cPxBoneRef::SetBoneIndex",
+"cPxContainer::Set"
+],
+"0x14c7a0": [
+"cBoneCollisionManager::cBoneCollisionManager"
+],
+"0x14cc00": [
+"cPxDrawMesh::AllocateDrawUnits"
+],
+"0x14cdb0": [
+"cPxDrawMesh::GetHierarchyPtr"
+],
+"0x14d160": [
+"cSpring::Add"
+],
+"0x14dc10": [
+"cSpringNode::Add"
+],
+"0x15271a": [
+"LoadGameFont"
+],
+"0x15bf80": [
+"pxMath_Normalize"
+],
+"0x16cb40": [
+"CameraManager::operator new"
+],
+"0x16cce0": [
+"CameraManager::GetCamera"
+],
+"0x17a300": [
+"CRenderTrackerPvt::Link"
+],
+"0x17a3c0": [
+"CRenderTrackerPvt::GetTrackedObject"
+],
+"0x17a4d0": [
+"CRenderTracker::EnlistObject"
+],
+"0x17a760": [
+"Async_InitList"
+],
+"0x17a840": [
+"Async_AddToLoadList"
+],
+"0x17a970": [
+"Async_SetPartialFileData"
+],
+"0x17a9d0": [
+"Async_InitLoad"
+],
+"0x18b680": [
+"GetEngineScreen"
+],
+"0x18bac0": [
+"pxSarray<class ProjectileBone,14>::resize"
+],
+"0x18bb50": [
+"pxSarray<class OverrideMoveObj,14>::resize"
+],
+"0x18bbc0": [
+"pxSarray<class ProjectileBone,14>::operator`[]'"
+],
+"0x18bc60": [
+"pxSarray<class OverridePath,10>::push_back"
+],
+"0x18bd60": [
+"pxSarray<class ProjectileBone,14>::operator`[]'"
+],
+"0x18c0c0": [
+"pxSarray<class ProjectileBone,14>::operator`[]'"
+],
+"0x18c170": [
+"pxSarray<class ProjectileBone,14>::operator`[]'"
+],
+"0x18c380": [
+"pxSarray<class ProjectileBone,14>::operator`[]'"
+],
+"0x18c890": [
+"pxSarray<class OverridePath,10>::push_back"
+],
+"0x198f50": [
+"cMapAnimManager::Initialise"
+],
+"0x1ab780": [
+"pxAnim_General2LocalBone"
+],
+"0x1ab7e0": [
+"pxAnim_SearchBoneIndex"
+],
+"0x1ab890": [
+"PxAnim_GetChild"
+],
+"0x1ab970": [
+"PxAnim_Link"
+],
+"0x1abaf0": [
+"PxAnim_ModelBone_To_ModelBoneFlipped"
+],
+"0x1abbe0": [
+"PxAnim_Get_Sub_Object_Local_Bound"
+],
+"0x1abd70": [
+"PxAnim_SwitchLinkToMirrorParent"
+],
+"0x1b07a0": [
+"pxSarray<int,20>::operator`[]'"
+],
+"0x1b07f0": [
+"pxSarray<int,20>::push_back"
+],
+"0x1b0840": [
+"pxSarray<int,20>::operator`[]'"
+],
+"0x1b0890": [
+"pxSarray<int,20>::push_back"
+],
+"0x1b0920": [
+"WeightedRandomSelector::AddProbability"
+],
+"0x1b0970": [
+"WeightedRandomSelector::SelectRandomEntry",
+"pxSarray<int,20>::operator`[]'"
+],
+"0x1b1ad0": [
+"FE_animDef::addAnimDef"
+],
+"0x1b1cc0": [
+"swfAnim::Shapes2DInit"
+],
+"0x1b1f70": [
+"swfAnim::Object2DDraw"
+],
+"0x1b2230": [
+"swfAnim::AllocateMovieTexture"
+],
+"0x1b2430": [
+"GetTextureManager",
+"ProcessLoadedFlashData"
+],
+"0x1b34d0": [
+"swfSharingTexture::FindbyIndex"
+],
+"0x1b3580": [
+"swfSharingTexture::StoreTextureHandle"
+],
+"0x1b5200": [
+"PxCheats::AddNewCode"
+],
+"0x1b5430": [
+"cPxCheats::SetCheatActiveStatus"
+],
+"0x1b54b0": [
+"cPxCheats::GetCheatActiveStatus",
+"cPxCheats::SetCheatAvailableStatus"
+],
+"0x1b5580": [
+"cPxCheats::GetCheatAvailableStatus"
+],
+"0x1b7120": [
+"CameraTargetsManager::operator new"
+],
+"0x1b7270": [
+"CameraTargetsManager::AddCameraTarget"
+],
+"0x1b8070": [
+"PointInsideSpline2D"
+],
+"0x1b9220": [
+"MEFile::InitLightVolumeChunk"
+],
+"0x1b9320": [
+"MEFile::InitTriMeshChunk"
+],
+"0x1b9410": [
+"MEFile::InitInstanceChunk"
+],
+"0x1b94c0": [
+"MEFile::InitSplineChunk"
+],
+"0x1b9560": [
+"MEFile::InitSphereChunk"
+],
+"0x1b9610": [
+"MEFile::InitBoneChunk"
+],
+"0x1b9760": [
+"MEFile::GetVertex"
+],
+"0x1b9f30": [
+"MEFile::FindMultipassTexture",
+"MEFile::GetPass2TextureIDFromMaterialID"
+],
+"0x1ba250": [
+"MEFile::GetMaterialNameCRC"
+],
+"0x1ba2e0": [
+"MEFile::GetTextureIDFromMaterialID"
+],
+"0x1ba3e0": [
+"MEFile::GetVertexSizeFromVertexType"
+],
+"0x1ba70e": [
+"MEFile::InitialiseChunk"
+],
+"0x1bb030": [
+"MEFile::ConvertObsoleteFileToNewPhysicsFlags"
+],
+"0x1bb120": [
+"MEFile::Initialise"
+],
+"0x1ca290": [
+"ToolManager::IsTriggerTool"
+],
+"0x1ca540": [
+"ToolManager::Initialize"
+],
+"0x1ca640": [
+"SetVisibilityFlagsForModelSwapTool"
+],
+"0x1ca760": [
+"ToolManager::ResetCharacter"
+],
+"0x1ca7e0": [
+"ToolManager::GetSelectedTool"
+],
+"0x1ca850": [
+"ToolManager::GetClosestTool"
+],
+"0x1ca8c0": [
+"ToolManager::GetToolHeldByPlayer"
+],
+"0x1ca930": [
+"SetWeaponCollisionForChildrenNoCallback"
+],
+"0x1caaf0": [
+"ToolManager::AddTools"
+],
+"0x1caf30": [
+"ToolManager::ToolManager"
+],
+"0x1cb020": [
+"ToolManager::IsToolSelected"
+],
+"0x1cb2c0": [
+"OverrideWeaponBone"
+],
+"0x1cb6b0": [
+"ToolManager::SelectClosestTool"
+],
+"0x1cb750": [
+"ToolManager::GetInstance"
+],
+"0x1cb920": [
+"ToolManager::GetInstance",
+"ToolManager::IsTriggerTool"
+],
+"0x1cbaa0": [
+"ToolManager::GetInstance"
+],
+"0x1cbfa0": [
+"ToolManager::PickupSelectedTool"
+],
+"0x1cc0d0": [
+"ToolManager::PlayerPutdownObject"
+],
+"0x1cc1d0": [
+"ToolManager::IsTriggerTool"
+],
+"0x1cc480": [
+"ToolManager::ResetTool"
+],
+"0x1cc640": [
+"ToolManager::IsTriggerTool",
+"ToolManager::Update"
+],
+"0x1d27b0": [
+"PxMath::ConvertIndexToMask"
+],
+"0x1d2810": [
+"PxMath::ConvertMaskToIndex"
+],
+"0x1d74a0": [
+"PxMapGameObjectToPhysics::SetEntry"
+],
+"0x1d8050": [
+"load_events"
+],
+"0x1d81a0": [
+"unload_events"
+],
+"0x1d82f0": [
+"NewSetEventPointers"
+],
+"0x1d8400": [
+"NewSetThrowAwayData"
+],
+"0x1d84a0": [
+"NewSetKeepData"
+],
+"0x1d86c0": [
+"ReLoadKeepData"
+],
+"0x1d8800": [
+"ReLoadThrowAwayData"
+],
+"0x1d8880": [
+"UnloadEventsByType"
+],
+"0x1da0c0": [
+"ArenaParticles_StartEffect"
+],
+"0x1dccd0": [
+"GameEventsSetup_SystemTriggerFlags"
+],
+"0x1dcee0": [
+"GameEvent_Reset"
+],
+"0x1e2e80": [
+"LightningBolt::Set_Num_Links"
+],
+"0x1e4160": [
+"MaterialDefaultSound"
+],
+"0x1e41f0": [
+"MaterialDefaultParticles"
+],
+"0x1e4380": [
+"SetDefaultMaterial"
+],
+"0x1e43d0": [
+"MaterialFootstepSoundIDs"
+],
+"0x1e4480": [
+"MaterialFootstepParticles"
+],
+"0x1e4570": [
+"StartDefinitionOfInteractiveMaterial"
+],
+"0x1e45e0": [
+"ResetIMaterialFlagsToOriginalValues"
+],
+"0x1e4700": [
+"DistributeIMaterialFlags"
+],
+"0x1e4950": [
+"CMaterialStateEvent_SET::EventFired"
+],
+"0x1e4a10": [
+"CMaterialStateEvent_CLEAR::EventFired"
+],
+"0x1e4db0": [
+"MaterialIsBreakable"
+],
+"0x1e52a0": [
+"MaterialWeaponHitSound"
+],
+"0x1e5370": [
+"MaterialCollisionSound"
+],
+"0x1e5400": [
+"IMaterialOnCollision"
+],
+"0x1e5a20": [
+"IMaterialOnTrails"
+],
+"0x1e6180": [
+"PxCharacterProxyListener::contactPointAddedCallback",
+"PxCharacterProxyListener::contactPointRemovedCallback"
+],
+"0x1eb160": [
+"DoClimbUpAction"
+],
+"0x1eb350": [
+"DoClimbDownAction"
+],
+"0x1ebfa0": [
+"ToolManager::GetInstance"
+],
+"0x1efd60": [
+"ReadVerboseTypes"
+],
+"0x1efe80": [
+"ReadVerboseFormatByIndex"
+],
+"0x1efff0": [
+"ToolIterator::IterateTool"
+],
+"0x1f2a10": [
+"pxMtHistory::AddHistoryBlock"
+],
+"0x1f3920": [
+"ReOrderSplineWindingIfNeeded"
+],
+"0x1f8660": [
+"ProcessLoadedRegionWad"
+],
+"0x22a80": [],
+"0x130b40": [],
+"0x13b0e0": [],
+"0x13b2f0": [],
+"0x149990": [],
+"0x149b70": [],
+"0x873c0": [
+"MiniMapV2::import_external_data"
+],
+"0x11d000": [],
+"0x17aa40": [
+"Async_DataLoad"
+],
+"0x1b81b0": [
+"ChunkContainer::InitialiseChunk"
+],
+"0x1ba490": [],
+"0x342d0": [],
+"0x34490": [],
+"0x344d0": [],
+"0x345f0": [],
+"0x34630": [],
+"0x34680": [],
+"0x346d0": [],
+"0x34720": [],
+"0x34af0": [],
+"0x34b70": [],
+"0x34c10": [],
+"0x34cb0": [],
+"0x34d50": [],
+"0x353f0": [],
+"0x35960": [],
+"0x35d80": [],
+"0x36080": [],
+"0x361d0": [],
+"0x3b9a0": [],
+"0x3ba10": [],
+"0x3ba50": [],
+"0x3bf90": [],
+"0x3c090": [],
+"0x3d2f0": [],
+"0x3dcc0": [],
+"0x3dd00": [],
+"0x3dd40": [],
+"0x3ddb0": [],
+"0x3de30": [],
+"0x3df20": [],
+"0x3dfa0": [],
+"0x3e050": [],
+"0x3e420": [],
+"0x3e460": [],
+"0x3e760": [],
+"0x3e7e0": [],
+"0x76010": [],
+"0x76070": [],
+"0x760b0": [],
+"0x760f0": [],
+"0x76130": [],
+"0x761a0": [],
+"0x763e0": [],
+"0x76540": [],
+"0xa4dd0": [],
+"0xa4fe0": [],
+"0xa7220": [],
+"0xa7270": [],
+"0xa7300": [],
+"0xa7540": [],
+"0xa75f0": [],
+"0xa77b0": [],
+"0xb06a0": [],
+"0xb2b20": [],
+"0xba440": [],
+"0xba5c0": [],
+"0xbbee0": [],
+"0xbbf20": [],
+"0xbc000": [],
+"0xbc670": [],
+"0xbc870": [],
+"0xbd220": [],
+"0xbdcf0": [],
+"0xbdd90": [],
+"0xe0fa0": [],
+"0xe0fe0": [],
+"0xe1180": [],
+"0xe11e0": [],
+"0xe1560": [],
+"0x140a50": [],
+"0x16dac0": [],
+"0x16db30": [],
+"0x16dbb0": [],
+"0x16dc00": [],
+"0x16dda0": [],
+"0x16de00": [],
+"0x16de40": [],
+"0x16e740": [],
+"0x16e9c0": [],
+"0x16ea40": [],
+"0x16f090": [],
+"0x16f3b0": [],
+"0x1f2890": [],
+"0x1f2990": [],
+"0x1f2ae0": [],
+"0x1f2ca0": [],
+"0x1f3130": [],
+"0x1f35a0": [],
+"0x1f3b50": [],
+"0x1f3be0": [],
+"0x1f3c20": [],
+"0x1f3cc0": [],
+"0x1f3db0": [],
+"0x1f3ec0": [],
+"0x1f3f10": [],
+"0x326670": [],
+"0x39dd0": [
+"CCharacterFX::Init"
+],
+"0x87440": [
+"MiniMapV2::import_external_data"
+],
+"0x8b160": [
+"cGamePanel::Init_SpriteList"
+],
+"0x8b1c0": [
+"cGamePanel::Init_SpriteList"
+],
+"0x8b370": [
+"cGamePanel::Init_SpriteList"
+],
+"0x9e8f0": [
+"MPDatabase::ImportData"
+],
+"0xa1000": [
+"SaveBufferManager::CreateTempSaveBuffer"
+],
+"0xbf6f0": [
+"AllocateArenaSubsMemory"
+],
+"0xc1360": [
+"ProcessAllPreLoadedCameras"
+],
+"0xc2b00": [
+"ProcessAllPreLoadedArenaData"
+],
+"0xca5a0": [
+"BareSystem_Main"
+],
+"0xcc950": [
+"InitLevelAmbientSounds"
+],
+"0xd28e0": [
+"InitialiseFrontEndVramBlock"
+],
+"0x101bc0": [
+"hkXBOXMalloc"
+],
+"0x1061a0": [
+"cGameMemInterface::InitialiseMemoryBlock"
+],
+"0x109a20": [
+"cMutilationManager::CreateDetachableBoneData"
+],
+"0x115730": [
+"AllocTextureData"
+],
+"0x115780": [
+"AllocTextureResources"
+],
+"0x115ad0": [
+"TexContainer::UnSwizzle"
+],
+"0x115b70": [
+"TexContainer::GetUniqueColorCount",
+"TexContainer::ReSwizzle"
+],
+"0x115dc0": [
+"CRendererTextureManager::TextureRemap"
+],
+"0x1168e0": [
+"AllocTextureResources"
+],
+"0x116b60": [
+"AllocTextureResources"
+],
+"0x1176b0": [
+"CRendererTextureManager::Backup_Texture_Bits_No_Palette"
+],
+"0x128ae0": [
+"ApStart"
+],
+"0x139cb0": [
+"LoadUniqueShaders"
+],
+"0x141710": [
+"cCRIAudioStreamInterface::InitStream"
+],
+"0x1436a0": [
+"cCRISoundInterface::LoadPackData_Blocked"
+],
+"0x143eb0": [
+"cCRIFileInterface::InitMusicPlayback"
+],
+"0x145630": [
+"cWaterPool::remove_duplicate_positions"
+],
+"0x145df0": [
+"cWaterManager::find_pools"
+],
+"0x148d60": [
+"cPxContainer::cPxContainer"
+],
+"0x1505b0": [
+"ProcessLoadedPermanentBankInformation"
+],
+"0x1506b0": [
+"ProcessLoadedBankInformation"
+],
+"0x1612a0": [
+"PxObjectCollisionListener::operator new"
+],
+"0x161320": [
+"PxCollisionFilter::operator new"
+],
+"0x1614c0": [
+"PxBoundaryPhantom::operator new[]"
+],
+"0x161560": [
+"PxRigidBodyConvex::operator new"
+],
+"0x1615c0": [
+"PxRigidBodyConvex::operator new[]"
+],
+"0x161700": [
+"PxRigidBodyConcave::operator new[]"
+],
+"0x161980": [
+"PxStandardEntityListener::operator new"
+],
+"0x1619d0": [
+"SpareWorldCollisionFilter::operator new"
+],
+"0x161b60": [
+"PxBoundaryPhantomShape::operator new"
+],
+"0x16556e": [
+"PxStandardEntityListener::operator new"
+],
+"0x167bb0": [
+"PxObjectCollisionListener::operator new"
+],
+"0x169380": [
+"PxBoundaryPhantomShape::operator new",
+"PxRigidBodyConcave::operator new[]",
+"PxRigidBodyConvex::operator new[]",
+"PxRigidBodyManager::AddRigidBodySetObjects"
+],
+"0x16aa96": [
+"PxRigidBodyManager::LoadRigidBodySet"
+],
+"0x16aff0": [
+"Actor::operator new[]"
+],
+"0x16c750": [
+"Actor::operator new[]"
+],
+"0x16f9d0": [
+"_MapTrigLoad"
+],
+"0x1834a0": [
+"AIBrain::operator new[]"
+],
+"0x183540": [
+"AISquad::operator new[]"
+],
+"0x1835f0": [
+"AICombatBrain::operator new[]"
+],
+"0x184220": [
+"AICombatBrain::operator new[]"
+],
+"0x1842d0": [
+"AIBrain::operator new[]",
+"AIOverlord::RunInitialization",
+"AISquad::operator new[]"
+],
+"0x194e80": [
+"tAIZone::AllocateLinksForGroup"
+],
+"0x19bdb0": [
+"AISquad::Init"
+],
+"0x1a1510": [
+"MtObjectSound::EventFired"
+],
+"0x1a5480": [
+"Uncollide"
+],
+"0x1a6ef0": [
+"MapLink::StoreObjectChecksums"
+],
+"0x1af4c0": [
+"InitGameTaskSystem"
+],
+"0x1b06b0": [
+"PhysicsModelInit"
+],
+"0x1b0eb0": [
+"swfBaseMenu::InitAnim"
+],
+"0x1b0f70": [
+"swfBaseMenu::InitTextList"
+],
+"0x1b5140": [
+"PxCheats::InitSystem"
+],
+"0x1b5880": [
+"cLIST::CopyTextEntry"
+],
+"0x1d29a0": [
+"PxDynamicRigidBodyInterface::operator new"
+],
+"0x1d8210": [
+"load_nodes"
+],
+"0x1d88f0": [
+"Process_Node_Data"
+],
+"0x1d8b00": [
+"Process_ReLoaded_Node_Data"
+],
+"0x1db5d0": [
+"Entity::operator new[]"
+],
+"0x1db900": [
+"Entity::operator new[]"
+],
+"0x1dc6b0": [
+"GameEventsInit_System"
+],
+"0x1dc7c0": [
+"GameEventsSetup_SystemGroup"
+],
+"0x1dc970": [
+"GameEventsSetup_SystemGroup2"
+],
+"0x1de2a0": [
+"GameEventsInit_System"
+],
+"0x1e1480": [
+"CMapObjectManager::CreateNewMapObject"
+],
+"0x1e16d0": [
+"ObjectVisibilitySetup"
+],
+"0x1e1f40": [
+"CMapObjectManager::CreateNewMapObject"
+],
+"0x1e5e20": [
+"PxCharacterProxyListener::operator new"
+],
+"0x1eb860": [
+"VariableLink::New_BuildVarLists"
+],
+"0x1f5de0": [
+"cMapAnimObject::Initialise"
+],
+"0x1f5fc0": [
+"cMapAnimObject::Initialise",
+"cMapAnimObject::SetupObject"
+],
+"0x1f66b0": [
+"ReadPair_Parse_Value_Block"
+],
+"0x2aef70": [
+"hkPoolMemory::operator new"
+],
+"0x2b0970": [
+"hkPoolMemory::operator new"
+],
+"0x46aa0": [
+"cGallery::FreeThumbnails"
+],
+"0x46ba0": [
+"cGallery::FreeActiveSprites"
+],
+"0x4b320": [
+"DeinitKreditsData"
+],
+"0x9b3b0": [
+"MPDatabase::FreeMPData"
+],
+"0x9bcd0": [
+"FreeWadCRCBuffer"
+],
+"0x9bd20": [
+"FreeTextCRCBuffer"
+],
+"0x9cdc0": [
+"MPDatabase::DisplayDescription"
+],
+"0x9da20": [
+"FreeTextCRCBuffer",
+"FreeWadCRCBuffer"
+],
+"0xa0fb0": [
+"SaveBufferManager::DeleteTempSaveBuffer"
+],
+"0xa10d0": [
+"SaveBufferManager::DeleteTempSaveBuffer"
+],
+"0xa1170": [
+"SaveBufferManager::DeleteTempSaveBuffer"
+],
+"0xa1de0": [
+"SaveBufferManager::DeleteTempSaveBuffer"
+],
+"0xa1fa0": [
+"SaveBufferManager::DeleteTempSaveBuffer"
+],
+"0xa2260": [
+"SaveBufferManager::DeleteTempSaveBuffer"
+],
+"0xc1450": [
+"ProcessLoadedParticleTextures"
+],
+"0xc1550": [
+"ProcessReLoadedObjectTextureWad"
+],
+"0xc1690": [
+"ProcessLoadedObjectTextureWad"
+],
+"0xc1a80": [
+"ProcessReLoadedObjectModel"
+],
+"0xc1bf0": [
+"ProcessLoadedObjectModel"
+],
+"0xc1f20": [
+"ProcessLoadedObjectEffect"
+],
+"0xc2000": [
+"ProcessLoadedObjectTexture"
+],
+"0xc2100": [
+"ProcessReLoadedThrowAwayData"
+],
+"0xc2150": [
+"ProcessLoadedThrowAwayData"
+],
+"0xc2940": [
+"ProcessLoadedAnimEventPointers"
+],
+"0xc38d0": [
+"ProcessIngameTextData"
+],
+"0xc3a20": [
+"ProcessMCTextData"
+],
+"0xcf6f0": [
+"ProcessMiniMapData"
+],
+"0x117b10": [
+"CRendererTextureManager::CreateTexture"
+],
+"0x11d9c0": [],
+"0x128c40": [
+"ApStop"
+],
+"0x13d640": [
+"RenderDrawUnitEffect_CB"
+],
+"0x13e1c0": [
+"C_Trail_System_Platform::PostRender"
+],
+"0x150860": [
+"ProcessLoadedBankData"
+],
+"0x150b40": [
+"ProcessLoadedDSPInformation"
+],
+"0x1612d0": [
+"PxObjectCollisionListener::operator delete"
+],
+"0x161350": [
+"PxCollisionFilter::operator delete"
+],
+"0x1614f0": [
+"PxBoundaryPhantom::operator delete[]"
+],
+"0x161590": [
+"PxRigidBodyConvex::operator delete"
+],
+"0x1615f0": [
+"PxRigidBodyConvex::operator delete[]"
+],
+"0x1616d0": [
+"PxRigidBodyConcave::operator delete"
+],
+"0x161730": [
+"PxRigidBodyConcave::operator delete[]"
+],
+"0x161a00": [
+"SpareWorldCollisionFilter::operator delete"
+],
+"0x161b90": [
+"PxBoundaryPhantomShape::operator delete"
+],
+"0x162010": [
+"PxBoundaryPhantom::operator delete[]",
+"PxRigidBodyManager::RemoveAndFreeRigidBodySet"
+],
+"0x163bc0": [
+"PxObjectCollisionListener::operator delete"
+],
+"0x163dd0": [
+"SpareWorldCollisionFilter::operator delete"
+],
+"0x163f70": [
+"PxBoundaryPhantomShape::operator delete"
+],
+"0x1640e0": [
+"PxStandardEntityListener::operator delete"
+],
+"0x165460": [
+"PxCollisionFilter::operator delete"
+],
+"0x166e60": [
+"PxRigidBody::operator delete"
+],
+"0x1673b0": [
+"PxRigidBodyConvex::operator delete",
+"PxRigidBodyConvex::operator delete[]"
+],
+"0x1674a0": [
+"PxRigidBodyConcave::operator delete",
+"PxRigidBodyConcave::operator delete[]"
+],
+"0x16af80": [
+"Entity::operator delete"
+],
+"0x16afc0": [
+"Actor::operator delete"
+],
+"0x16b020": [
+"Actor::operator delete[]"
+],
+"0x16b120": [
+"ActorManager::~ActorManager"
+],
+"0x16c260": [
+"Actor::operator delete",
+"Actor::operator delete[]"
+],
+"0x183430": [
+"AINode::operator delete"
+],
+"0x183470": [
+"AIBrain::operator delete"
+],
+"0x1834d0": [
+"AIBrain::operator delete[]"
+],
+"0x183510": [
+"AISquad::operator delete"
+],
+"0x183570": [
+"AISquad::operator delete[]"
+],
+"0x1835c0": [
+"AICombatBrain::operator delete"
+],
+"0x183620": [
+"AICombatBrain::operator delete[]"
+],
+"0x1836e0": [
+"AIOverlord::~AIOverlord"
+],
+"0x1839d0": [
+"AICombatBrain::operator delete",
+"AICombatBrain::operator delete[]"
+],
+"0x183a50": [
+"AISquad::operator delete",
+"AISquad::operator delete[]"
+],
+"0x183ad0": [
+"AIBrain::operator delete",
+"AIBrain::operator delete[]"
+],
+"0x1927e0": [
+"tAIPathingServiceAllocator::~tAIPathingServiceAllocator"
+],
+"0x194240": [],
+"0x19bca0": [
+"AISquad::~AISquad"
+],
+"0x19c7d0": [
+"AISquad::operator delete"
+],
+"0x1a7600": [
+"PxAnimStream::CloseStream"
+],
+"0x1adea0": [
+"Particle_Get_Command_From_File"
+],
+"0x1b15b0": [
+"DisableFlashLoading"
+],
+"0x1b22f0": [
+"swfAnim::ClearMemoryBlockForTemporaryLoading"
+],
+"0x1b6980": [
+"UnProccessPanelTexture"
+],
+"0x1d29d0": [
+"PxDynamicRigidBodyInterface::operator delete"
+],
+"0x1d2c40": [
+"PxDynamicRigidBodyInterface::operator delete"
+],
+"0x1d2c90": [
+"PxDynamicRigidBodyInterface::operator delete"
+],
+"0x1d2db0": [
+"PxDynamicRigidBodyInterface::operator delete"
+],
+"0x1d3030": [
+"PxDynamicRigidBodyInterface::operator delete"
+],
+"0x1d8df0": [
+"ProcessLoadedParticles"
+],
+"0x1d9040": [
+"TexBackup::DumpTexture"
+],
+"0x1d9860": [
+"TexBackup::DumpTexture"
+],
+"0x1da670": [
+"CAnimMesh::TextureLoaded"
+],
+"0x1db5a0": [
+"Entity::operator delete"
+],
+"0x1db600": [
+"Entity::operator delete[]"
+],
+"0x1db630": [
+"Entity::operator delete",
+"Entity::operator delete[]",
+"EntityManager::~EntityManager"
+],
+"0x1dc040": [
+"ProcessMapObjectEventPointers"
+],
+"0x1e56d0": [
+"RemoveSoundFX"
+],
+"0x1e5e50": [
+"PxCharacterProxyListener::operator delete"
+],
+"0x2aeec0": [
+"hkMemory::operator delete"
+],
+"0x2aefa0": [
+"hkPoolMemory::operator delete"
+],
+"0x2afa70": [
+"hkPoolMemory::operator delete"
+],
+"0x3c4cd0": [
+"tAIPathingServiceAllocator::~tAIPathingServiceAllocator"
+],
+"0x3c4d40": [
+"TexBackup::DumpTexture"
+],
+"0x3c4d90": [
+"EntityManager::~EntityManager"
+],
+"0x2023b0": [],
+"0x2aecd0": [],
+"0x2aed50": []
+},
+"files": {
+"0x1cc00": [
+"\\Projects\\Paradox\\Utility/SoftwareTimer.h"
+],
+"0x1cc80": [
+"\\Projects\\Paradox\\Utility/SoftwareTimer.h"
+],
+"0x1e490": [
+"\\Projects\\Utility\\util_sarray.h"
+],
+"0x1e6a0": [
+"\\Projects\\Utility\\util_sarray.h"
+],
+"0x1e750": [
+"\\Projects\\Mka\\Source\\Gamecode\\2Player\\MutalityManager.cpp"
+],
+"0x1ef00": [
+"\\Projects\\Mka\\Source\\Gamecode\\2Player\\MutalityPlayerInfo.cpp"
+],
+"0x1f1d0": [
+"\\Projects\\Mka\\Source\\Gamecode\\2Player\\QueuedTeleportManager.cpp"
+],
+"0x1f2a0": [
+"\\Projects\\Mka\\Source\\Gamecode\\2Player\\QueuedTeleportManager.cpp"
+],
+"0x1f5a0": [
+"\\Projects\\Mka\\Source\\Gamecode\\2Player\\RespawnManager.cpp"
+],
+"0x1ff60": [
+"\\Projects\\Mka\\Source\\Gamecode\\2Player\\RespawnManager.cpp"
+],
+"0x20850": [
+"\\Projects\\Mka\\Source\\Gamecode\\2Player\\SpaceChecker.cpp"
+],
+"0x20c30": [
+"\\Projects\\Mka\\Source\\Gamecode\\2Player\\StonePower.cpp"
+],
+"0x20d00": [
+"\\Projects\\Mka\\Source\\Gamecode\\2Player\\TetherManager.cpp"
+],
+"0x21040": [
+"\\Projects\\Mka\\Source\\Gamecode\\2Player\\TetherManager.cpp",
+"c:\\projects\\mka\\source\\gamecode\\2player\\TetherManager.h"
+],
+"0x21780": [
+"\\Projects\\Mka\\Source\\Gamecode\\2Player\\VSMode\\VSEvents.cpp"
+],
+"0x21ee0": [
+"\\Projects\\Mka\\Source\\Gamecode\\2Player\\VSMode\\VSModeManager.cpp"
+],
+"0x22150": [
+"\\Projects\\Mka\\Source\\Gamecode\\2Player\\VSMode\\VSModeManager.cpp"
+],
+"0x22e20": [
+"\\Projects\\Mka\\Source\\Gamecode\\2Player\\VSMode\\VSModeManager.cpp"
+],
+"0x22f40": [
+"\\Projects\\Mka\\Source\\Gamecode\\2Player\\VSMode\\VSModeManager.cpp"
+],
+"0x23080": [
+"\\Projects\\Mka\\Source\\Gamecode\\2Player\\VSMode\\VSModeManager.cpp"
+],
+"0x23530": [
+"\\Projects\\Mka\\Source\\Gamecode\\2Player\\VSMode\\VSModeManager.cpp"
+],
+"0x235e0": [
+"\\Projects\\Mka\\Source\\Gamecode\\2Player\\VSMode\\VSState.cpp"
+],
+"0x23c80": [
+"\\Projects\\Mka\\Source\\Gamecode\\2Player\\VSMode\\VSStates\\VSStateDisplayRound.cpp"
+],
+"0x24110": [
+"\\Projects\\Mka\\Source\\Gamecode\\2Player\\VSMode\\VSStates\\VSStateDisplayWinner.cpp"
+],
+"0x24720": [
+"\\Projects\\Paradox\\Utility/SoftwareTimer.h"
+],
+"0x36300": [
+"\\Projects\\Mka\\Source\\Gamecode\\Cinema\\ButtonThrough.cpp"
+],
+"0x36a10": [
+"\\Projects\\Mka\\Source\\Gamecode\\Cinema\\HiddenBackground.cpp"
+],
+"0x36fd0": [
+"\\Projects\\Mka\\Source\\Gamecode\\Containers\\Container.cpp"
+],
+"0x378f0": [
+"\\Projects\\Utility\\util_sarray.h"
+],
+"0x37950": [
+"\\Projects\\Utility\\util_sarray.h"
+],
+"0x379b0": [
+"\\Projects\\Utility\\util_sarray.h"
+],
+"0x37b30": [
+"\\Projects\\Paradox\\Utility/SoftwareTimer.h"
+],
+"0x37bd0": [
+"\\Projects\\Paradox\\Utility/SoftwareTimer.h"
+],
+"0x37f70": [
+"\\Projects\\Utility\\util_sarray.h"
+],
+"0x38020": [
+"\\Projects\\Utility\\util_sarray.h"
+],
+"0x380d0": [
+"\\Projects\\Utility\\util_sarray.h"
+],
+"0x382f0": [
+"\\Projects\\Paradox\\Utility/SoftwareTimer.h"
+],
+"0x38720": [
+"\\Projects\\Mka\\Source\\Gamecode\\Containers\\ContainerManager.cpp"
+],
+"0x3ab00": [
+"\\Projects\\Mka\\Source\\Gamecode\\Events\\EventUtils.cpp"
+],
+"0x3ac00": [
+"\\Projects\\Mka\\Source\\Gamecode\\Events\\EventUtils.cpp"
+],
+"0x3b030": [
+"\\Projects\\Mka\\Source\\Gamecode\\Events\\QueuedTriggersManager.cpp"
+],
+"0x452c0": [
+"\\Projects\\Paradox\\General\\GameMap.h"
+],
+"0x45390": [
+"\\Projects\\Paradox\\General\\GameMap.h"
+],
+"0x45460": [
+"\\Projects\\Paradox\\General\\GameMap.h"
+],
+"0x45720": [
+"\\Projects\\Paradox\\General\\GameMap.h"
+],
+"0x54d60": [
+"\\Projects\\Paradox\\Camera\\pxBaseCamera.h"
+],
+"0x54dc0": [
+"\\Projects\\Paradox\\Camera\\pxBaseCamera.h"
+],
+"0x54f20": [
+"\\Projects\\Paradox\\Camera\\pxCameraManager.h"
+],
+"0x54f80": [
+"\\Projects\\Paradox\\Camera\\pxCameraManager.h"
+],
+"0x55080": [
+"c:\\projects\\mka\\source\\gamecode\\gamecamera\\MKACameraBox.h"
+],
+"0x552e0": [
+"\\Projects\\MKA\\Source\\Gamecode\\GameCamera\\MKABaseCamera.h"
+],
+"0x55360": [
+"\\Projects\\MKA\\Source\\Gamecode\\GameCamera\\MKABaseCamera.h"
+],
+"0x55580": [
+"\\Projects\\Paradox\\Camera\\pxCameraManager.h"
+],
+"0x569f0": [
+"\\Projects\\Paradox\\Camera\\pxCameraManager.h"
+],
+"0x56a40": [
+"\\Projects\\Mka\\Source\\Gamecode\\GameCamera\\GameCameraManager.cpp",
+"\\Projects\\Paradox\\Camera\\pxBaseCamera.h"
+],
+"0x58860": [
+"\\Projects\\Mka\\Source\\Gamecode\\GameCamera\\GameCameraManager.cpp"
+],
+"0x592f0": [
+"\\Projects\\Mka\\Source\\Gamecode\\GameCamera\\GameCameraManager.cpp"
+],
+"0x59f20": [
+"c:\\projects\\paradox\\camera\\pxCameraTargets.h"
+],
+"0x59f80": [
+"c:\\projects\\paradox\\camera\\pxCameraTargets.h"
+],
+"0x5a000": [
+"\\Projects\\Paradox\\Camera\\pxCameraTargetsManager.h"
+],
+"0x5a060": [
+"\\Projects\\Paradox\\Camera\\pxCameraTargetsManager.h"
+],
+"0x5a130": [
+"\\Projects\\Paradox\\Camera\\pxCameraTargetsManager.h"
+],
+"0x5a500": [
+"\\Projects\\Paradox\\Camera\\pxCameraTargetsManager.h"
+],
+"0x5b1b0": [
+"\\Projects\\Mka\\Source\\Gamecode\\GameCamera\\MKABaseCamera.cpp"
+],
+"0x5e400": [
+"\\Projects\\Mka\\Source\\Gamecode\\GameCamera\\MKABaseCamera.cpp"
+],
+"0x5e500": [
+"\\Projects\\Paradox\\Camera\\pxBaseCamera.h"
+],
+"0x600a7": [
+"\\Projects\\Mka\\Source\\Gamecode\\GameCamera\\CameraTypes\\pxCameraTypeMKA2PlayerVs.cpp"
+],
+"0x674b0": [
+"\\Projects\\Mka\\Source\\Gamecode\\GameCamera\\CameraTypes\\pxCameraTypeMKAPanoramic.cpp"
+],
+"0x67ca0": [
+"\\Projects\\Mka\\Source\\Gamecode\\GameCamera\\CameraTypes\\pxCameraTypeMKARail.cpp"
+],
+"0x70750": [
+"\\Projects\\Paradox\\Camera\\pxCameraTargets.h"
+],
+"0xa89b0": [
+"\\Projects\\Mka\\Source\\Gamecode\\Pickups\\Pickup.cpp"
+],
+"0xa8b60": [
+"\\Projects\\Mka\\Source\\Gamecode\\Pickups\\Pickup.cpp"
+],
+"0xa90c0": [
+"\\Projects\\Utility\\util_sarray.h"
+],
+"0xa9120": [
+"\\Projects\\Utility\\util_sarray.h"
+],
+"0xa91a0": [
+"\\Projects\\Paradox\\Utility/SoftwareTimer.h",
+"\\Projects\\Utility\\util_sarray.h"
+],
+"0xa9460": [
+"\\Projects\\Utility\\util_sarray.h"
+],
+"0xa9700": [
+"\\Projects\\Utility\\util_sarray.h"
+],
+"0xaa8b0": [
+"\\Projects\\Mka\\Source\\Gamecode\\Pickups\\PickupEvents.cpp"
+],
+"0xab350": [
+"\\Projects\\Mka\\Source\\Gamecode\\Pickups\\PickupEvents.cpp"
+],
+"0xab510": [
+"\\Projects\\Mka\\Source\\Gamecode\\Pickups\\PickupEvents.cpp"
+],
+"0xab6d0": [
+"\\Projects\\Mka\\Source\\Gamecode\\Pickups\\PickupEvents.cpp"
+],
+"0xab890": [
+"\\Projects\\Mka\\Source\\Gamecode\\Pickups\\PickupEvents.cpp"
+],
+"0xaca50": [
+"\\Projects\\Mka\\Source\\Gamecode\\Pickups\\coreclasses\\RecycledObjectTracker.cpp"
+],
+"0xacae0": [
+"\\Projects\\Mka\\Source\\Gamecode\\Pickups\\coreclasses\\RecycledObjectTracker.cpp"
+],
+"0xad790": [
+"\\Projects\\Mka\\Source\\Gamecode\\Pickups\\noncombat\\PickupTypeUnlockable.cpp"
+],
+"0xadb40": [
+"\\Projects\\Mka\\Source\\Gamecode\\Pickups\\noncombat\\PickupTypeUnlockable.cpp"
+],
+"0xadbd0": [
+"\\Projects\\Mka\\Source\\Gamecode\\Pickups\\noncombat\\PickupTypeUnlockable.cpp"
+],
+"0xadea0": [
+"\\Projects\\Utility\\util_sarray.h"
+],
+"0xadfd0": [
+"\\Projects\\Utility\\util_sarray.h"
+],
+"0xaf5a0": [
+"\\Projects\\Mka\\Source\\Gamecode\\Pickups\\restoration\\pickups\\PickupExperience.cpp"
+],
+"0xb7640": [
+"\\Projects\\Mka\\Source\\Gamecode\\Unlockables\\UnlockableTuneData.cpp"
+],
+"0xb76a0": [
+"\\Projects\\Mka\\Source\\Gamecode\\Unlockables\\UnlockableTuneData.cpp"
+],
+"0xb7710": [
+"\\Projects\\Mka\\Source\\Gamecode\\Unlockables\\UnlockableTuneData.cpp"
+],
+"0xb7780": [
+"\\Projects\\Mka\\Source\\Gamecode\\Unlockables\\UnlockableTuneData.cpp"
+],
+"0xb77f0": [
+"\\Projects\\Mka\\Source\\Gamecode\\Unlockables\\UnlockableTuneData.cpp"
+],
+"0xb7860": [
+"\\Projects\\Mka\\Source\\Gamecode\\Unlockables\\UnlockableTuneData.cpp"
+],
+"0xb78d0": [
+"\\Projects\\Mka\\Source\\Gamecode\\Unlockables\\UnlockableTuneData.cpp"
+],
+"0xb7940": [
+"\\Projects\\Mka\\Source\\Gamecode\\Unlockables\\UnlockableTuneData.cpp"
+],
+"0xb79b0": [
+"\\Projects\\Mka\\Source\\Gamecode\\Unlockables\\UnlockableTuneData.cpp"
+],
+"0xb7a20": [
+"\\Projects\\Mka\\Source\\Gamecode\\Unlockables\\UnlockableTuneData.cpp"
+],
+"0xb7a90": [
+"\\Projects\\Mka\\Source\\Gamecode\\Unlockables\\UnlockableTuneData.cpp"
+],
+"0xb7b00": [
+"\\Projects\\Mka\\Source\\Gamecode\\Unlockables\\UnlockableTuneData.cpp"
+],
+"0xb7b70": [
+"\\Projects\\Mka\\Source\\Gamecode\\Unlockables\\UnlockableTuneData.cpp"
+],
+"0xb7be0": [
+"\\Projects\\Mka\\Source\\Gamecode\\Unlockables\\UnlockableTuneData.cpp"
+],
+"0xb7c50": [
+"\\Projects\\Mka\\Source\\Gamecode\\Unlockables\\UnlockableTuneData.cpp"
+],
+"0xb7cc0": [
+"\\Projects\\Mka\\Source\\Gamecode\\Unlockables\\UnlockableTuneData.cpp"
+],
+"0xb7d30": [
+"\\Projects\\Mka\\Source\\Gamecode\\Unlockables\\UnlockableTuneData.cpp"
+],
+"0xb7da0": [
+"\\Projects\\Mka\\Source\\Gamecode\\Unlockables\\UnlockableTuneData.cpp"
+],
+"0xb7e10": [
+"\\Projects\\Mka\\Source\\Gamecode\\Unlockables\\UnlockableTuneData.cpp"
+],
+"0xb7e80": [
+"\\Projects\\Mka\\Source\\Gamecode\\Unlockables\\UnlockableTuneData.cpp"
+],
+"0xb7ef0": [
+"\\Projects\\Mka\\Source\\Gamecode\\Unlockables\\UnlockableTuneData.cpp"
+],
+"0xb7f60": [
+"\\Projects\\Mka\\Source\\Gamecode\\Unlockables\\UnlockableTuneData.cpp"
+],
+"0xb7fd0": [
+"\\Projects\\Mka\\Source\\Gamecode\\Unlockables\\UnlockableTuneData.cpp"
+],
+"0xb8040": [
+"\\Projects\\Mka\\Source\\Gamecode\\Unlockables\\UnlockableTuneData.cpp"
+],
+"0xb80b0": [
+"\\Projects\\Mka\\Source\\Gamecode\\Unlockables\\UnlockableTuneData.cpp"
+],
+"0xb8120": [
+"\\Projects\\Mka\\Source\\Gamecode\\Unlockables\\UnlockableTuneData.cpp"
+],
+"0xb8190": [
+"\\Projects\\Mka\\Source\\Gamecode\\Unlockables\\UnlockableTuneData.cpp"
+],
+"0xb8200": [
+"\\Projects\\Mka\\Source\\Gamecode\\Unlockables\\UnlockableTuneData.cpp"
+],
+"0xb8270": [
+"\\Projects\\Mka\\Source\\Gamecode\\Unlockables\\UnlockableTuneData.cpp"
+],
+"0xb9c70": [
+"\\Projects\\Utility\\util_sarray.h"
+],
+"0xb9ec0": [
+"\\Projects\\Utility\\util_sarray.h"
+],
+"0xba300": [
+"\\Projects\\Mka\\Source\\Gamecode\\Weapons\\PmeWeapon.cpp"
+],
+"0xba480": [
+"\\Projects\\Mka\\Source\\Gamecode\\Weapons\\PmeWeapon.cpp"
+],
+"0xbafc0": [
+"c:\\projects\\paradox\\physics\\PxDynamicRigidBody.h"
+],
+"0xbb300": [
+"\\Projects\\Paradox\\Tools/ToolManager.h"
+],
+"0xda620": [
+"\\Projects\\Mka\\Source\\Gamecode\\MonkDynClass.cpp"
+],
+"0x102be0": [
+"\\Projects\\Utility\\util_New.cpp"
+],
+"0x102ea0": [
+"\\Projects\\Utility\\util_MemoryManager.cpp"
+],
+"0x102f10": [
+"\\Projects\\Utility\\util_MemoryManager.cpp"
+],
+"0x1030c0": [
+"\\Projects\\Utility\\util_MemoryManager.cpp"
+],
+"0x1031a0": [
+"\\Projects\\Utility\\util_MemoryManager.cpp"
+],
+"0x103800": [
+"\\Projects\\Utility\\util_MemoryManager.cpp"
+],
+"0x103920": [
+"\\Projects\\Utility\\util_MemoryManager.cpp"
+],
+"0x1050a0": [
+"\\Projects\\Utility\\util_MemoryManager.cpp"
+],
+"0x105710": [
+"\\Projects\\Utility\\util_MemoryManager.cpp"
+],
+"0x105a50": [
+"\\Projects\\Utility\\util_ArrayManager.cpp"
+],
+"0x106220": [
+"\\Projects\\Utility\\util_GameMem.cpp"
+],
+"0x106310": [
+"\\Projects\\Utility\\util_GameMem.cpp"
+],
+"0x106690": [
+"\\Projects\\Utility\\util_GameMem.cpp"
+],
+"0x1067d0": [
+"\\Projects\\Utility\\util_GameMem.cpp"
+],
+"0x106930": [
+"\\Projects\\Utility\\util_GameMem.cpp"
+],
+"0x106980": [
+"\\Projects\\Utility\\util_GameMem.cpp"
+],
+"0x1069d0": [
+"\\Projects\\Utility\\util_GameMem.cpp"
+],
+"0x106a20": [
+"\\Projects\\Utility\\util_GameMem.cpp"
+],
+"0x106a70": [
+"\\Projects\\Utility\\util_GameMem.cpp"
+],
+"0x107090": [
+"c:\\projects\\xbox\\eng_Vector4.h"
+],
+"0x107100": [
+"c:\\projects\\xbox\\eng_Vector4.h"
+],
+"0x1072c0": [
+"\\Projects\\XBOX\\Renderer\\eng_Screen.h"
+],
+"0x107510": [
+"\\Projects\\XBOX\\Renderer\\eng_TextureManager.h"
+],
+"0x107a00": [
+"\\Projects\\Xbox\\Renderer\\eng_Render.cpp"
+],
+"0x107b50": [
+"\\Projects\\Xbox\\Renderer\\eng_Render.cpp"
+],
+"0x108320": [
+"\\Projects\\Xbox\\Renderer\\eng_Render.cpp"
+],
+"0x108410": [
+"\\Projects\\Xbox\\Renderer\\eng_Render.cpp"
+],
+"0x108560": [
+"\\Projects\\Xbox\\Renderer\\eng_Render.cpp"
+],
+"0x1086c0": [
+"\\Projects\\Xbox\\Renderer\\eng_Render.cpp"
+],
+"0x108890": [
+"\\Projects\\Xbox\\Renderer\\eng_Render.cpp"
+],
+"0x108a00": [
+"\\Projects\\Xbox\\Renderer\\eng_Render.cpp"
+],
+"0x108b30": [
+"\\Projects\\Xbox\\Renderer\\eng_Render.cpp"
+],
+"0x108e00": [
+"\\Projects\\XBOX\\Renderer\\eng_Renderer.h"
+],
+"0x108f10": [
+"\\Projects\\Xbox\\Renderer\\eng_Render.cpp"
+],
+"0x1090b0": [
+"\\Projects\\XBOX\\Renderer\\eng_Renderer.h",
+"\\Projects\\Xbox\\Renderer\\eng_Render.cpp"
+],
+"0x1091d0": [
+"\\Projects\\Xbox\\Renderer\\eng_Render.cpp"
+],
+"0x109280": [
+"\\Projects\\Xbox\\Renderer\\eng_Render.cpp"
+],
+"0x1093a0": [
+"\\Projects\\XBOX\\Renderer\\eng_Renderer.h"
+],
+"0x109430": [
+"\\Projects\\XBOX\\Renderer\\eng_Renderer.h"
+],
+"0x1094c0": [
+"\\Projects\\XBOX\\Renderer\\eng_Renderer.h",
+"\\Projects\\XBOX\\Renderer\\eng_Screen.h"
+],
+"0x1095e0": [
+"\\Projects\\XBOX\\Renderer\\eng_Renderer.h"
+],
+"0x109620": [
+"\\Projects\\XBOX\\Renderer\\eng_Screen.h"
+],
+"0x109670": [
+"\\Projects\\XBOX\\Renderer\\eng_Screen.h"
+],
+"0x1096c0": [
+"\\Projects\\XBOX\\Renderer\\eng_Screen.h"
+],
+"0x109710": [
+"\\Projects\\XBOX\\Renderer\\eng_Screen.h"
+],
+"0x10c860": [
+"c:\\projects\\xbox\\eng_Vector3.h"
+],
+"0x10c8d0": [
+"c:\\projects\\xbox\\eng_Vector3.h"
+],
+"0x10c940": [
+"c:\\projects\\xbox\\eng_Vector3.h"
+],
+"0x10c9a0": [
+"c:\\projects\\xbox\\eng_Vector4.h"
+],
+"0x10cca0": [
+"\\Projects\\Xbox\\eng_Math.cpp"
+],
+"0x10cd30": [
+"\\Projects\\Xbox\\eng_Math.cpp"
+],
+"0x10d8c0": [
+"\\Projects\\Xbox\\eng_Math.cpp"
+],
+"0x10e310": [
+"c:\\projects\\xbox\\Renderer\\eng_Screen.h"
+],
+"0x10e3b0": [
+"\\Projects\\Xbox\\tgtFunctions.cpp"
+],
+"0x10e480": [
+"\\Projects\\Xbox\\tgtFunctions.cpp"
+],
+"0x10e530": [
+"c:\\projects\\xbox\\Renderer\\eng_Screen.h"
+],
+"0x10e620": [
+"\\Projects\\Xbox\\tgtFunctions.cpp"
+],
+"0x10e670": [
+"c:\\projects\\xbox\\Renderer\\eng_Renderer.h"
+],
+"0x10e6d0": [
+"c:\\projects\\xbox\\Renderer\\eng_Renderer.h"
+],
+"0x10e750": [
+"\\Projects\\Xbox\\tgtFunctions.cpp"
+],
+"0x10e7a0": [
+"\\Projects\\Xbox\\tgtFunctions.cpp"
+],
+"0x10e7f0": [
+"\\Projects\\Xbox\\tgtFunctions.cpp"
+],
+"0x10e870": [
+"\\Projects\\Xbox\\tgtFunctions.cpp"
+],
+"0x10e8f0": [
+"\\Projects\\Xbox\\tgtFunctions.cpp"
+],
+"0x10ea40": [
+"\\Projects\\Xbox\\tgtFunctions.cpp"
+],
+"0x10eb80": [
+"c:\\projects\\xbox\\Renderer\\eng_Renderer.h"
+],
+"0x10ebd0": [
+"c:\\projects\\xbox\\Renderer\\eng_Renderer.h"
+],
+"0x10ec50": [
+"\\Projects\\Xbox\\tgtFunctions.cpp"
+],
+"0x10f140": [
+"\\Projects\\Xbox\\tgtFunctions.cpp"
+],
+"0x10f1a0": [
+"\\Projects\\Xbox\\tgtFunctions.cpp"
+],
+"0x10f260": [
+"\\Projects\\Xbox\\tgtFunctions.cpp"
+],
+"0x10f3c0": [
+"\\Projects\\XBOX\\Renderer\\eng_Sprites.h"
+],
+"0x10f520": [
+"\\Projects\\XBOX\\Renderer\\eng_Model.h"
+],
+"0x1104a0": [
+"\\Projects\\Xbox\\Renderer\\eng_Setup.cpp"
+],
+"0x110510": [
+"\\Projects\\XBOX\\Renderer\\eng_Renderer.h"
+],
+"0x110590": [
+"\\Projects\\XBOX\\Renderer\\eng_Renderer.h",
+"\\Projects\\XBOX\\Renderer\\eng_Screen.h"
+],
+"0x110980": [
+"\\Projects\\XBOX\\Renderer\\eng_Renderer.h"
+],
+"0x110af1": [
+"\\Projects\\XBOX\\Renderer\\eng_Renderer.h",
+"\\Projects\\Xbox\\Renderer\\eng_Setup.cpp"
+],
+"0x110ec0": [
+"\\Projects\\Xbox\\Renderer\\eng_Setup.cpp"
+],
+"0x111370": [
+"\\Projects\\XBOX\\Renderer\\eng_Model.h"
+],
+"0x111540": [
+"\\Projects\\Xbox\\Renderer\\eng_Setup.cpp"
+],
+"0x1116e0": [
+"\\Projects\\XBOX\\Renderer\\eng_Renderer.h"
+],
+"0x111800": [
+"\\Projects\\Xbox\\Renderer\\eng_Setup.cpp"
+],
+"0x111aa0": [
+"\\Projects\\XBOX\\Renderer\\eng_Model.h"
+],
+"0x111b60": [
+"\\Projects\\Xbox\\Renderer\\eng_Setup.cpp"
+],
+"0x111c40": [
+"\\Projects\\Xbox\\Renderer\\eng_Setup.cpp"
+],
+"0x111cf0": [
+"\\Projects\\Xbox\\Renderer\\eng_Setup.cpp"
+],
+"0x111e50": [
+"\\projects\\Utility\\util_BinList.h"
+],
+"0x1123a0": [
+"\\Projects\\XBOX\\Renderer\\eng_Renderer.h"
+],
+"0x112480": [
+"\\Projects\\XBOX\\Renderer\\eng_Renderer.h"
+],
+"0x112530": [
+"\\Projects\\XBOX\\Renderer\\eng_Renderer.h",
+"\\Projects\\XBOX\\Renderer\\eng_TextureManager.h"
+],
+"0x112b60": [
+"\\Projects\\XBOX\\Renderer\\eng_Renderer.h",
+"\\Projects\\XBOX\\Renderer\\eng_TextureManager.h"
+],
+"0x1130d0": [
+"\\Projects\\XBOX\\Renderer\\eng_Renderer.h",
+"\\Projects\\XBOX\\Renderer\\eng_TextureManager.h",
+"\\Projects\\Xbox\\Renderer\\eng_Setup.cpp"
+],
+"0x113790": [
+"\\Projects\\XBOX\\Renderer\\eng_Renderer.h",
+"\\Projects\\Xbox\\Renderer\\eng_Setup.cpp"
+],
+"0x113b50": [
+"\\Projects\\XBOX\\Renderer\\eng_Renderer.h",
+"\\Projects\\Xbox\\Renderer\\eng_Setup.cpp"
+],
+"0x113ef0": [
+"\\Projects\\Xbox\\Renderer\\eng_Setup.cpp"
+],
+"0x114240": [
+"\\Projects\\Xbox\\Renderer\\eng_Setup.cpp"
+],
+"0x114840": [
+"\\Projects\\XBOX\\Eng_Memory.h"
+],
+"0x114930": [
+"\\Projects\\XBOX\\Eng_Memory.h"
+],
+"0x1183e0": [
+"\\Projects\\XBOX\\Renderer\\eng_Renderer.h"
+],
+"0x118440": [
+"\\Projects\\XBOX\\Renderer\\eng_Screen.h",
+"\\Projects\\XBOX\\Renderer\\eng_shaderConst.h"
+],
+"0x118fc0": [
+"\\Projects\\Xbox\\Renderer\\eng_Screen.cpp"
+],
+"0x1190d0": [
+"\\Projects\\Xbox\\Renderer\\eng_Screen.cpp"
+],
+"0x1192b4": [
+"\\Projects\\XBOX\\Renderer\\eng_Renderer.h"
+],
+"0x119510": [
+"\\Projects\\XBOX\\Renderer\\eng_Renderer.h",
+"\\Projects\\XBOX\\Renderer\\eng_Screen.h"
+],
+"0x1195e0": [
+"\\Projects\\XBOX\\Renderer\\eng_Screen.h"
+],
+"0x1196f0": [
+"\\Projects\\XBOX\\Renderer\\eng_Screen.h"
+],
+"0x119740": [
+"\\Projects\\XBOX\\Renderer\\eng_Screen.h"
+],
+"0x119885": [
+"\\Projects\\XBOX\\Renderer\\eng_Screen.h"
+],
+"0x1198a1": [
+"\\Projects\\XBOX\\Renderer\\eng_Screen.h"
+],
+"0x119ef0": [
+"\\Projects\\XBOX\\Renderer\\eng_Screen.h"
+],
+"0x119f80": [
+"\\Projects\\XBOX\\Renderer\\eng_Screen.h"
+],
+"0x11a0a0": [
+"\\Projects\\XBOX\\Renderer\\eng_Renderer.h",
+"\\Projects\\XBOX\\Renderer\\eng_Screen.h"
+],
+"0x11a270": [
+"\\Projects\\XBOX\\Renderer\\eng_Renderer.h"
+],
+"0x11b290": [
+"\\Projects\\XBOX\\Renderer\\eng_Renderer.h"
+],
+"0x11b620": [
+"\\Projects\\XBOX\\Renderer\\eng_Screen.h"
+],
+"0x11b690": [
+"\\Projects\\XBOX\\Renderer\\eng_Screen.h"
+],
+"0x11b7c0": [
+"\\Projects\\Xbox\\Renderer\\eng_Screen.cpp"
+],
+"0x11bca0": [
+"\\Projects\\Xbox\\Renderer\\eng_Sprites.cpp"
+],
+"0x11bdb0": [
+"\\Projects\\Xbox\\Renderer\\eng_Sprites.cpp"
+],
+"0x11be80": [
+"\\Projects\\XBOX\\Renderer\\eng_Screen.h"
+],
+"0x11c460": [
+"\\Projects\\Xbox\\Renderer\\eng_Sprites.cpp"
+],
+"0x11c6d0": [
+"\\Projects\\XBOX\\Renderer\\eng_Screen.h"
+],
+"0x11c730": [
+"\\Projects\\XBOX\\Renderer\\eng_Screen.h"
+],
+"0x11d140": [
+"\\Projects\\XBOX\\Renderer\\eng_Screen.h"
+],
+"0x11d4b0": [
+"\\Projects\\Xbox\\Renderer\\eng_LoadModel.cpp"
+],
+"0x11e130": [
+"c:\\projects\\xbox\\eng_Vector4.h"
+],
+"0x11e1a0": [
+"c:\\projects\\xbox\\eng_Vector4.h"
+],
+"0x11e210": [
+"c:\\projects\\xbox\\eng_Vector4.h"
+],
+"0x11e370": [
+"\\projects\\Platform\\Common\\Renderer\\pfmc_Arena.h"
+],
+"0x11e480": [
+"\\Projects\\XBOX\\Renderer\\eng_Renderer.h"
+],
+"0x11e510": [
+"\\Projects\\XBOX\\Renderer\\eng_Renderer.h"
+],
+"0x11e700": [
+"\\Projects\\XBox\\Renderer\\effects\\trail_system_platform.h"
+],
+"0x11e770": [
+"\\projects\\Platform\\Common\\Renderer\\pfmc_DrawObject.h"
+],
+"0x11e7d0": [
+"\\projects\\Platform\\Common\\Renderer\\pfmc_DrawObject.h"
+],
+"0x11e840": [
+"\\Projects\\XBOX\\Renderer\\eng_Screen.h"
+],
+"0x11e9f0": [
+"\\Projects\\XBOX\\Renderer\\eng_Screen.h"
+],
+"0x11eab0": [
+"\\Projects\\XBOX\\Renderer\\eng_TextureManager.h"
+],
+"0x11ebd0": [
+"\\Projects\\Xbox\\Renderer\\eng_Renderer.cpp"
+],
+"0x11ec60": [
+"\\Projects\\XBOX\\Renderer\\eng_Renderer.h"
+],
+"0x11ef50": [
+"\\Projects\\XBOX\\Renderer\\eng_Renderer.h"
+],
+"0x11f020": [
+"\\Projects\\XBOX\\Renderer\\eng_Screen.h"
+],
+"0x11f120": [
+"\\Projects\\XBOX\\Renderer\\eng_Renderer.h",
+"\\Projects\\XBOX\\Renderer\\eng_Screen.h"
+],
+"0x11f960": [
+"\\Projects\\Xbox\\Renderer\\eng_Renderer.cpp"
+],
+"0x11fb00": [
+"\\Projects\\XBOX\\Renderer\\eng_Renderer.h"
+],
+"0x11ff60": [
+"\\Projects\\XBOX\\Renderer\\eng_Renderer.h",
+"\\Projects\\XBOX\\Renderer\\eng_Shadow.h"
+],
+"0x120110": [
+"\\Projects\\Xbox\\Renderer\\eng_Renderer.cpp"
+],
+"0x120250": [
+"\\Projects\\XBOX\\Renderer\\eng_Renderer.h",
+"\\Projects\\Xbox\\Renderer\\eng_Renderer.cpp"
+],
+"0x1202f0": [
+"\\Projects\\XBOX\\Renderer\\eng_Renderer.h",
+"\\Projects\\Xbox\\Renderer\\eng_Renderer.cpp"
+],
+"0x120440": [
+"\\projects\\Platform\\Common\\Utility\\pfmc_SortedList.h"
+],
+"0x120500": [
+"\\projects\\Platform\\Common\\Utility\\pfmc_SortedList.h"
+],
+"0x1205f0": [
+"\\projects\\Platform\\Common\\Utility\\pfmc_SortedList.h"
+],
+"0x1206b0": [
+"\\projects\\Platform\\Common\\Utility\\pfmc_SortedList.h"
+],
+"0x120790": [
+"\\projects\\Platform\\Common\\Utility\\pfmc_SortedList.h"
+],
+"0x120880": [
+"\\projects\\Platform\\Common\\Utility\\pfmc_SortedList.h"
+],
+"0x120a40": [
+"\\Projects\\XBOX\\Renderer\\eng_Screen.h"
+],
+"0x120ae0": [
+"\\Projects\\XBOX\\Renderer\\eng_Screen.h"
+],
+"0x120b50": [
+"\\Projects\\Xbox\\Renderer\\eng_Renderer.cpp"
+],
+"0x121350": [
+"\\Projects\\XBOX\\Renderer\\eng_Renderer.h"
+],
+"0x1213c0": [
+"\\Projects\\XBOX\\Renderer\\eng_Renderer.h"
+],
+"0x121430": [
+"\\Projects\\XBOX\\Renderer\\eng_Renderer.h"
+],
+"0x1214a0": [
+"\\Projects\\XBOX\\Renderer\\eng_Renderer.h"
+],
+"0x12163e": [
+"\\Projects\\XBOX\\Renderer\\eng_Renderer.h"
+],
+"0x121713": [
+"\\Projects\\XBOX\\Renderer\\eng_Screen.h"
+],
+"0x121b50": [
+"\\Projects\\XBOX\\Renderer\\eng_Renderer.h",
+"\\Projects\\XBOX\\Renderer\\eng_Screen.h"
+],
+"0x121d00": [
+"\\Projects\\XBOX\\Renderer\\eng_Renderer.h"
+],
+"0x122050": [
+"\\Projects\\XBOX\\Renderer\\eng_Renderer.h",
+"\\projects\\Platform\\Common\\Renderer\\pfmc_Arena.h"
+],
+"0x1221c0": [
+"\\Projects\\XBOX\\Renderer\\eng_Screen.h",
+"\\Projects\\XBOX\\Renderer\\eng_Shadow.h"
+],
+"0x122b40": [
+"\\Projects\\XBOX\\Renderer\\eng_Renderer.h"
+],
+"0x122b90": [
+"\\Projects\\XBOX\\Renderer\\eng_Renderer.h"
+],
+"0x122be0": [
+"\\Projects\\XBOX\\Renderer\\eng_Renderer.h"
+],
+"0x122c60": [
+"\\Projects\\XBOX\\Renderer\\eng_Renderer.h",
+"\\Projects\\XBOX\\Renderer\\eng_Screen.h"
+],
+"0x123090": [
+"\\Projects\\XBOX\\Renderer\\eng_Renderer.h",
+"\\Projects\\XBOX\\Renderer\\eng_Screen.h",
+"\\Projects\\Xbox\\Renderer\\eng_Renderer.cpp"
+],
+"0x123280": [
+"\\Projects\\XBOX\\Renderer\\eng_Renderer.h",
+"\\Projects\\XBOX\\Renderer\\eng_Screen.h"
+],
+"0x12337b": [
+"\\Projects\\XBOX\\Renderer\\eng_Screen.h",
+"\\Projects\\XBOX\\Renderer\\eng_Shadow.h"
+],
+"0x1234f0": [
+"\\Projects\\XBOX\\Renderer\\eng_Renderer.h",
+"\\Projects\\XBOX\\Renderer\\eng_Screen.h",
+"\\Projects\\XBOX\\Renderer\\eng_Shadow.h",
+"\\Projects\\XBox\\Renderer\\effects\\trail_system_platform.h"
+],
+"0x123920": [
+"c:\\projects\\xbox\\Renderer\\eng_Screen.h"
+],
+"0x123b40": [
+"c:\\projects\\xbox\\Renderer\\eng_Renderer.h"
+],
+"0x123cd0": [
+"\\Projects\\XBOX\\Renderer\\eng_Renderer.h"
+],
+"0x123d70": [
+"\\Projects\\XBOX\\Renderer\\eng_Renderer.h"
+],
+"0x123e10": [
+"\\Projects\\XBOX\\Renderer\\eng_Renderer.h"
+],
+"0x1244f0": [
+"\\Projects\\XBOX\\Renderer\\eng_Screen.h"
+],
+"0x127140": [
+"\\Projects\\Xbox\\SaveGame\\HardDisk.cpp"
+],
+"0x127b10": [
+"\\Projects\\XBOX\\Renderer\\eng_Renderer.h"
+],
+"0x127e70": [
+"\\Projects\\Xbox\\Effects\\ParticleDraw.cpp"
+],
+"0x127ed0": [
+"\\Projects\\XBOX\\Renderer\\eng_Renderer.h",
+"\\Projects\\XBOX\\Renderer\\eng_Screen.h"
+],
+"0x1282f0": [
+"\\Projects\\Xbox\\Effects\\ParticleDraw.cpp"
+],
+"0x1287f0": [
+"\\Projects\\Xbox\\Effects\\ParticleDraw.cpp"
+],
+"0x129200": [
+"\\Projects\\Xbox\\JoyDrv\\xboxJoyDrv.cpp"
+],
+"0x12af70": [
+"\\Projects\\XBOX\\Renderer\\eng_Renderer.h",
+"\\Projects\\XBOX\\Renderer\\eng_Shadow.h"
+],
+"0x12b3b0": [
+"\\Projects\\XBOX\\Renderer\\eng_Renderer.h"
+],
+"0x12b430": [
+"\\Projects\\XBOX\\Renderer\\eng_Renderer.h"
+],
+"0x12b510": [
+"\\projects\\Utility\\util_sarray.h"
+],
+"0x12b560": [
+"\\projects\\Utility\\util_sarray.h"
+],
+"0x12b5e0": [
+"\\Projects\\XBOX\\Renderer\\eng_Screen.h"
+],
+"0x12b630": [
+"\\Projects\\XBOX\\Renderer\\eng_Screen.h"
+],
+"0x12b680": [
+"\\Projects\\XBOX\\Renderer\\eng_Screen.h"
+],
+"0x12b6d0": [
+"\\Projects\\XBOX\\Renderer\\eng_Screen.h"
+],
+"0x12b720": [
+"\\Projects\\XBOX\\Renderer\\eng_Screen.h"
+],
+"0x12b7d0": [
+"\\Projects\\XBOX\\Renderer\\eng_Renderer.h",
+"\\Projects\\Xbox\\Renderer\\eng_Character.cpp"
+],
+"0x12baa0": [
+"\\Projects\\Xbox\\Renderer\\eng_Character.cpp"
+],
+"0x12c0e0": [
+"\\Projects\\XBOX\\Renderer\\eng_Renderer.h",
+"\\Projects\\XBOX\\Renderer\\eng_Screen.h"
+],
+"0x12c540": [
+"\\Projects\\XBOX\\Renderer\\eng_Renderer.h",
+"\\Projects\\XBOX\\Renderer\\eng_Shadow.h"
+],
+"0x12c850": [
+"\\Projects\\XBOX\\Renderer\\eng_Renderer.h",
+"\\Projects\\XBOX\\Renderer\\eng_Shadow.h"
+],
+"0x12cbf0": [
+"\\projects\\Utility\\util_sarray.h"
+],
+"0x12cc80": [
+"\\projects\\Utility\\util_sarray.h"
+],
+"0x12d3b0": [
+"\\Projects\\XBOX\\Renderer\\eng_Renderer.h"
+],
+"0x12da10": [
+"\\Projects\\Xbox\\Renderer\\eng_Character.cpp"
+],
+"0x12dcd0": [
+"\\Projects\\Xbox\\Renderer\\eng_Character.cpp"
+],
+"0x12e1d0": [
+"\\Projects\\Xbox\\eng_Memory.cpp"
+],
+"0x12e2f0": [
+"\\Projects\\Xbox\\eng_Memory.cpp"
+],
+"0x12e590": [
+"\\Projects\\Xbox\\eng_Memory.cpp"
+],
+"0x12f340": [
+"\\Projects\\XBOX\\Renderer\\eng_Screen.h",
+"\\Projects\\Xbox\\Renderer\\StateManager\\StateMgr.cpp"
+],
+"0x12f3e0": [
+"\\Projects\\Xbox\\Renderer\\StateManager\\StateMgr.cpp"
+],
+"0x12f450": [
+"\\Projects\\XBOX\\Renderer\\eng_Screen.h"
+],
+"0x12f5a0": [
+"\\Projects\\XBOX\\Renderer\\eng_Screen.h"
+],
+"0x12f800": [
+"\\Projects\\XBOX\\Renderer\\eng_Screen.h"
+],
+"0x12fbe0": [
+"\\Projects\\XBOX\\Renderer\\eng_Screen.h"
+],
+"0x12fcc0": [
+"\\Projects\\XBOX\\Renderer\\eng_Screen.h"
+],
+"0x1301b0": [
+"\\Projects\\Xbox\\Effects\\Blur.cpp"
+],
+"0x130370": [
+"\\Projects\\XBOX\\Renderer\\eng_Screen.h"
+],
+"0x130680": [
+"\\Projects\\XBOX\\Renderer\\eng_Screen.h"
+],
+"0x130770": [
+"\\Projects\\XBOX\\Renderer\\eng_Screen.h"
+],
+"0x130870": [
+"\\Projects\\XBOX\\Renderer\\eng_Screen.h"
+],
+"0x130c60": [
+"\\Projects\\Xbox\\Renderer\\eng_PacketBuilder.cpp"
+],
+"0x130ed0": [
+"\\Projects\\Xbox\\Renderer\\eng_PacketBuilder.cpp"
+],
+"0x130fa0": [
+"\\Projects\\Xbox\\Renderer\\eng_PacketBuilder.cpp"
+],
+"0x131070": [
+"\\Projects\\Xbox\\Renderer\\eng_PacketBuilder.cpp"
+],
+"0x1312b0": [
+"\\Projects\\Xbox\\Renderer\\eng_PacketBuilder.cpp"
+],
+"0x131520": [
+"\\Projects\\Xbox\\Renderer\\eng_PacketBuilder.cpp"
+],
+"0x131780": [
+"\\Projects\\Xbox\\Renderer\\eng_PacketBuilder.cpp"
+],
+"0x1319e0": [
+"\\Projects\\Xbox\\Renderer\\eng_PacketBuilder.cpp"
+],
+"0x131c30": [
+"\\Projects\\Xbox\\Renderer\\eng_PacketBuilder.cpp"
+],
+"0x131e90": [
+"\\Projects\\Xbox\\Renderer\\eng_PacketBuilder.cpp"
+],
+"0x1320e0": [
+"\\Projects\\Xbox\\Renderer\\eng_PacketBuilder.cpp"
+],
+"0x132340": [
+"\\Projects\\Xbox\\Renderer\\eng_PacketBuilder.cpp"
+],
+"0x132620": [
+"\\Projects\\Xbox\\Renderer\\eng_PacketBuilder.cpp"
+],
+"0x1328f0": [
+"\\Projects\\Xbox\\Renderer\\eng_PacketBuilder.cpp"
+],
+"0x132bd0": [
+"\\Projects\\Xbox\\Renderer\\eng_PacketBuilder.cpp"
+],
+"0x132ea0": [
+"\\Projects\\Xbox\\Renderer\\eng_PacketBuilder.cpp",
+"c:\\projects\\xbox\\eng_Vector3.h"
+],
+"0x133110": [
+"\\Projects\\XBOX\\Renderer\\eng_Renderer.h",
+"\\Projects\\XBOX\\eng_Memory.h",
+"\\Projects\\Xbox\\Renderer\\eng_PacketBuilder.cpp"
+],
+"0x1336c0": [
+"\\Projects\\XBOX\\Renderer\\eng_Renderer.h",
+"\\Projects\\Xbox\\Renderer\\eng_PacketBuilder.cpp",
+"\\projects\\Platform\\Common\\Renderer\\pfmc_BoneRef.h"
+],
+"0x133a60": [
+"\\Projects\\Xbox\\Renderer\\eng_PacketBuilder.cpp"
+],
+"0x133bf0": [
+"\\Projects\\Xbox\\Renderer\\eng_Material.cpp"
+],
+"0x133c50": [
+"\\Projects\\Xbox\\Renderer\\eng_Material.cpp"
+],
+"0x133cd0": [
+"\\Projects\\Xbox\\Renderer\\eng_Material.cpp"
+],
+"0x133ee0": [
+"\\Projects\\XBOX\\Renderer\\eng_Renderer.h"
+],
+"0x134130": [
+"\\Projects\\XBOX\\Renderer\\eng_Renderer.h",
+"\\Projects\\XBOX\\Renderer\\eng_TextureManager.h"
+],
+"0x134380": [
+"\\Projects\\XBOX\\Renderer\\eng_Renderer.h"
+],
+"0x134530": [
+"\\Projects\\Xbox\\Renderer\\eng_MeshDraw.cpp"
+],
+"0x134570": [
+"\\Projects\\XBOX\\Renderer\\eng_Renderer.h",
+"\\Projects\\Xbox\\Renderer\\eng_MeshDraw.cpp"
+],
+"0x134b30": [
+"\\Projects\\XBOX\\Renderer\\eng_Renderer.h",
+"\\Projects\\Xbox\\Renderer\\eng_MeshDraw.cpp"
+],
+"0x135eb0": [
+"\\Projects\\Xbox\\General\\SpringManager.cpp"
+],
+"0x135f20": [
+"\\Projects\\Xbox\\General\\SpringManager.cpp"
+],
+"0x135fa0": [
+"\\Projects\\Xbox\\General\\SpringManager.cpp"
+],
+"0x1369f0": [
+"\\Projects\\Xbox\\Renderer\\eng_Shadow.cpp"
+],
+"0x136a60": [
+"\\Projects\\Xbox\\Renderer\\eng_Shadow.cpp"
+],
+"0x136b20": [
+"\\Projects\\XBOX\\Renderer\\eng_Screen.h"
+],
+"0x136d30": [
+"\\Projects\\XBOX\\Renderer\\eng_Screen.h"
+],
+"0x136e80": [
+"\\Projects\\XBOX\\Renderer\\eng_Screen.h"
+],
+"0x1372c0": [
+"\\Projects\\XBOX\\Renderer\\eng_Renderer.h"
+],
+"0x137570": [
+"\\Projects\\XBOX\\Renderer\\eng_TextureManager.h"
+],
+"0x137e90": [
+"\\Projects\\XBOX\\Renderer\\eng_Screen.h"
+],
+"0x137f30": [
+"\\Projects\\XBOX\\Renderer\\eng_Screen.h",
+"\\Projects\\Xbox\\Renderer\\eng_HDR.cpp"
+],
+"0x138610": [
+"\\Projects\\XBOX\\Renderer\\eng_Screen.h",
+"\\Projects\\Xbox\\Renderer\\eng_HDR.cpp"
+],
+"0x13ab30": [
+"\\Projects\\XBOX\\Renderer\\eng_Screen.h",
+"\\Projects\\Xbox\\Renderer\\eng_ShaderManager.cpp"
+],
+"0x13ad40": [
+"\\Projects\\XBOX\\Renderer\\eng_Screen.h",
+"\\Projects\\Xbox\\Renderer\\eng_ShaderManager.cpp"
+],
+"0x13ae40": [
+"\\Projects\\XBOX\\Renderer\\eng_Screen.h",
+"\\Projects\\Xbox\\Renderer\\eng_ShaderManager.cpp"
+],
+"0x13af40": [
+"\\Projects\\XBOX\\Renderer\\eng_Screen.h",
+"\\Projects\\Xbox\\Renderer\\eng_ShaderManager.cpp"
+],
+"0x13b1b0": [
+"\\Projects\\Xbox\\Renderer\\eng_ShaderManager.cpp"
+],
+"0x13b8d0": [
+"\\projects\\Platform\\Common\\Utility\\pfmc_SortedList.h"
+],
+"0x13b9b0": [
+"\\projects\\Platform\\Common\\Utility\\pfmc_SortedList.h"
+],
+"0x13ba90": [
+"\\Projects\\XBOX\\Renderer\\eng_Screen.h"
+],
+"0x13bae0": [
+"\\Projects\\XBOX\\Renderer\\eng_Screen.h"
+],
+"0x13bb30": [
+"\\Projects\\XBOX\\Renderer\\eng_Screen.h"
+],
+"0x13bc40": [
+"\\Projects\\XBOX\\Renderer\\eng_Renderer.h",
+"\\Projects\\Xbox\\Renderer\\eng_DrawUnit.cpp"
+],
+"0x13bec0": [
+"\\Projects\\XBOX\\Renderer\\eng_Renderer.h"
+],
+"0x13c020": [
+"\\Projects\\Xbox\\Renderer\\eng_DrawUnit.cpp"
+],
+"0x13c550": [
+"\\Projects\\XBOX\\Renderer\\eng_Renderer.h",
+"\\Projects\\Xbox\\Renderer\\eng_DrawUnit.cpp"
+],
+"0x13c9a0": [
+"\\Projects\\XBOX\\Renderer\\eng_Renderer.h"
+],
+"0x13cb10": [
+"\\Projects\\XBOX\\Renderer\\eng_Renderer.h",
+"\\Projects\\XBOX\\Renderer\\eng_Shadow.h"
+],
+"0x13cf20": [
+"\\Projects\\Xbox\\Renderer\\eng_DrawUnit.cpp"
+],
+"0x13d510": [
+"\\Projects\\XBOX\\Renderer\\eng_Renderer.h",
+"\\Projects\\XBOX\\Renderer\\eng_Screen.h"
+],
+"0x13d740": [
+"\\Projects\\XBOX\\Renderer\\eng_Screen.h",
+"\\Projects\\XBOX\\Renderer\\eng_ShaderConst.h"
+],
+"0x13d8b0": [
+"\\Projects\\XBOX\\Renderer\\eng_Screen.h",
+"\\Projects\\XBOX\\Renderer\\eng_ShaderConst.h",
+"\\Projects\\Xbox\\Renderer\\eng_ShaderConst.cpp"
+],
+"0x13da80": [
+"\\Projects\\XBOX\\Renderer\\eng_Screen.h",
+"\\Projects\\XBOX\\Renderer\\eng_ShaderConst.h",
+"\\Projects\\Xbox\\Renderer\\eng_ShaderConst.cpp"
+],
+"0x13dc80": [
+"\\Projects\\XBOX\\Renderer\\eng_Renderer.h",
+"\\Projects\\XBOX\\Renderer\\eng_Screen.h",
+"\\Projects\\XBOX\\Renderer\\eng_ShaderConst.h",
+"\\Projects\\Xbox\\Renderer\\eng_ShaderConst.cpp"
+],
+"0x13df80": [
+"\\Projects\\XBOX\\Renderer\\eng_Screen.h"
+],
+"0x13e040": [
+"\\Projects\\XBOX\\Renderer\\eng_Renderer.h"
+],
+"0x13e2d0": [
+"\\Projects\\XBOX\\Renderer\\eng_Renderer.h",
+"\\Projects\\XBOX\\Renderer\\eng_Screen.h"
+],
+"0x13e590": [
+"\\Projects\\XBOX\\Renderer\\eng_Renderer.h",
+"\\Projects\\XBOX\\Renderer\\eng_Screen.h"
+],
+"0x13ea00": [
+"\\projects\\Utility\\util_BinList.h"
+],
+"0x13eae0": [
+"\\projects\\Utility\\util_BinList.h"
+],
+"0x13ec10": [
+"\\projects\\Utility\\util_BinList.h"
+],
+"0x13ecc0": [
+"\\Projects\\Xbox\\Renderer\\eng_SceneList.cpp"
+],
+"0x13f380": [
+"\\Projects\\XBOX\\Renderer\\eng_Screen.h"
+],
+"0x13f4c0": [
+"\\Projects\\XBOX\\Renderer\\eng_Screen.h"
+],
+"0x13ffb0": [
+"\\Projects\\XBOX\\Renderer\\eng_Screen.h",
+"\\Projects\\XBOX\\Renderer\\eng_TextureManager.h",
+"\\Projects\\Xbox\\Renderer\\eng_Poly.cpp"
+],
+"0x140500": [
+"\\Projects\\XBOX\\Renderer\\eng_Renderer.h",
+"\\Projects\\XBOX\\Renderer\\eng_Shadow.h"
+],
+"0x140750": [
+"\\Projects\\XBOX\\Renderer\\eng_Renderer.h",
+"\\Projects\\XBOX\\Renderer\\eng_Shadow.h"
+],
+"0x141df0": [
+"\\Projects\\XBOX\\Renderer\\eng_Screen.h"
+],
+"0x141f10": [
+"\\Projects\\XBOX\\Renderer\\eng_Screen.h"
+],
+"0x142420": [
+"\\Projects\\XBOX\\Renderer\\eng_Screen.h"
+],
+"0x142840": [
+"\\Projects\\XBOX\\Renderer\\eng_TextureManager.h",
+"\\Projects\\Xbox\\Renderer\\eng_RenderObject.cpp"
+],
+"0x142a10": [
+"\\projects\\Utility\\util_BinList.h"
+],
+"0x142d90": [
+"\\Projects\\Xbox\\Renderer\\eng_Primitive.cpp"
+],
+"0x142de0": [
+"\\Projects\\Xbox\\Renderer\\eng_Primitive.cpp"
+],
+"0x142f80": [
+"\\Projects\\XBOX\\eng_Memory.h"
+],
+"0x142fe0": [
+"\\Projects\\Xbox\\Renderer\\eng_Primitive.cpp"
+],
+"0x1430e0": [
+"\\Projects\\Xbox\\Renderer\\eng_Primitive.cpp"
+],
+"0x143210": [
+"\\Projects\\Xbox\\Renderer\\eng_Primitive.cpp"
+],
+"0x143290": [
+"\\Projects\\Xbox\\Renderer\\eng_Primitive.cpp"
+],
+"0x1441a0": [
+"\\Projects\\Platform\\pfm_Model.cpp"
+],
+"0x1442b0": [
+"\\Projects\\Platform\\pfm_Model.cpp"
+],
+"0x144300": [
+"\\Projects\\Platform\\pfm_Model.cpp"
+],
+"0x144350": [
+"\\Projects\\Platform\\pfm_Model.cpp"
+],
+"0x1443a0": [
+"\\Projects\\Platform\\pfm_Model.cpp"
+],
+"0x1443f0": [
+"\\Projects\\Platform\\pfm_Model.cpp"
+],
+"0x144440": [
+"\\Projects\\Platform\\pfm_Model.cpp"
+],
+"0x1444c0": [
+"\\Projects\\Platform\\pfm_Model.cpp"
+],
+"0x144530": [
+"\\Projects\\Platform\\pfm_Model.cpp"
+],
+"0x144580": [
+"\\Projects\\Platform\\pfm_Model.cpp"
+],
+"0x1445d0": [
+"\\Projects\\Platform\\pfm_Model.cpp"
+],
+"0x144620": [
+"\\Projects\\Platform\\pfm_Model.cpp"
+],
+"0x144670": [
+"\\Projects\\Platform\\pfm_Model.cpp"
+],
+"0x1446c0": [
+"\\Projects\\Platform\\pfm_Model.cpp"
+],
+"0x144740": [
+"\\Projects\\Platform\\pfm_Model.cpp"
+],
+"0x144a30": [
+"\\Projects\\Utility\\util_sarray.h"
+],
+"0x144ad0": [
+"\\Projects\\Platform\\pfm_PmeModel.cpp"
+],
+"0x144e30": [
+"\\Projects\\Utility\\util_sarray.h"
+],
+"0x1478c0": [
+"\\Projects\\XBOX\\Renderer\\eng_Renderer.h"
+],
+"0x147cb0": [
+"\\Projects\\XBOX\\Renderer\\eng_Screen.h",
+"\\Projects\\XBOX\\Renderer\\eng_ShaderConst.h"
+],
+"0x148130": [
+"c:\\projects\\platform\\common\\renderer\\pfmc_BoneRef.h"
+],
+"0x148570": [
+"\\Projects\\Platform\\Common\\Renderer\\pfmc_DrawObject.cpp"
+],
+"0x148db0": [
+"\\Projects\\Platform\\Common\\Utility\\pfmc_Container.cpp"
+],
+"0x149170": [
+"\\Projects\\Platform\\Common\\Renderer\\pfmc_Bone.cpp"
+],
+"0x149230": [
+"\\Projects\\Platform\\Common\\Renderer\\pfmc_Bone.cpp"
+],
+"0x149420": [
+"\\Projects\\Platform\\Common\\Renderer\\pfmc_Bone.cpp"
+],
+"0x149ed0": [
+"\\Projects\\Platform\\Common\\Renderer\\pfmc_Light.cpp"
+],
+"0x14a6b0": [
+"\\Projects\\Platform\\Common\\Renderer\\pfmc_Light.cpp"
+],
+"0x14b900": [
+"\\projects\\Platform\\Common\\Utility\\pfmc_Container.h"
+],
+"0x14b9f0": [
+"\\Projects\\XBOX\\Renderer\\eng_Model.h",
+"\\projects\\Platform\\Common\\Utility\\pfmc_Container.h",
+"c:\\projects\\platform\\common\\renderer\\pfmc_BoneRef.h"
+],
+"0x14c7a0": [
+"\\Projects\\Platform\\Common\\Utility\\pfmc_BoneCollision.cpp"
+],
+"0x14cc00": [
+"\\Projects\\Platform\\Common\\Renderer\\pfmc_DrawMesh.cpp"
+],
+"0x14cdb0": [
+"\\Projects\\Platform\\Common\\Renderer\\pfmc_DrawMesh.cpp"
+],
+"0x14d160": [
+"\\Projects\\Platform\\Common\\Utility\\pfmc_Spring.cpp"
+],
+"0x14dc10": [
+"\\Projects\\Platform\\Common\\Utility\\pfmc_Spring.cpp"
+],
+"0x15271a": [
+"\\Projects\\Paradox\\General\\drawtext.cpp"
+],
+"0x15bf80": [
+"\\Projects\\Paradox\\Math\\matrixmath.cpp"
+],
+"0x16cb40": [
+"c:\\projects\\paradox\\camera\\pxCameraManager.h"
+],
+"0x16cce0": [
+"\\Projects\\Paradox\\Camera\\pxCameraManager.cpp"
+],
+"0x17a300": [
+"\\Projects\\Paradox\\RenderTracker.cpp"
+],
+"0x17a3c0": [
+"\\Projects\\Paradox\\RenderTracker.cpp"
+],
+"0x17a4d0": [
+"\\Projects\\Paradox\\RenderTracker.cpp"
+],
+"0x17a760": [
+"\\Projects\\Paradox\\Async_Manager.cpp"
+],
+"0x17a840": [
+"\\Projects\\Paradox\\Async_Manager.cpp"
+],
+"0x17a970": [
+"\\Projects\\Paradox\\Async_Manager.cpp"
+],
+"0x17a9d0": [
+"\\Projects\\Paradox\\Async_Manager.cpp"
+],
+"0x18b680": [
+"\\Projects\\XBOX\\Renderer\\eng_Screen.h"
+],
+"0x18bac0": [
+"\\Projects\\Utility\\util_sarray.h"
+],
+"0x18bb50": [
+"\\Projects\\Utility\\util_sarray.h"
+],
+"0x18bbc0": [
+"\\Projects\\Utility\\util_sarray.h"
+],
+"0x18bc60": [
+"\\Projects\\Utility\\util_sarray.h"
+],
+"0x18bd60": [
+"\\Projects\\Utility\\util_sarray.h"
+],
+"0x18c0c0": [
+"\\Projects\\Utility\\util_sarray.h"
+],
+"0x18c170": [
+"\\Projects\\Utility\\util_sarray.h"
+],
+"0x18c380": [
+"\\Projects\\Utility\\util_sarray.h"
+],
+"0x18c890": [
+"\\Projects\\Utility\\util_sarray.h"
+],
+"0x198f50": [
+"\\Projects\\Paradox\\Map\\MapAnimation.cpp"
+],
+"0x1ab780": [
+"\\Projects\\Paradox\\Anim\\SubObjs.cpp"
+],
+"0x1ab7e0": [
+"\\Projects\\Paradox\\Anim\\SubObjs.cpp"
+],
+"0x1ab890": [
+"\\Projects\\Paradox\\Anim\\SubObjs.cpp"
+],
+"0x1ab970": [
+"\\Projects\\Paradox\\Anim\\SubObjs.cpp"
+],
+"0x1abaf0": [
+"\\Projects\\Paradox\\Anim\\SubObjs.cpp"
+],
+"0x1abbe0": [
+"\\Projects\\Paradox\\Anim\\SubObjs.cpp"
+],
+"0x1abd70": [
+"\\Projects\\Paradox\\Anim\\SubObjs.cpp"
+],
+"0x1b07a0": [
+"\\Projects\\Utility\\util_sarray.h"
+],
+"0x1b07f0": [
+"\\Projects\\Utility\\util_sarray.h"
+],
+"0x1b0840": [
+"\\Projects\\Utility\\util_sarray.h"
+],
+"0x1b0890": [
+"\\Projects\\Utility\\util_sarray.h"
+],
+"0x1b0920": [
+"\\Projects\\Paradox\\Utility\\WeightedRandomSelector.cpp"
+],
+"0x1b0970": [
+"\\Projects\\Paradox\\Utility\\WeightedRandomSelector.cpp",
+"\\Projects\\Utility\\util_sarray.h"
+],
+"0x1b1ad0": [
+"\\Projects\\Paradox\\Flash\\Anim2DManager.cpp"
+],
+"0x1b1cc0": [
+"\\Projects\\Paradox\\Flash\\Anim2DManager.cpp"
+],
+"0x1b1f70": [
+"\\Projects\\Paradox\\Flash\\Anim2DManager.cpp"
+],
+"0x1b2230": [
+"\\Projects\\Paradox\\Flash\\Anim2DManager.cpp"
+],
+"0x1b2430": [
+"\\Projects\\Paradox\\Flash\\Anim2DManager.cpp",
+"\\Projects\\XBOX\\Renderer\\eng_TextureManager.h"
+],
+"0x1b34d0": [
+"\\Projects\\Paradox\\Flash\\Anim2DUtil.cpp"
+],
+"0x1b3580": [
+"\\Projects\\Paradox\\Flash\\Anim2DUtil.cpp"
+],
+"0x1b5200": [
+"\\Projects\\Paradox\\General\\PxCheats.cpp"
+],
+"0x1b5430": [
+"\\Projects\\Paradox\\General\\PxCheats.cpp"
+],
+"0x1b54b0": [
+"\\Projects\\Paradox\\General\\PxCheats.cpp"
+],
+"0x1b5580": [
+"\\Projects\\Paradox\\General\\PxCheats.cpp"
+],
+"0x1b7120": [
+"c:\\projects\\paradox\\camera\\pxCameraTargetsManager.h"
+],
+"0x1b7270": [
+"\\Projects\\Paradox\\Camera\\pxCameraTargetsManager.cpp"
+],
+"0x1b8070": [
+"\\Projects\\Paradox\\General\\Chunk_Container.cpp"
+],
+"0x1b9220": [
+"\\Projects\\Tools\\ParadoxME\\PME_Source\\MEFile.cpp"
+],
+"0x1b9320": [
+"\\Projects\\Tools\\ParadoxME\\PME_Source\\MEFile.cpp"
+],
+"0x1b9410": [
+"\\Projects\\Tools\\ParadoxME\\PME_Source\\MEFile.cpp"
+],
+"0x1b94c0": [
+"\\Projects\\Tools\\ParadoxME\\PME_Source\\MEFile.cpp"
+],
+"0x1b9560": [
+"\\Projects\\Tools\\ParadoxME\\PME_Source\\MEFile.cpp"
+],
+"0x1b9610": [
+"\\Projects\\Tools\\ParadoxME\\PME_Source\\MEFile.cpp"
+],
+"0x1b9760": [
+"\\Projects\\Tools\\ParadoxME\\PME_Source\\MEFile.cpp"
+],
+"0x1b9f30": [
+"\\Projects\\Tools\\ParadoxME\\PME_Source\\MEFile.cpp"
+],
+"0x1ba250": [
+"\\Projects\\Tools\\ParadoxME\\PME_Source\\MEFile.cpp"
+],
+"0x1ba2e0": [
+"\\Projects\\Tools\\ParadoxME\\PME_Source\\MEFile.cpp"
+],
+"0x1ba3e0": [
+"\\Projects\\Tools\\ParadoxME\\PME_Source\\MEFile.cpp"
+],
+"0x1ba70e": [
+"\\Projects\\Tools\\ParadoxME\\PME_Source\\MEFile.cpp"
+],
+"0x1bb030": [
+"\\Projects\\Tools\\ParadoxME\\PME_Source\\MEFile.cpp"
+],
+"0x1bb120": [
+"\\Projects\\Tools\\ParadoxME\\PME_Source\\MEFile.cpp"
+],
+"0x1ca290": [
+"\\Projects\\Paradox\\Tools/ToolManager.h"
+],
+"0x1ca540": [
+"\\Projects\\Paradox\\Tools\\ToolManager.cpp"
+],
+"0x1ca640": [
+"\\Projects\\Paradox\\Tools\\ToolManager.cpp"
+],
+"0x1ca760": [
+"\\Projects\\Paradox\\Tools\\ToolManager.cpp"
+],
+"0x1ca7e0": [
+"\\Projects\\Paradox\\Tools\\ToolManager.cpp"
+],
+"0x1ca850": [
+"\\Projects\\Paradox\\Tools\\ToolManager.cpp"
+],
+"0x1ca8c0": [
+"\\Projects\\Paradox\\Tools\\ToolManager.cpp"
+],
+"0x1ca930": [
+"\\Projects\\Paradox\\Tools\\ToolManager.cpp"
+],
+"0x1caaf0": [
+"\\Projects\\Paradox\\Tools\\ToolManager.cpp"
+],
+"0x1caf30": [
+"\\Projects\\Paradox\\Tools\\ToolManager.cpp"
+],
+"0x1cb020": [
+"\\Projects\\Paradox\\Tools\\ToolManager.cpp"
+],
+"0x1cb2c0": [
+"\\Projects\\Paradox\\Tools\\ToolManager.cpp"
+],
+"0x1cb6b0": [
+"\\Projects\\Paradox\\Tools\\ToolManager.cpp"
+],
+"0x1cb750": [
+"\\Projects\\Paradox\\Tools/ToolManager.h"
+],
+"0x1cb920": [
+"\\Projects\\Paradox\\Tools/ToolManager.h"
+],
+"0x1cbaa0": [
+"\\Projects\\Paradox\\Tools/ToolManager.h"
+],
+"0x1cbfa0": [
+"\\Projects\\Paradox\\Tools\\ToolManager.cpp"
+],
+"0x1cc0d0": [
+"\\Projects\\Paradox\\Tools\\ToolManager.cpp"
+],
+"0x1cc1d0": [
+"\\Projects\\Paradox\\Tools/ToolManager.h"
+],
+"0x1cc480": [
+"\\Projects\\Paradox\\Tools\\ToolManager.cpp"
+],
+"0x1cc640": [
+"\\Projects\\Paradox\\Tools/ToolManager.h",
+"\\Projects\\Paradox\\Tools\\ToolManager.cpp"
+],
+"0x1d27b0": [
+"\\Projects\\Paradox\\Math\\PxMath.cpp"
+],
+"0x1d2810": [
+"\\Projects\\Paradox\\Math\\PxMath.cpp"
+],
+"0x1d74a0": [
+"\\Projects\\Paradox\\General\\MapGameObjectToPhysics.h"
+],
+"0x1d8050": [
+"\\Projects\\Paradox\\General\\Tweak.cpp"
+],
+"0x1d81a0": [
+"\\Projects\\Paradox\\General\\Tweak.cpp"
+],
+"0x1d82f0": [
+"\\Projects\\Paradox\\General\\Tweak.cpp"
+],
+"0x1d8400": [
+"\\Projects\\Paradox\\General\\Tweak.cpp"
+],
+"0x1d84a0": [
+"\\Projects\\Paradox\\General\\Tweak.cpp"
+],
+"0x1d86c0": [
+"\\Projects\\Paradox\\General\\Tweak.cpp"
+],
+"0x1d8800": [
+"\\Projects\\Paradox\\General\\Tweak.cpp"
+],
+"0x1d8880": [
+"\\Projects\\Paradox\\General\\Tweak.cpp"
+],
+"0x1da0c0": [
+"\\Projects\\Paradox\\Effects\\particles_arena.cpp"
+],
+"0x1dccd0": [
+"\\Projects\\Paradox\\General\\Proto_GameEvents.cpp"
+],
+"0x1dcee0": [
+"\\Projects\\Paradox\\General\\Proto_GameEvents.cpp"
+],
+"0x1e2e80": [
+"\\Projects\\Paradox\\Effects\\lightning.cpp"
+],
+"0x1e4160": [
+"\\Projects\\Paradox\\IMaterial\\IMaterial.cpp"
+],
+"0x1e41f0": [
+"\\Projects\\Paradox\\IMaterial\\IMaterial.cpp"
+],
+"0x1e4380": [
+"\\Projects\\Paradox\\IMaterial\\IMaterial.cpp"
+],
+"0x1e43d0": [
+"\\Projects\\Paradox\\IMaterial\\IMaterial.cpp"
+],
+"0x1e4480": [
+"\\Projects\\Paradox\\IMaterial\\IMaterial.cpp"
+],
+"0x1e4570": [
+"\\Projects\\Paradox\\IMaterial\\IMaterial.cpp"
+],
+"0x1e45e0": [
+"\\Projects\\Paradox\\IMaterial\\IMaterial.cpp"
+],
+"0x1e4700": [
+"\\Projects\\Paradox\\IMaterial\\IMaterial.cpp"
+],
+"0x1e4950": [
+"\\Projects\\Paradox\\IMaterial\\IMaterial.cpp"
+],
+"0x1e4a10": [
+"\\Projects\\Paradox\\IMaterial\\IMaterial.cpp"
+],
+"0x1e4db0": [
+"\\Projects\\Paradox\\IMaterial\\IMaterial.cpp"
+],
+"0x1e52a0": [
+"\\Projects\\Paradox\\IMaterial\\IMaterial.cpp"
+],
+"0x1e5370": [
+"\\Projects\\Paradox\\IMaterial\\IMaterial.cpp"
+],
+"0x1e5400": [
+"\\Projects\\Paradox\\IMaterial\\IMaterial.cpp"
+],
+"0x1e5a20": [
+"\\Projects\\Paradox\\IMaterial\\IMaterial.cpp"
+],
+"0x1e6180": [
+"\\Projects\\Paradox\\Physics\\Character\\PxCharacterProxy.cpp"
+],
+"0x1eb160": [
+"\\Projects\\Paradox\\General\\Proto_platform.cpp"
+],
+"0x1eb350": [
+"\\Projects\\Paradox\\General\\Proto_platform.cpp"
+],
+"0x1ebfa0": [
+"\\Projects\\Paradox\\Tools/ToolManager.h"
+],
+"0x1efd60": [
+"\\Projects\\Tools\\ParadoxME\\PME_Source\\PME_VertexConverter.cpp"
+],
+"0x1efe80": [
+"\\Projects\\Tools\\ParadoxME\\PME_Source\\PME_VertexConverter.cpp"
+],
+"0x1efff0": [
+"\\Projects\\Paradox\\Tools\\ToolIterator.cpp"
+],
+"0x1f2a10": [
+"\\Projects\\Paradox\\pxMapTrig\\pxMtHistory.cpp"
+],
+"0x1f3920": [
+"\\Projects\\Paradox\\pxMapTrig\\pxMtUtil.cpp"
+],
+"0x1f8660": [
+"\\Projects\\Paradox\\Utility\\TextureRegions.cpp"
+],
+"0x22a80": [
+"\\Projects\\Mka\\Source\\Gamecode\\2Player\\VSMode\\VSModeManager.cpp"
+],
+"0x130b40": [
+"c:\\projects\\platform\\common\\renderer\\pfmc_DrawMesh.h"
+],
+"0x13b0e0": [
+"\\Projects\\Xbox\\Renderer\\eng_ShaderManager.cpp"
+],
+"0x13b2f0": [
+"\\Projects\\Xbox\\Renderer\\eng_ShaderManager.cpp"
+],
+"0x149990": [
+"\\Projects\\Platform\\Common\\Renderer\\pfmc_Light.cpp"
+],
+"0x149b70": [
+"\\Projects\\Platform\\Common\\Renderer\\pfmc_Light.cpp"
+],
+"0x873c0": [
+"\\Projects\\Mka\\Source\\Gamecode\\GameDisplay\\MiniMapDisplay.cpp"
+],
+"0x11d000": [
+"\\Projects\\Xbox\\Renderer\\eng_Sprites.cpp"
+],
+"0x17aa40": [
+"\\Projects\\Paradox\\Async_Manager.cpp"
+],
+"0x1b81b0": [
+"\\Projects\\Paradox\\General\\Chunk_Container.cpp"
+],
+"0x1ba490": [
+"\\Projects\\Tools\\ParadoxME\\PME_Source\\MEFile.cpp"
+],
+"0x342d0": [
+"\\Projects\\Utility\\util_sarray.h"
+],
+"0x34490": [
+"\\Projects\\Utility\\util_sarray.h"
+],
+"0x344d0": [
+"\\Projects\\Utility\\util_sarray.h"
+],
+"0x345f0": [
+"\\Projects\\Utility\\util_sarray.h"
+],
+"0x34630": [
+"\\Projects\\Utility\\util_sarray.h"
+],
+"0x34680": [
+"\\Projects\\Utility\\util_sarray.h"
+],
+"0x346d0": [
+"\\Projects\\Utility\\util_sarray.h"
+],
+"0x34720": [
+"\\Projects\\Utility\\util_sarray.h"
+],
+"0x34af0": [
+"\\Projects\\Utility\\util_sarray.h"
+],
+"0x34b70": [
+"\\Projects\\Utility\\util_sarray.h"
+],
+"0x34c10": [
+"\\Projects\\Utility\\util_sarray.h"
+],
+"0x34cb0": [
+"\\Projects\\Utility\\util_sarray.h"
+],
+"0x34d50": [
+"\\Projects\\Utility\\util_sarray.h"
+],
+"0x353f0": [
+"\\Projects\\Utility\\util_sarray.h"
+],
+"0x35960": [
+"\\Projects\\Utility\\util_sarray.h"
+],
+"0x35d80": [
+"\\Projects\\Utility\\util_sarray.h"
+],
+"0x36080": [
+"\\Projects\\Utility\\util_sarray.h"
+],
+"0x361d0": [
+"\\Projects\\Utility\\util_sarray.h"
+],
+"0x3b9a0": [
+"\\Projects\\Utility\\util_sarray.h"
+],
+"0x3ba10": [
+"\\Projects\\Utility\\util_sarray.h"
+],
+"0x3ba50": [
+"\\Projects\\Utility\\util_sarray.h"
+],
+"0x3bf90": [
+"\\Projects\\Utility\\util_sarray.h"
+],
+"0x3c090": [
+"\\Projects\\Utility\\util_sarray.h"
+],
+"0x3d2f0": [
+"\\Projects\\Utility\\util_sarray.h"
+],
+"0x3dcc0": [
+"\\Projects\\Utility\\util_sarray.h"
+],
+"0x3dd00": [
+"\\Projects\\Utility\\util_sarray.h"
+],
+"0x3dd40": [
+"\\Projects\\Utility\\util_sarray.h"
+],
+"0x3ddb0": [
+"\\Projects\\Utility\\util_sarray.h"
+],
+"0x3de30": [
+"\\Projects\\Utility\\util_sarray.h"
+],
+"0x3df20": [
+"\\Projects\\Utility\\util_sarray.h"
+],
+"0x3dfa0": [
+"\\Projects\\Utility\\util_sarray.h"
+],
+"0x3e050": [
+"\\Projects\\Utility\\util_sarray.h"
+],
+"0x3e420": [
+"\\Projects\\Utility\\util_sarray.h"
+],
+"0x3e460": [
+"\\Projects\\Utility\\util_sarray.h"
+],
+"0x3e760": [
+"\\Projects\\Utility\\util_sarray.h"
+],
+"0x3e7e0": [
+"\\Projects\\Utility\\util_sarray.h"
+],
+"0x76010": [
+"\\Projects\\Utility\\util_sarray.h"
+],
+"0x76070": [
+"\\Projects\\Utility\\util_sarray.h"
+],
+"0x760b0": [
+"\\Projects\\Utility\\util_sarray.h"
+],
+"0x760f0": [
+"\\Projects\\Utility\\util_sarray.h"
+],
+"0x76130": [
+"\\Projects\\Utility\\util_sarray.h"
+],
+"0x761a0": [
+"\\Projects\\Utility\\util_sarray.h"
+],
+"0x763e0": [
+"\\Projects\\Utility\\util_sarray.h"
+],
+"0x76540": [
+"\\Projects\\Utility\\util_sarray.h"
+],
+"0xa4dd0": [
+"\\Projects\\Utility\\util_sarray.h"
+],
+"0xa4fe0": [
+"\\Projects\\Utility\\util_sarray.h"
+],
+"0xa7220": [
+"\\Projects\\Utility\\util_sarray.h"
+],
+"0xa7270": [
+"\\Projects\\Utility\\util_sarray.h"
+],
+"0xa7300": [
+"\\Projects\\Utility\\util_sarray.h"
+],
+"0xa7540": [
+"\\Projects\\Utility\\util_sarray.h"
+],
+"0xa75f0": [
+"\\Projects\\Utility\\util_sarray.h"
+],
+"0xa77b0": [
+"\\Projects\\Utility\\util_sarray.h"
+],
+"0xb06a0": [
+"\\Projects\\Utility\\util_sarray.h"
+],
+"0xb2b20": [
+"\\Projects\\Utility\\util_sarray.h"
+],
+"0xba440": [
+"\\Projects\\Utility\\util_sarray.h"
+],
+"0xba5c0": [
+"\\Projects\\Utility\\util_sarray.h"
+],
+"0xbbee0": [
+"\\Projects\\Utility\\util_sarray.h"
+],
+"0xbbf20": [
+"\\Projects\\Utility\\util_sarray.h"
+],
+"0xbc000": [
+"\\Projects\\Utility\\util_sarray.h"
+],
+"0xbc670": [
+"\\Projects\\Utility\\util_sarray.h"
+],
+"0xbc870": [
+"\\Projects\\Utility\\util_sarray.h"
+],
+"0xbd220": [
+"\\Projects\\Utility\\util_sarray.h"
+],
+"0xbdcf0": [
+"\\Projects\\Utility\\util_sarray.h"
+],
+"0xbdd90": [
+"\\Projects\\Utility\\util_sarray.h"
+],
+"0xe0fa0": [
+"\\Projects\\Utility\\util_sarray.h"
+],
+"0xe0fe0": [
+"\\Projects\\Utility\\util_sarray.h"
+],
+"0xe1180": [
+"\\Projects\\Utility\\util_sarray.h"
+],
+"0xe11e0": [
+"\\Projects\\Utility\\util_sarray.h"
+],
+"0xe1560": [
+"\\Projects\\Utility\\util_sarray.h"
+],
+"0x140a50": [
+"\\Projects\\Xbox\\Xb\\xbstoragedevice.cpp"
+],
+"0x16dac0": [
+"\\Projects\\Utility\\util_sarray.h"
+],
+"0x16db30": [
+"\\Projects\\Utility\\util_sarray.h"
+],
+"0x16dbb0": [
+"\\Projects\\Utility\\util_sarray.h"
+],
+"0x16dc00": [
+"\\Projects\\Utility\\util_sarray.h"
+],
+"0x16dda0": [
+"\\Projects\\Utility\\util_sarray.h"
+],
+"0x16de00": [
+"\\Projects\\Utility\\util_sarray.h"
+],
+"0x16de40": [
+"\\Projects\\Utility\\util_sarray.h"
+],
+"0x16e740": [
+"\\Projects\\Utility\\util_sarray.h"
+],
+"0x16e9c0": [
+"\\Projects\\Utility\\util_sarray.h"
+],
+"0x16ea40": [
+"\\Projects\\Utility\\util_sarray.h"
+],
+"0x16f090": [
+"\\Projects\\Utility\\util_sarray.h"
+],
+"0x16f3b0": [
+"\\Projects\\Utility\\util_sarray.h"
+],
+"0x1f2890": [
+"\\Projects\\Utility\\util_sarray.h"
+],
+"0x1f2990": [
+"\\Projects\\Utility\\util_sarray.h"
+],
+"0x1f2ae0": [
+"\\Projects\\Utility\\util_sarray.h"
+],
+"0x1f2ca0": [
+"\\Projects\\Utility\\util_sarray.h"
+],
+"0x1f3130": [
+"\\Projects\\Utility\\util_sarray.h"
+],
+"0x1f35a0": [
+"\\Projects\\Utility\\util_sarray.h"
+],
+"0x1f3b50": [
+"\\Projects\\Utility\\util_sarray.h"
+],
+"0x1f3be0": [
+"\\Projects\\Utility\\util_sarray.h"
+],
+"0x1f3c20": [
+"\\Projects\\Utility\\util_sarray.h"
+],
+"0x1f3cc0": [
+"\\Projects\\Utility\\util_sarray.h"
+],
+"0x1f3db0": [
+"\\Projects\\Utility\\util_sarray.h"
+],
+"0x1f3ec0": [
+"\\Projects\\Utility\\util_sarray.h"
+],
+"0x1f3f10": [
+"\\Projects\\Utility\\util_sarray.h"
+],
+"0x326670": [
+"\\Projects\\Utility\\util_zlib.cpp"
+],
+"0x39dd0": [
+"\\Projects\\Mka\\Source\\Gamecode\\newfx_char.cpp"
+],
+"0x87440": [
+"\\Projects\\Mka\\Source\\Gamecode\\GameDisplay\\MiniMapDisplay.cpp"
+],
+"0x8b160": [
+"\\Projects\\Mka\\Source\\Gamecode\\GameDisplay\\OnScreenDisplay.cpp"
+],
+"0x8b1c0": [
+"\\Projects\\Mka\\Source\\Gamecode\\GameDisplay\\OnScreenDisplay.cpp"
+],
+"0x8b370": [
+"\\Projects\\Mka\\Source\\Gamecode\\GameDisplay\\OnScreenDisplay.cpp"
+],
+"0x9e8f0": [
+"\\Projects\\Mka\\Source\\Gamecode\\GameDisplay\\PauseMenu.cpp"
+],
+"0xa1000": [
+"\\Projects\\Mka\\Source\\Gamecode\\GameDisplay\\SaveGame.cpp"
+],
+"0xbf6f0": [
+"\\Projects\\Mka\\Source\\Gamecode\\Backgrnd.cpp"
+],
+"0xc1360": [
+"\\Projects\\Mka\\Source\\Gamecode\\Gameload.cpp"
+],
+"0xc2b00": [
+"\\Projects\\Mka\\Source\\Gamecode\\Gameload.cpp"
+],
+"0xca5a0": [
+"\\Projects\\Mka\\Source\\Gamecode\\GameMain.cpp"
+],
+"0xcc950": [
+"\\Projects\\Mka\\Source\\Gamecode\\GameMapSetup.cpp"
+],
+"0xd28e0": [
+"\\Projects\\Mka\\Source\\Gamecode\\GameMem.cpp"
+],
+"0x101bc0": [
+"\\Projects\\HavokSDK\\include\\hkbase\\memory\\hkMemory.cpp"
+],
+"0x1061a0": [
+"\\Projects\\Utility\\util_GameMem.cpp"
+],
+"0x109a20": [
+"\\Projects\\Xbox\\Renderer\\BoneDetach.cpp"
+],
+"0x115730": [
+"\\Projects\\Xbox\\Renderer\\eng_TextureManager.cpp"
+],
+"0x115780": [
+"\\Projects\\Xbox\\Renderer\\eng_TextureManager.cpp"
+],
+"0x115ad0": [
+"\\Projects\\Xbox\\Renderer\\eng_TextureManager.cpp"
+],
+"0x115b70": [
+"\\Projects\\Xbox\\Renderer\\eng_TextureManager.cpp"
+],
+"0x115dc0": [
+"\\Projects\\Xbox\\Renderer\\eng_TextureManager.cpp"
+],
+"0x1168e0": [
+"\\Projects\\Xbox\\Renderer\\eng_TextureManager.cpp"
+],
+"0x116b60": [
+"\\Projects\\Xbox\\Renderer\\eng_TextureManager.cpp"
+],
+"0x1176b0": [
+"\\Projects\\Xbox\\Renderer\\eng_TextureManager.cpp"
+],
+"0x128ae0": [
+"\\Projects\\Xbox\\Cri\\Movie.cpp"
+],
+"0x139cb0": [
+"\\Projects\\Xbox\\Renderer\\eng_ShaderDesc.cpp"
+],
+"0x141710": [
+"\\Projects\\Xbox\\Cri\\Music.cpp"
+],
+"0x1436a0": [
+"\\Projects\\Xbox\\Cri\\Sound.cpp"
+],
+"0x143eb0": [
+"\\Projects\\Xbox\\Cri\\File.cpp"
+],
+"0x145630": [
+"\\Projects\\Platform\\Common\\Utility\\pfmc_Water.cpp"
+],
+"0x145df0": [
+"\\Projects\\Platform\\Common\\Utility\\pfmc_Water.cpp"
+],
+"0x148d60": [
+"\\Projects\\Platform\\Common\\Utility\\pfmc_Container.cpp"
+],
+"0x1505b0": [
+"\\Projects\\Paradox\\General\\Sound.cpp"
+],
+"0x1506b0": [
+"\\Projects\\Paradox\\General\\Sound.cpp"
+],
+"0x1612a0": [
+"c:\\projects\\paradox\\physics\\PxObjectCollisionListener.h"
+],
+"0x161320": [
+"c:\\projects\\paradox\\physics\\PxCollisionFilter.h"
+],
+"0x1614c0": [
+"c:\\projects\\paradox\\physics\\PxRigidBody.h"
+],
+"0x161560": [
+"c:\\projects\\paradox\\physics\\PxRigidBody.h"
+],
+"0x1615c0": [
+"c:\\projects\\paradox\\physics\\PxRigidBody.h"
+],
+"0x161700": [
+"c:\\projects\\paradox\\physics\\PxRigidBody.h"
+],
+"0x161980": [
+"c:\\projects\\paradox\\physics\\PxStandardEntityListener.h"
+],
+"0x1619d0": [
+"\\Projects\\Paradox\\Physics/SpareWorld.h"
+],
+"0x161b60": [
+"\\Projects\\Paradox\\Physics\\PxRigidBody.cpp"
+],
+"0x16556e": [
+"c:\\projects\\paradox\\physics\\PxStandardEntityListener.h"
+],
+"0x167bb0": [
+"c:\\projects\\paradox\\physics\\PxObjectCollisionListener.h"
+],
+"0x169380": [
+"\\Projects\\Paradox\\Physics\\PxRigidBody.cpp",
+"c:\\projects\\paradox\\physics\\PxRigidBody.h"
+],
+"0x16aa96": [
+"\\Projects\\Paradox\\Physics\\PxRigidBody.cpp"
+],
+"0x16aff0": [
+"c:\\projects\\paradox\\ai\\Actor.h"
+],
+"0x16c750": [
+"c:\\projects\\paradox\\ai\\Actor.h"
+],
+"0x16f9d0": [
+"\\Projects\\Paradox\\pxMapTrig\\pxMapTrig.cpp"
+],
+"0x1834a0": [
+"\\Projects\\Paradox\\AI\\AIBrain.h"
+],
+"0x183540": [
+"c:\\projects\\paradox\\ai\\AISquad.h"
+],
+"0x1835f0": [
+"c:\\projects\\paradox\\ai\\AICombatBrain.h"
+],
+"0x184220": [
+"c:\\projects\\paradox\\ai\\AICombatBrain.h"
+],
+"0x1842d0": [
+"\\Projects\\Paradox\\AI\\AIBrain.h",
+"\\Projects\\Paradox\\Ai\\AIOverlord.cpp",
+"c:\\projects\\paradox\\ai\\AISquad.h"
+],
+"0x194e80": [
+"\\Projects\\Paradox\\Ai\\PathingService.cpp"
+],
+"0x19bdb0": [
+"\\Projects\\Paradox\\Ai\\AISquad.cpp"
+],
+"0x1a1510": [
+"\\Projects\\Paradox\\General\\SFX_Cntl.cpp"
+],
+"0x1a5480": [
+"\\Projects\\Paradox\\General\\collide.cpp"
+],
+"0x1a6ef0": [
+"\\Projects\\Paradox\\Map\\MapLink.cpp"
+],
+"0x1af4c0": [
+"\\Projects\\Paradox\\General\\GameTasks.cpp"
+],
+"0x1b06b0": [
+"\\Projects\\Paradox\\General\\PhysicsModel.cpp"
+],
+"0x1b0eb0": [
+"\\Projects\\Paradox\\Flash\\AnimMenuMan.cpp"
+],
+"0x1b0f70": [
+"\\Projects\\Paradox\\Flash\\AnimMenuMan.cpp"
+],
+"0x1b5140": [
+"\\Projects\\Paradox\\General\\PxCheats.cpp"
+],
+"0x1b5880": [
+"\\Projects\\Paradox\\Flash\\AnimMenuGUI.cpp"
+],
+"0x1d29a0": [
+"c:\\projects\\paradox\\physics\\PxDynamicRigidBody.h"
+],
+"0x1d8210": [
+"\\Projects\\Paradox\\General\\Tweak.cpp"
+],
+"0x1d88f0": [
+"\\Projects\\Paradox\\General\\Tweak.cpp"
+],
+"0x1d8b00": [
+"\\Projects\\Paradox\\General\\Tweak.cpp"
+],
+"0x1db5d0": [
+"c:\\projects\\paradox\\ai\\Entity.h"
+],
+"0x1db900": [
+"c:\\projects\\paradox\\ai\\Entity.h"
+],
+"0x1dc6b0": [
+"\\Projects\\Paradox\\General\\Proto_GameEvents.cpp"
+],
+"0x1dc7c0": [
+"\\Projects\\Paradox\\General\\Proto_GameEvents.cpp"
+],
+"0x1dc970": [
+"\\Projects\\Paradox\\General\\Proto_GameEvents.cpp"
+],
+"0x1de2a0": [
+"\\Projects\\Paradox\\General\\Proto_GameEvents.cpp"
+],
+"0x1e1480": [
+"\\Projects\\Paradox\\General\\Obj_Proc.cpp"
+],
+"0x1e16d0": [
+"\\Projects\\Paradox\\General\\Obj_Proc.cpp"
+],
+"0x1e1f40": [
+"\\Projects\\Paradox\\General\\Obj_Proc.cpp"
+],
+"0x1e5e20": [
+"\\Projects\\Paradox\\Physics\\Character\\PxCharacterProxy.cpp"
+],
+"0x1eb860": [
+"\\Projects\\Paradox\\VariableLink.cpp"
+],
+"0x1f5de0": [
+"\\Projects\\Paradox\\Map\\MapAnimObject.cpp"
+],
+"0x1f5fc0": [
+"\\Projects\\Paradox\\Map\\MapAnimObject.cpp"
+],
+"0x1f66b0": [
+"\\Projects\\Paradox\\General\\readpairs.cpp"
+],
+"0x2aef70": [
+"\\Projects\\HavokSDK\\include\\hkbase/memory/impl/hkPoolMemory.h"
+],
+"0x2b0970": [
+"\\Projects\\HavokSDK\\include\\hkbase/memory/impl/hkPoolMemory.h"
+],
+"0x46aa0": [
+"\\Projects\\Mka\\Source\\Gamecode\\FrontEnd\\fe_Gallery.cpp"
+],
+"0x46ba0": [
+"\\Projects\\Mka\\Source\\Gamecode\\FrontEnd\\fe_Gallery.cpp"
+],
+"0x4b320": [
+"\\Projects\\Mka\\Source\\Gamecode\\FrontEnd\\fe_MainOptionKotentMenu.cpp"
+],
+"0x9b3b0": [
+"\\Projects\\Mka\\Source\\Gamecode\\GameDisplay\\PauseMenu.cpp"
+],
+"0x9bcd0": [
+"\\Projects\\Mka\\Source\\Gamecode\\GameDisplay\\PauseMenu.cpp"
+],
+"0x9bd20": [
+"\\Projects\\Mka\\Source\\Gamecode\\GameDisplay\\PauseMenu.cpp"
+],
+"0x9cdc0": [
+"\\Projects\\Mka\\Source\\Gamecode\\GameDisplay\\PauseMenu.cpp"
+],
+"0x9da20": [
+"\\Projects\\Mka\\Source\\Gamecode\\GameDisplay\\PauseMenu.cpp"
+],
+"0xa0fb0": [
+"\\Projects\\Mka\\Source\\Gamecode\\GameDisplay\\SaveGame.cpp"
+],
+"0xa10d0": [
+"\\Projects\\Mka\\Source\\Gamecode\\GameDisplay\\SaveGame.cpp"
+],
+"0xa1170": [
+"\\Projects\\Mka\\Source\\Gamecode\\GameDisplay\\SaveGame.cpp"
+],
+"0xa1de0": [
+"\\Projects\\Mka\\Source\\Gamecode\\GameDisplay\\SaveGame.cpp"
+],
+"0xa1fa0": [
+"\\Projects\\Mka\\Source\\Gamecode\\GameDisplay\\SaveGame.cpp"
+],
+"0xa2260": [
+"\\Projects\\Mka\\Source\\Gamecode\\GameDisplay\\SaveGame.cpp"
+],
+"0xc1450": [
+"\\Projects\\Mka\\Source\\Gamecode\\Gameload.cpp"
+],
+"0xc1550": [
+"\\Projects\\Mka\\Source\\Gamecode\\Gameload.cpp"
+],
+"0xc1690": [
+"\\Projects\\Mka\\Source\\Gamecode\\Gameload.cpp"
+],
+"0xc1a80": [
+"\\Projects\\Mka\\Source\\Gamecode\\Gameload.cpp"
+],
+"0xc1bf0": [
+"\\Projects\\Mka\\Source\\Gamecode\\Gameload.cpp"
+],
+"0xc1f20": [
+"\\Projects\\Mka\\Source\\Gamecode\\Gameload.cpp"
+],
+"0xc2000": [
+"\\Projects\\Mka\\Source\\Gamecode\\Gameload.cpp"
+],
+"0xc2100": [
+"\\Projects\\Mka\\Source\\Gamecode\\Gameload.cpp"
+],
+"0xc2150": [
+"\\Projects\\Mka\\Source\\Gamecode\\Gameload.cpp"
+],
+"0xc2940": [
+"\\Projects\\Mka\\Source\\Gamecode\\Gameload.cpp"
+],
+"0xc38d0": [
+"\\Projects\\Mka\\Source\\Gamecode\\Gameload.cpp"
+],
+"0xc3a20": [
+"\\Projects\\Mka\\Source\\Gamecode\\Gameload.cpp"
+],
+"0xcf6f0": [
+"\\Projects\\Mka\\Source\\Gamecode\\GameMapSetup.cpp"
+],
+"0x117b10": [
+"\\Projects\\Xbox\\Renderer\\eng_TextureManager.cpp"
+],
+"0x11d9c0": [
+"\\Projects\\Xbox\\FileIODrv\\FileIODrv.cpp"
+],
+"0x128c40": [
+"\\Projects\\Xbox\\Cri\\Movie.cpp"
+],
+"0x13d640": [
+"\\Projects\\Xbox\\Renderer\\eng_DrawUnit.cpp"
+],
+"0x13e1c0": [
+"\\Projects\\Xbox\\Renderer\\Effects\\trail_system_platform.cpp"
+],
+"0x150860": [
+"\\Projects\\Paradox\\General\\Sound.cpp"
+],
+"0x150b40": [
+"\\Projects\\Paradox\\General\\Sound.cpp"
+],
+"0x1612d0": [
+"c:\\projects\\paradox\\physics\\PxObjectCollisionListener.h"
+],
+"0x161350": [
+"c:\\projects\\paradox\\physics\\PxCollisionFilter.h"
+],
+"0x1614f0": [
+"c:\\projects\\paradox\\physics\\PxRigidBody.h"
+],
+"0x161590": [
+"c:\\projects\\paradox\\physics\\PxRigidBody.h"
+],
+"0x1615f0": [
+"c:\\projects\\paradox\\physics\\PxRigidBody.h"
+],
+"0x1616d0": [
+"c:\\projects\\paradox\\physics\\PxRigidBody.h"
+],
+"0x161730": [
+"c:\\projects\\paradox\\physics\\PxRigidBody.h"
+],
+"0x161a00": [
+"\\Projects\\Paradox\\Physics/SpareWorld.h"
+],
+"0x161b90": [
+"\\Projects\\Paradox\\Physics\\PxRigidBody.cpp"
+],
+"0x162010": [
+"\\Projects\\Paradox\\Physics\\PxRigidBody.cpp",
+"c:\\projects\\paradox\\physics\\PxRigidBody.h"
+],
+"0x163bc0": [
+"c:\\projects\\paradox\\physics\\PxObjectCollisionListener.h"
+],
+"0x163dd0": [
+"\\Projects\\Paradox\\Physics/SpareWorld.h"
+],
+"0x163f70": [
+"\\Projects\\Paradox\\Physics\\PxRigidBody.cpp"
+],
+"0x1640e0": [
+"c:\\projects\\paradox\\physics\\PxStandardEntityListener.h"
+],
+"0x165460": [
+"c:\\projects\\paradox\\physics\\PxCollisionFilter.h"
+],
+"0x166e60": [
+"c:\\projects\\paradox\\physics\\PxRigidBody.h"
+],
+"0x1673b0": [
+"c:\\projects\\paradox\\physics\\PxRigidBody.h"
+],
+"0x1674a0": [
+"c:\\projects\\paradox\\physics\\PxRigidBody.h"
+],
+"0x16af80": [
+"\\Projects\\Paradox\\AI\\Entity.h"
+],
+"0x16afc0": [
+"c:\\projects\\paradox\\ai\\Actor.h"
+],
+"0x16b020": [
+"c:\\projects\\paradox\\ai\\Actor.h"
+],
+"0x16b120": [
+"\\Projects\\Paradox\\Ai\\ActorManager.cpp"
+],
+"0x16c260": [
+"c:\\projects\\paradox\\ai\\Actor.h"
+],
+"0x183430": [
+"\\Projects\\Paradox\\AI\\AINode.h"
+],
+"0x183470": [
+"\\Projects\\Paradox\\AI\\AIBrain.h"
+],
+"0x1834d0": [
+"\\Projects\\Paradox\\AI\\AIBrain.h"
+],
+"0x183510": [
+"c:\\projects\\paradox\\ai\\AISquad.h"
+],
+"0x183570": [
+"c:\\projects\\paradox\\ai\\AISquad.h"
+],
+"0x1835c0": [
+"c:\\projects\\paradox\\ai\\AICombatBrain.h"
+],
+"0x183620": [
+"c:\\projects\\paradox\\ai\\AICombatBrain.h"
+],
+"0x1836e0": [
+"\\Projects\\Paradox\\Ai\\AIOverlord.cpp"
+],
+"0x1839d0": [
+"c:\\projects\\paradox\\ai\\AICombatBrain.h"
+],
+"0x183a50": [
+"c:\\projects\\paradox\\ai\\AISquad.h"
+],
+"0x183ad0": [
+"\\Projects\\Paradox\\AI\\AIBrain.h"
+],
+"0x1927e0": [
+"\\Projects\\Paradox\\Ai\\PathingService.cpp"
+],
+"0x194240": [
+"\\Projects\\Paradox\\Ai\\PathingService.cpp"
+],
+"0x19bca0": [
+"\\Projects\\Paradox\\Ai\\AISquad.cpp"
+],
+"0x19c7d0": [
+"c:\\projects\\paradox\\ai\\AISquad.h"
+],
+"0x1a7600": [
+"\\Projects\\Paradox\\Anim\\pxAnimStream.cpp"
+],
+"0x1adea0": [
+"\\Projects\\Paradox\\Effects\\particles.cpp"
+],
+"0x1b15b0": [
+"\\Projects\\Paradox\\Flash\\AnimMenuMan.cpp"
+],
+"0x1b22f0": [
+"\\Projects\\Paradox\\Flash\\Anim2DManager.cpp"
+],
+"0x1b6980": [
+"\\Projects\\Paradox\\General\\PanelLoad.cpp"
+],
+"0x1d29d0": [
+"c:\\projects\\paradox\\physics\\PxDynamicRigidBody.h"
+],
+"0x1d2c40": [
+"c:\\projects\\paradox\\physics\\PxDynamicRigidBody.h"
+],
+"0x1d2c90": [
+"c:\\projects\\paradox\\physics\\PxDynamicRigidBody.h"
+],
+"0x1d2db0": [
+"c:\\projects\\paradox\\physics\\PxDynamicRigidBody.h"
+],
+"0x1d3030": [
+"c:\\projects\\paradox\\physics\\PxDynamicRigidBody.h"
+],
+"0x1d8df0": [
+"\\Projects\\Paradox\\Effects\\ParticleDefs.cpp"
+],
+"0x1d9040": [
+"c:\\projects\\paradox\\utility\\TextureWriter.h"
+],
+"0x1d9860": [
+"c:\\projects\\paradox\\utility\\TextureWriter.h"
+],
+"0x1da670": [
+"\\Projects\\Paradox\\Anim\\pxAnimMesh.cpp"
+],
+"0x1db5a0": [
+"c:\\projects\\paradox\\ai\\Entity.h"
+],
+"0x1db600": [
+"c:\\projects\\paradox\\ai\\Entity.h"
+],
+"0x1db630": [
+"\\Projects\\Paradox\\Ai\\EntityManager.cpp",
+"c:\\projects\\paradox\\ai\\Entity.h"
+],
+"0x1dc040": [
+"\\Projects\\Paradox\\General\\map_object_triggers.cpp"
+],
+"0x1e56d0": [
+"\\Projects\\Paradox\\IMaterial\\IMaterial.cpp"
+],
+"0x1e5e50": [
+"\\Projects\\Paradox\\Physics\\Character\\PxCharacterProxy.cpp"
+],
+"0x2aeec0": [
+"\\Projects\\HavokSDK\\include\\hkbase/memory/hkMemory.h"
+],
+"0x2aefa0": [
+"\\Projects\\HavokSDK\\include\\hkbase/memory/impl/hkPoolMemory.h"
+],
+"0x2afa70": [
+"\\Projects\\HavokSDK\\include\\hkbase/memory/impl/hkPoolMemory.h"
+],
+"0x3c4cd0": [
+"\\Projects\\Paradox\\Ai\\PathingService.cpp"
+],
+"0x3c4d40": [
+"c:\\projects\\paradox\\utility\\TextureWriter.h"
+],
+"0x3c4d90": [
+"\\Projects\\Paradox\\Ai\\EntityManager.cpp"
+],
+"0x2023b0": [
+".\\world\\hkWorld.cpp"
+],
+"0x2aecd0": [
+"\\Projects\\HavokSDK\\include\\hkbase\\error\\hkError.cpp"
+],
+"0x2aed50": [
+"\\Projects\\HavokSDK\\include\\hkbase\\error\\hkError.cpp"
+]
+}
+}
