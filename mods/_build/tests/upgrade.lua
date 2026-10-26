@@ -72,13 +72,23 @@ local function node(kind, name, parent, n)
     return p
 end
 local function child(parent, i, c) H.w32(parent + 0x30 + i * 4, c) end
-local root = node(3, 0, nil, 5)
+local root = node(3, 0, nil, 6)
 local basic = node(2, 402, root, 3)
 local combos = node(1, 463, root, 2)
 local skill = node(1, 464, root, 4)
 local team = node(1, 465, root, 2)
 local fatal = node(1, 400, root, 3)
+-- Specials: the X button's group with its four moves (description, video)
+local specials = node(2, 461, root, 1)
+local xgroup = node(1, 466, specials, 4); child(specials, 0, xgroup)
+local move = {}
+for j = 1, 4 do
+    move[j] = node(0, 1530 + j, xgroup, 0); child(xgroup, j - 1, move[j])
+    H.w32(move[j] + 0x1C, 1500 + j); H.w32(move[j] + 0x20, 0x1000 + j); H.w32(move[j] + 0x24, 0)
+end
 child(root, 0, basic); child(root, 1, combos); child(root, 2, skill); child(root, 3, team); child(root, 4, fatal)
+child(root, 5, specials)
+for slot, level in ipairs({ 4, 3, 4, 5 }) do H.w8(MGR + 0x1C4 + slot - 1, level) end   -- Liu Kang's R2 tiers
 local group, rows = {}, {}
 for j = 1, 3 do
     group[j] = node(1, 402 + j, basic, 4); child(basic, j - 1, group[j])
@@ -170,13 +180,16 @@ assert(H.r32(group[3] + 0x0C) == 1, "weapon rows with none in the area: " .. H.r
 assert(text(H.r32(rows[3][1] + 0x18)) == "None here       " and H.r32(rows[3][1] + 0x28) == 0, "none-here row")
 -- Skill became the EX store: four rows, none owned (no flags yet)
 assert(H.r32(skill + 0x18) == 614 and text(614) == "EX Moves", "ex store")
-assert(text(H.r32(skill + 0x1C)) == "Hold L2 with a special for its EX version.", "ex store desc")
+assert(text(H.r32(skill + 0x1C)) == "L2 for EX versions of your specials.", "ex store desc")
 -- (rows carry the tier: Liu Kang's * ~ | ^ top out at 4 4 3 5; tier 1 costs 5000)
 for k, label in ipairs({ "EX * 0/4  ", "EX ~ 0/4  ", "EX | 0/3  ", "EX ^ 0/5  " }) do
     assert(text(H.r32(ex[k] + 0x18)) == label and H.r32(ex[k] + 0x28) == 5000
         and H.r32(ex[k] + 0x2C) == 0, "ex row " .. k .. ": " .. text(H.r32(ex[k] + 0x18)))
 end
-assert(text(H.r32(ex[1] + 0x1C)) == "L2 + *: EX at your tier.\nCosts extra stamina.", "ex row desc")
+-- the X row shows its next move (Special 1): that row's description and video
+assert(H.r32(ex[1] + 0x1C) == 1501 and H.r32(ex[1] + 0x20) == 0x1001, "ex row not showing Special 1")
+-- (no Specials group for ~: our own description)
+assert(text(H.r32(ex[2] + 0x1C)) == "L2 + ~: EX at your tier.\nCosts extra stamina.", "ex row fallback desc")
 assert(H.r32(team + 0x18) == 465 and H.r32(gear[1] + 0x18) == 1022 and H.r32(gear[1] + 0x2C) == 1,
     "team touched")
 assert(H.r32(combo_leaf[0] + 0x18) == 920, "combos touched")
@@ -593,6 +606,13 @@ H.invoke(m, SYNC, {}, nil); for _ = 1, 3 do ask(CAN, combo_leaf[0], 1) end
 assert(text(H.r32(ex[2] + 0x18)) == "EX ~ 1/4  " and H.r32(ex[2] + 0x28) == 10000, "tier 2 row")
 xp(10000)
 assert(ask(CAN, ex[2], 0) == 1, "tier 2 not for sale")
+H.w8(MGR + 0x1C4 + 2, 1)                       -- ~ owned only up to move 1 on R2:
+assert(ask(CAN, ex[2], 0) == 0, "EX of a move not owned on R2 for sale")   -- move 2's EX waits
+H.w8(MGR + 0x1C4 + 2, 4)
+H.w8(MGR + 0x1C4 + 19, 1)                      -- X: Special 1 is EX, the row shows Special 2
+H.invoke(m, SYNC, {}, nil); for _ = 1, 3 do ask(CAN, combo_leaf[0], 1) end
+assert(H.r32(ex[1] + 0x1C) == 1502 and H.r32(ex[1] + 0x20) == 0x1002, "X row not showing Special 2")
+H.w8(MGR + 0x1C4 + 19, 0)
 H.w8(MGR + 0x1C4 + 21, 4)                      -- ~ at its top: owned, not for sale
 H.invoke(m, SYNC, {}, nil); for _ = 1, 3 do ask(CAN, combo_leaf[0], 1) end
 assert(H.r32(ex[2] + 0x2C) == 1 and ask(CAN, ex[2], 0) == 0, "maxed ex row for sale")
@@ -626,7 +646,8 @@ H.w32(0x5CE878, 1000); H.wf32(NOW0, 100)
 -- L2 + X (* owned): the game sees R2 + X, the special is EX
 local lt, rt = pad(0, { [LT] = 0xFF, [X] = 0xFF })
 assert(lt == 0 and rt == 0xFF, "L2 + X not turned into R2 + X")
-assert(level(0, 0, 2) == 4 and stam() == 100, "EX special not at its top tier, or charged at the pick")
+assert(level(0, 0, 4) == 4 and stam() == 100, "EX move not picked, or charged at the pick")
+assert(level(0, 0, 2) == 2, "EX above the player's own (R2) tier")
 spend(0)
 assert(stam() == 75, "EX stamina not charged: " .. stam())
 spend(0)
@@ -683,11 +704,11 @@ H.w32(0x5CE878, 2000)
 assert(level(0, 0, 2) == 2, "a plain special boosted")
 pad(0, { [LT] = 0xFF, [Y] = 0xFF })            -- Y is ~ (slot 2), owned
 assert(level(0, 2, 1, 0x9D650) == 1, "boosted for the menu")
-assert(level(0, 2, 1) == 4, "~ not boosted to its top tier 4")
+assert(level(0, 2, 4) == 4 and level(0, 2, 1) == 1, "~ EX not limited to the R2 tier")
 assert(level(0, 2, 4) == 4, "a maxed special changed")
 H.w8(MGR + 0x1C4 + 21, 2)                      -- EX ~ tier 2: the tier-2 variant, whatever R2 owns
 pad(0, {}); pad(0, { [LT] = 0xFF, [Y] = 0xFF })
-assert(level(0, 2, 4) == 2 and level(0, 2, 1) == 2, "EX tier 2 not reported as 2")
+assert(level(0, 2, 4) == 2 and level(0, 2, 1) == 1, "EX tier 2 not the lower of 2 and the R2 tier")
 H.w8(MGR + 0x1C4 + 21, 4)
 spend(0)
 assert(stam() == 75, "EX on ~ not charged")
@@ -709,7 +730,7 @@ H.w8(SHOP0, 0x81)
 -- player 2 (Kung Lao, port 1): his own flags, top tiers and stamina
 H.w32(MGR + 0xCC + 4, 1); H.w8(MGR + 0x1C4 + 0x1C + 21, 3); H.wf32(NOW0 + 0x24, 100)
 lt, rt = pad(1, { [LT] = 0xFF, [Y] = 0xFF })
-assert(rt == 0xFF and level(1, 2, 1) == 3, "KL ~ EX")
+assert(rt == 0xFF and level(1, 2, 5) == 3, "KL ~ EX not capped at his top tier 3")
 spend(1)
 assert(stam(1) == 80, "player 2's charge (Stamina +1: 20): " .. stam(1))
 pad(1, {})

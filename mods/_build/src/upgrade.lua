@@ -1,4 +1,4 @@
--- Extended Upgrades 0.8.3: XP shop, Health, Stamina, weapons, EX moves and fatality inputs.
+-- Extended Upgrades 0.8.4: XP shop, Health, Stamina, weapons, EX moves and fatality inputs.
 --
 -- Turns pause-menu Moves categories into the XP shop. Nothing new is added
 -- to the menu; existing rows get new text, costs and behaviour, and
@@ -12,10 +12,11 @@
 --   * Fatalities: a row not discovered yet (its input shows as ???) can be
 --     bought, which reveals the input. Every fatality works without being
 --     discovered; this sells the knowledge, not the move.
---   * Skill -> EX Moves: one row per special button (* ~ | ^), bought tier by
---     tier like the special itself (as many tiers as it has). With a tier
---     bought, L2 + that attack button (no R2) does the special as an EX at
---     that tier, for extra stamina (the blue bar; the red
+--   * Skill -> EX Moves: one row per special button (* ~ | ^). Each purchase
+--     makes the next of that button's moves (Special 1, 2, ...) an EX move,
+--     once you own that move on R2; the row shows that move's own input,
+--     name and video. L2 + its input (no R2) does the move as an EX, for
+--     extra stamina (the blue bar; the red
 --     orbs stay the fatality meter). L2 + a button without EX stays vanilla
 --     (block), and L2 + R2 + a button stays free.
 -- Team keeps its vanilla rows (a failing callback switches the whole script off,
@@ -114,7 +115,8 @@
 --     its whole input chain (a tier-4 fireball is R2 + X, X, X; between the
 --     presses plain L2 would be block). Pressing it marks an
 --     EX: for that special the evaluator, and only it (by return address),
---     gets the EX tier (never above the top tier), and its stamina extra comes off when the
+--     gets the lower of the EX tier and the player's own (R2) tier, so L2
+--     does exactly the moves owned on both, and its stamina extra comes off when the
 --     special spends its own (script command 0x1F1 -> wrapper thunk
 --     0x1406B, once per move), scaled like every cost.
 --     Never above the top tier: slot 3 has a hidden ==6 variant.
@@ -210,6 +212,7 @@ local POPUP_FLAG    = 0x004EE890    -- byte: show the "new abilities" popup (pur
 local POPUP_TEXT    = 407           -- that popup's text
 local MAP           = 0x00505970    -- the current map (area) number
 local SKILL_TEXT    = 464           -- "Skill" category: becomes EX Moves
+local SPECIALS_TEXT = 461           -- "Specials": a group per button, a row per move
 local EX_FLAG       = 19            -- EX tiers: level slots 19-22, one per game slot
 local EX_PRICES     = { 5000, 10000, 15000, 20000, 25000 }  -- EX tier 1-5 (placeholders)
 local EX_LABEL      = 10            -- row names ("EX * 2/4") padded to this, like weapon names
@@ -265,7 +268,7 @@ local LANGUAGES = {
                  "Weapons for sale here:\nUpgrades > Weapons." },
       weapons = { kama01 = "Kamas", sword = "Sword", broadsword = "Broadsword", axe = "Axe",
                   hooksword01 = "Hook swords", shard = "Shard", shard1h = "Shard" },
-      ex = { "EX Moves", "Hold L2 with a special for its EX version.", "L2 + %s: EX at your tier.\nCosts extra stamina." } },
+      ex = { "EX Moves", "L2 for EX versions of your specials.", "L2 + %s: EX at your tier.\nCosts extra stamina." } },
     { tag = "Mejo", category = { "Mejoras", "Gasta EXP en salud y energ\237a." },
       health = { "Salud", "Salud +%d", "Vida m\225xima +%d,\nadem\225s de la del juego.",
                  "Salud extra, adem\225s de la del juego." },
@@ -276,7 +279,7 @@ local LANGUAGES = {
                  "Armas a la venta aqu\237:\nMejoras > Armas." },
       weapons = { kama01 = "Kamas", sword = "Espada", broadsword = "Mandoble", axe = "Hacha",
                   hooksword01 = "Espadas gancho", shard = "Fragmento", shard1h = "Fragmento" },
-      ex = { "Movimientos EX", "Mant\233n L2 + especial para la versi\243n EX.", "L2 + %s: EX de tu nivel.\nGasta m\225s energ\237a." } },
+      ex = { "Movimientos EX", "L2: versiones EX de tus especiales.", "L2 + %s: EX de tu nivel.\nGasta m\225s energ\237a." } },
     { tag = "Verb", category = { "Verbesserungen", "EXP f\252r Leben und Ausdauer ausgeben." },
       health = { "Leben", "Leben +%d", "Max. Leben +%d,\nzus\228tzlich zum Spiel.",
                  "Mehr Leben, zus\228tzlich zum Spiel." },
@@ -287,7 +290,7 @@ local LANGUAGES = {
                  "Hier gibt es Waffen:\nVerbesserungen > Waffen." },
       weapons = { kama01 = "Kamas", sword = "Schwert", broadsword = "Breitschwert", axe = "Axt",
                   hooksword01 = "Hakenschwerter", shard = "Splitter", shard1h = "Splitter" },
-      ex = { "EX-Angriffe", "Halte L2 + Spezial f\252r die EX-Version.", "L2 + %s: EX, deine Stufe.\nMehr Ausdauer." } },
+      ex = { "EX-Angriffe", "L2: EX-Versionen deiner Spezialz\252ge.", "L2 + %s: EX, deine Stufe.\nMehr Ausdauer." } },
     { tag = "Pote", category = { "Potenziamenti", "Spendi EXP per salute ed energia." },
       health = { "Salute", "Salute +%d", "Salute max +%d,\noltre a quella del gioco.",
                  "Salute extra oltre a quella del gioco." },
@@ -298,7 +301,7 @@ local LANGUAGES = {
                  "Armi in vendita qui:\nPotenziamenti > Armi." },
       weapons = { kama01 = "Kama", sword = "Spada", broadsword = "Spadone", axe = "Ascia",
                   hooksword01 = "Spade uncinate", shard = "Frammento", shard1h = "Frammento" },
-      ex = { "Mosse EX", "Tieni L2 + speciale per la versione EX.", "L2 + %s: EX del tuo livello.\nPi\249 energia." } },
+      ex = { "Mosse EX", "L2: versioni EX dei tuoi speciali.", "L2 + %s: EX del tuo livello.\nPi\249 energia." } },
     { tag = "Am\233l", category = { "Am\233liorations", "D\233pensez l'EXP en sant\233 et endurance." },
       health = { "Sant\233", "Sant\233 +%d", "Sant\233 max +%d,\nen plus de celle du jeu.",
                  "Sant\233 en plus de celle du jeu." },
@@ -309,7 +312,7 @@ local LANGUAGES = {
                  "Armes \224 vendre ici :\nAm\233liorations > Armes." },
       weapons = { kama01 = "Kamas", sword = "\201p\233e", broadsword = "Claymore", axe = "Hache",
                   hooksword01 = "\201p\233es crochets", shard = "\201clat", shard1h = "\201clat" },
-      ex = { "Coups EX", "Maintenez L2 + sp\233cial pour la version EX.", "L2 + %s : EX \224 ton niveau.\nPlus d'endurance." } },
+      ex = { "Coups EX", "L2 : versions EX de tes sp\233ciaux.", "L2 + %s : EX \224 ton niveau.\nPlus d'endurance." } },
 }
 
 -- Each shop group takes over one Basic Moves group (source = its vanilla
@@ -829,6 +832,28 @@ local function ex_nodes(root)
     return nil
 end
 
+-- The vanilla Specials row of button k's move j (both 1-based, menu order),
+-- or nil.
+local function special_row(root, k, j)
+    local n, kids = game.read_u32(root + 0x0C), game.read_u32(root + 0x14)
+    if n > 16 or not plausible(kids) then return nil end
+    for i = 0, n - 1 do
+        local c = game.read_u32(kids + i * 4)
+        if plausible(c) and game.read_u32(c + 0x18) == SPECIALS_TEXT then
+            local groups, list = game.read_u32(c + 0x0C), game.read_u32(c + 0x14)
+            if k > groups or not plausible(list) then return nil end
+            local g = game.read_u32(list + (k - 1) * 4)
+            if not plausible(g) then return nil end
+            local rows, leaves = game.read_u32(g + 0x0C), game.read_u32(g + 0x14)
+            if j < 1 or j > rows or not plausible(leaves) then return nil end
+            local leaf = game.read_u32(leaves + (j - 1) * 4)
+            if plausible(leaf) and game.read_u32(leaf + 4) == 0 then return leaf end
+            return nil
+        end
+    end
+    return nil
+end
+
 -- The flag byte an EX row tracks: the menu player's, for its button.
 local function flag_addr(m, k)
     local player = menu_player()
@@ -916,10 +941,16 @@ local function patch_root(m, root)
         local kids = game.read_u32(ec + 0x14)
         for k, row in ipairs(EX_STORE.rows) do
             local node, t, top = game.read_u32(kids + (k - 1) * 4), ex_tier(m, k)
-            if plausible(node) and t and not (patch(node + 0x18, row.name) and patch(node + 0x1C, row.desc)
+            local move = t and special_row(root, k, t < top and t + 1 or top)
+            local desc = move and game.read_u32(move + 0x1C) or row.desc
+            if plausible(node) and t and not (patch(node + 0x18, row.name) and patch(node + 0x1C, desc)
                     and patch(node + 0x28, EX_PRICES[t < top and t + 1 or top])
                     and patch(node + 0x2C, t >= top and 1 or 0)) then
                 return false
+            end
+            if plausible(node) and move and not (patch(node + 0x20, game.read_u32(move + 0x20))
+                    and patch(node + 0x24, game.read_u32(move + 0x24))) then
+                return false                        -- (its video, for the preview)
             end
         end
     end
@@ -989,7 +1020,8 @@ local function can_buy(node, kind, store, k)
     elseif kind == "weapon" then
         if not weapon_free(k) then return false end
     elseif kind == "ex" then
-        -- (the next tier: checked with the cost above)
+        -- the next move's EX, once that move is owned on R2 (the move code's slot)
+        if game.read_u8(m + LEVELS + player * 0x1C + EX_LEAF_SLOT[k]) <= ex_tier(m, k) then return false end
     elseif shop_level(m, player, store.kind) ~= k - 1 then
         return false
     end
@@ -1133,8 +1165,10 @@ local function boost_level(ctx)
     if m == nil or game.read_u8(DEMO) == 1 then return end
     local t = game.read_u8(m + LEVELS + player * 0x1C + EX_FLAG + slot)
     if t == 0 then return end
-    local top = TOP_TIER[char_of(m, player)][slot + 1]
-    ctx.eax = (ctx.eax & 0xFFFFFF00) | (t < top and t or top)
+    local top, own = TOP_TIER[char_of(m, player)][slot + 1], ctx.eax & 0xFF
+    local level = t < top and t or top
+    if own < level then level = own end         -- only moves owned on R2 too
+    ctx.eax = (ctx.eax & 0xFFFFFF00) | level
 end
 
 -- Before a port's pad becomes action bits: L2 (without R2) + an attack

@@ -1,4 +1,4 @@
-# Extended Upgrades: XP Shop 0.8.3 (preview, experimental)
+# Extended Upgrades: XP Shop 0.8.4 (preview, experimental)
 
 The XP shop spends XP in the game's own upgrade menu, on the game's own menu
 entries. Nothing new is added to the menu, and everything it sells comes **on
@@ -15,7 +15,7 @@ other category, Team included, is unchanged.
 | Upgrades > Health | Health +1 to +4 | 5,000 / 10,000 / 15,000 / 20,000 XP | 1 / 2 / 4 / 8 health-upgrade steps (+100 / +200 / +400 / +800 max health in solo), above the game's own 4 |
 | Upgrades > Stamina | Stamina +1 to +4 | 5,000 / 10,000 / 15,000 / 20,000 XP | everything that spends the blue bar costs less: it plays as 125 / 150 / 200 / 300% |
 | Upgrades > Weapons | one row per weapon lying in the current area | 2,000 XP per summon | the weapon appears beside you at full durability |
-| EX Moves | EX * / ~ / \| / ^, tier by tier (as many tiers as the special has) | 5,000 / 10,000 / 15,000 / 20,000 / 25,000 XP per tier | L2 + that attack button (no R2): the special at your EX tier, for extra stamina |
+| EX Moves | EX * / ~ / \| / ^, one move at a time (Special 1, 2, ...) | 5,000 / 10,000 / 15,000 / 20,000 / 25,000 XP per move | L2 + that move's input (no R2): the move as an EX, for extra stamina |
 | Fatalities | any row still showing ??? | 5,000 XP each | reveals that fatality's input and video |
 
 - **Buying:** pick the next row and confirm in the usual Upgrade dialog. Health
@@ -33,9 +33,10 @@ other category, Team included, is unchanged.
   here". The game's own respawn does the moving, so a weapon the area never
   had can't be summoned (yet).
 - **EX Moves** (experimental): with a button's EX bought, **L2 + that attack
-  button** (X, Y or B; no R2) does the special as an EX, at the EX tier you
-  bought for it. EX tiers are bought separately from the special's own
-  (R2) tiers, one at a time; the row shows your tier, e.g. "EX * 2/4".
+  button** (X, Y or B; no R2) does the special as an EX. Each of a button's
+  moves (Special 1, 2, ...) gets its EX separately, in order, once you own
+  that move on R2; the row shows how many are EX ("EX * 2/4") and the next
+  move's own input, name and video. L2 only does moves you own both ways.
   Keep L2 held for the whole input: L2 + X, X, X does what R2 + X, X, X does
   (while L2 stays held after an EX press it counts as R2, not block). It costs extra stamina (a
   quarter of the blue bar, less with Stamina upgrades), once per move;
@@ -78,6 +79,9 @@ Combo extenders, in a menu entry that already exists. The reverse-engineering is
 
 ## Changelog
 
+- **0.8.4:** EX is bought per move: each purchase makes the next of that
+  button's moves EX, once you own it on R2, and the row shows that move.
+  L2 never does a move you don't own on R2.
 - **0.8.3:** L2 keeps counting as R2 until you let go, so EX input chains
   (X, X, X) go through instead of turning into a block between presses.
 - **0.8.2:** EX moves come in tiers like the specials themselves (EX * has
