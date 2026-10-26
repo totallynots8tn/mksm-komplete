@@ -63,3 +63,9 @@ analysis/ShaolinMonks-Android/
 # --- Personal drafts kept off the public repo ---
 MKSMK-overview.pdf
 donate.html
+
+# --- Marketing drafts and screenshots (local working files) ---
+release/marketing/
+
+# Ghidra decompiler output
+tools/ghidra/out/

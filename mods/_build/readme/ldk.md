@@ -1,4 +1,4 @@
-# Legendary Dark Knight Mode 3.9.2 (x2 / x3 / x4, with Boss Invasion)
+# Legendary Dark Knight Mode 3.10.0 (x2 / x3 / x4, with Boss Invasion)
 
 Doubles every multi-enemy spawn group (up to 12 per group). The extra enemies
 arrive as reinforcements. Sometimes the last one is one of the level's bosses
@@ -6,6 +6,20 @@ or elites. **Boss Invasion is now part of this mod.** Remove the separate
 "Boss Invasion" mod.
 
 
+
+## 3.10: the v1 memory fixes, in the dev line
+
+Two fixes from the v1 patches are now in this build too:
+
+- **Memory reuse counted per heap (v1 patch 2).** When an enemy type stays
+  loaded from one map to the next (Goro's Lair keeps its type across maps
+  98-100), its dead enemies' memory is reused, and the spawn guard now counts
+  that across the maps. Before, the count started over on each map. The guard
+  then cancelled the fatality room's respawning wave, which emptied the room,
+  so the gate never opened. In the Goro's Lair simulation every enemy now
+  spawns, 180 of 180, where the previous build spawned 60.
+- **Reptile counts as a boss (v1 patch 4).** The story Reptile (map 144) is
+  authored across three waves, so he was being cloned like a common enemy.
 
 ## 3.2: works in memory-tight areas
 

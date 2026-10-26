@@ -292,6 +292,7 @@ end
 -- Slot heaps only shrink until the area reloads, so free memory going back up
 -- is a reliable reload signal even when the level-load hook does not fire.
 local last_free = {}
+local heap_kind = {}
 
 local function memory_reloaded()
     local table_ptr, count = slot_table()
@@ -301,13 +302,19 @@ local function memory_reloaded()
     local grew = false
     for slot = 0, count - 1 do
         local heap = game.read_u32(table_ptr + slot * SLOT_STRIDE)
+        local kind = game.read_u32(table_ptr + slot * SLOT_STRIDE + SLOT_TYPE)
         if heap < 0x80 then
             local free = heap_space(heap)
             if free then
                 if last_free[heap] and free > last_free[heap] + 0x10000 then
                     grew = true
+                    allocs[kind] = 0             -- rebuilt: no instances to recycle
                 end
                 last_free[heap] = free
+            end
+            if heap_kind[heap] ~= kind then
+                heap_kind[heap] = kind
+                allocs[kind] = 0                 -- a new type took this heap
             end
         end
     end
@@ -320,7 +327,13 @@ local snapshot = nil
 -- Recycling evidence, session-wide (it's how the engine works, not a property
 -- of one area): a spawn that succeeded without taking memory from its type's
 -- heap reused a dead enemy's instance. Until one is seen, the spawn guard
--- only trusts fresh memory.
+-- only trusts fresh memory. v1 patch 2 (2026-10-24, ported to the dev line
+-- 2026-10-25): instances are counted per heap lifetime, not per map: a type
+-- that stays loaded across maps keeps its heap and instances (Goro's Lair,
+-- type 0xF), and memory_reloaded() resets a heap's count when the heap is
+-- rebuilt or another type takes it. Costs stay session-wide, so the guard is
+-- never blind (patch 1 reset them per map and the Kitana fight crashed on a
+-- spawn with no memory for its model).
 local recycling_seen = false
 local pending_entry = nil
 
@@ -572,6 +585,9 @@ local MK_BOSSES = {
     [66] = true,               -- Ermac
     [67] = true,               -- Sub-Zero
     [68] = true,               -- Smoke
+    [59] = true,               -- Reptile, story fight (map 144): authored in three
+                               -- waves, so LDK cloned him as a common enemy (v1 patch 4)
+    [82] = true,               -- Reptile (VS model)
 }
 local function is_boss(kind)
     return SUPER_BOSSES[kind] == true or MK_BOSSES[kind] == true

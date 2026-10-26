@@ -226,10 +226,32 @@ in its trace.
   file to live memory, which New Game+ and Extended Upgrades need.
 
 
+## 0.12: shop, meter and health state
+
+- **`SAVESTAT`** now also reports each player's XP, meter value and level,
+  the EX flags (level slots 19-22, as four digits) and slot 27, current and
+  max health, plus the max-health value, the area's health level and the
+  fatality counters (`fat=discovered/performed`). Compare `fat=` before and
+  after a reload to see whether discovered fatalities are kept.
+- **`HEARTBEAT`** samples end with player 0's health and meter (`hp450/600 mv380`).
+- `probe_upgrade` read player 0's XP from the wrong field; fixed.
+- Pairs with the QA Console (`QA - console.bat`), which reads the same
+  fields live and turns each run's logs into `summary.md`.
+
+## 0.11.1 and 0.11.2
+
+- **0.11.1:** the per-save report (`SAVESTAT`) also shows `+E0=`, the game's
+  health-upgrade count, so XP-shop purchases show up in save reports.
+- **0.11.2:** the heartbeat reports every 15 minutes instead of 7.5. A script
+  can only log once, so each report needs its own copy: 12 copies now cover
+  the same 3 hours as 24 did, which leaves 12 more of the Recomp's 64 script
+  slots for other mods. A crash now loses at most the last 15 minutes of
+  samples.
+
 ## 0.11: heartbeat and per-save stats
 
-- **`probe_heartbeat` (`HEARTBEAT#n`)** reports about every 7.5 minutes of
-  gameplay (24 copies, about 3 hours), so a soft-lock or crash between statues
+- **`probe_heartbeat` (`HEARTBEAT#n`)** reports about every 15 minutes of
+  gameplay (12 copies, about 3 hours), so a soft-lock or crash between statues
   still leaves data. Each report has a sample every ~40 seconds since the previous
   heartbeat: gameplay frames, game frame, map, XP balance, spawner
   (`sp<active>,<group>,<spawned>`), loaded enemy types and the cleared-waves

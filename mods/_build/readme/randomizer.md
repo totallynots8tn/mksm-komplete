@@ -1,8 +1,18 @@
-# Shaolin Shuffle 0.8.2 (Normal / Wild / Chaos)
+# Shaolin Shuffle 0.10.0 (Normal / Wild / Chaos)
 
-Shuffles enemy types across **every spawn slot in the area**, so most rooms get
-a different mix. Areas with only one regular enemy type, like Goro's Lair, get
-an **outsider**: an enemy type from another level, mixed into every room.
+Changes which enemy types a room spawns, two ways:
+
+- **Room mixing (0.10).** A room that authors one regular enemy type trades
+  plain spawn slots with a room of another type, so it spawns several types.
+  Each trade moves one slot each way, so every type's area total — and with it
+  its character-memory use — stays exactly as authored.
+- **Outsiders.** An area with only one regular enemy type in its whole map
+  roster (like Goro's Lair) has nothing to trade, so the shuffle appends an
+  enemy type from another level to the map's preload list and turns plain
+  slots into it.
+
+Slots with scripted entrances, bosses and elites keep their exact type: only
+plain slots (no entrance flags, no mover data) ever change type.
 
 ## Variants
 
@@ -10,13 +20,45 @@ Install all three; enable one. The variants conflict, so the launcher keeps
 only one enabled. To choose, use "Mods - choose LDK and Shuffle levels.bat" or
 the launcher's Mods screen.
 
-| Variant | Outsiders in every room | Extra outsiders | Max per room | Max per area |
-| --- | --- | --- | --- | --- |
-| Shaolin Shuffle (Normal) | 1 | 25% of the other spawns | 3 | 30 |
-| Shaolin Shuffle (Wild) | 1 | 50% | 5 | 45 |
-| Shaolin Shuffle (Chaos) | 2 | 80% | 8 | 60 |
+| Variant | Slot trades per one-type room | Outsiders per room (single-type areas) | Extra outsiders | Max per room | Max per area | Outsider types |
+| --- | --- | --- | --- | --- | --- | --- |
+| Shaolin Shuffle (Normal) | 0 (positions swap only) | 1 | 25% of the other spawns | 3 | 30 | 8 |
+| Shaolin Shuffle (Wild) | 1 | 1 | 50% | 5 | 45 | 11 |
+| Shaolin Shuffle (Chaos) | 2 | 2 | 80% | 8 | 60 | 17 |
 
 A "room" is one spawn group, one wave of a fight.
+
+**Outsider types (0.9):** Normal picks from the 8 enemy types v1 shipped
+with. Wild adds 3 more that the QA logs saw as ordinary enemies in 7 or more
+areas. Chaos adds every enemy type the logs saw as an ordinary enemy anywhere:
+17 in all. Bosses, elites and two-slot characters are never outsiders.
+
+## 0.10: rooms actually mix
+
+0.9's shuffle permuted types inside one behaviour signature, which leaves a
+room that authors a single type looking untouched, and its outsiders only
+reach single-type map rosters. Wild and Chaos looked inert in most areas.
+0.10 adds the slot trade above (Wild: one per one-type room, Chaos: two),
+tested in the spawn simulation: every one-type room ends up spawning two
+types, per-type totals byte-identical to vanilla, 0 stuck groups and 0 heap
+crashes across the scenario matrix.
+
+## 0.9: the v1 memory fixes, and more outsider types
+
+The two fixes from the v1 patches are now in this build too, plus a wider
+outsider pool:
+
+- **Memory reuse counted per heap (v1 patch 2).** When an enemy type stays
+  loaded from one map to the next (Goro's Lair keeps its type across maps
+  98-100), its dead enemies' memory is reused, and the spawn guard now counts
+  that across the maps. Before, the count started over on each map. The guard
+  then cancelled the fatality room's respawning wave, which emptied the room,
+  so the gate never opened. In the Goro's Lair simulation every enemy now
+  spawns, 180 of 180, where the previous build spawned 60.
+- **More outsider types on Wild and Chaos** (see Variants). Normal is
+  unchanged.
+- **Reptile counts as a boss (v1 patch 4).** The story Reptile (map 144) is
+  authored across three waves, so he was being cloned like a common enemy.
 
 ## 0.8: an outsider in every room
 

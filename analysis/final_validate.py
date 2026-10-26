@@ -14,7 +14,7 @@ pkgs = [
     ('env_kill_xp', 'mods/env_kill_xp/dist/env_kill_xp-2.0.0.tar.xz', '2.0.0'),
     ('randomizer', 'mods/randomizer/dist/randomizer-0.6.0.tar.xz', '0.6.0'),
     ('coop_solo', 'mods/coop_solo/dist/coop_solo-0.5.4.tar.xz', '0.5.4'),
-    ('mk_upgrade', 'mods/mk_upgrade/dist/mk_upgrade-0.1.0.tar.xz', '0.1.0'),
+    ('mk_upgrade', 'mods/mk_upgrade/dist/mk_upgrade-0.3.0.tar.xz', '0.3.0'),
     ('mksmk_probe', 'mods/mksmk_probe/dist/mksmk_probe-0.8.2.tar.xz', '0.8.2'),
 ]
 ok = True

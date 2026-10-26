@@ -7,7 +7,10 @@ local H = require("harness")
 local m = H.load(arg[1])
 local LOAD_GROUPS, PRELOAD = 0x00014D2C, 0x00015DEE
 local STACK, GM = 0xD00F0000, 0x81200000
-local POOL = { [10]=true, [11]=true, [12]=true, [13]=true, [14]=true, [15]=true, [26]=true, [27]=true }
+-- the variant's own pool (0.9: Wild and Chaos widen it), read from the script
+local POOL = {}
+local pool_line = assert(io.open(arg[1], "rb")):read("a"):match("local OUTSIDERS%s*=%s*(%b{})")
+for id in assert(pool_line, "no OUTSIDERS line"):gmatch("%d+") do POOL[tonumber(id)] = true end
 local NONE = 0xFFFFFFFF
 H.w32(0x005ACEBC, GM); H.w32(GM + 0x88, 0)
 

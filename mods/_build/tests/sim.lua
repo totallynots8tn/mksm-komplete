@@ -96,6 +96,19 @@ if os.getenv("BIG") == "1" then
     level[g] = {types=types, delay=0}
   end
 end
+-- MIX=1: rooms that each author a single regular type, like most real areas.
+-- The signature-class swap alone changes nothing here; Wild/Chaos must trade
+-- plain slots between rooms (0.10) while keeping per-type totals exact.
+local MIX = os.getenv("MIX") == "1"
+if MIX then
+  level = {
+    {types={3,3,3,3}, delay=0},
+    {types={4,4,4,4}, delay=0},
+    {types={3,3,3,3}, delay=10},
+    {types={4,4,4,4}, delay=0},
+  }
+  loaded = {3,4,0xFFFFFFFF,0xFFFFFFFF,0xFFFFFFFF,0xFFFFFFFF}
+end
 local loaded = {3,4,9,7,0xFFFFFFFF,0xFFFFFFFF}
 if OUTSIDER then
   level = {
@@ -352,4 +365,22 @@ if OUTSIDER then
   print("outsider spawns:", o, "evicted:", stats.evicted or 0, "outsider entries left after eviction:", stats.left_after_evict or 0)
   local rooms = 0 for _ in pairs(stats.o_rooms or {}) do rooms = rooms + 1 end
   print("rooms with an outsider spawn:", rooms, "of", stats.loads * #level)
+end
+if MIX then
+  local mixed, totals = 0, {}
+  for g = 0, #level - 1 do
+    local base = M + g * GS
+    local set = {}
+    for e = 0, H.r16(base + 0xA68) - 1 do
+      local t = H.r32(base + 0x18 + e * 0x74)
+      set[t] = true
+      totals[t] = (totals[t] or 0) + 1
+    end
+    local n = 0
+    for _ in pairs(set) do n = n + 1 end
+    if n >= 2 then mixed = mixed + 1 end
+  end
+  -- the last of 3 loads of the area authors 8 entries per type
+  assert(totals[3] == 8 and totals[4] == 8, "per-type totals changed: " .. fmt(totals))
+  print("mixed rooms:", mixed, "of", stats.loads * #level, "| totals:", fmt(totals))
 end

@@ -1,5 +1,5 @@
 
--- ===== Legendary Dark Knight 3.9.1 (with Boss Invasion) =====
+-- ===== Legendary Dark Knight 3.10.0 (with Boss Invasion) =====
 -- 3.6: a single-enemy group of a regular type is multiplied too when its
 -- entry has a plain entrance (early levels such as Goro's Lair are mostly
 -- single-enemy waves). Entries with a scripted entrance stay as authored.
@@ -74,7 +74,6 @@ local function reset_area()
     started = {}
     need = {}
     peak = {}
-    allocs = {}
     invaders = 0
 end
 
@@ -367,7 +366,8 @@ local hooks = {
                 return
             end
             ensure_capacity()
-            if refresh_census() or memory_reloaded() then
+            local reloaded = memory_reloaded()   -- every group start: keeps instance counts current
+            if refresh_census() or reloaded then
                 reset_area()
             end
             started[index] = true

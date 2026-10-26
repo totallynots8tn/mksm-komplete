@@ -19,7 +19,8 @@ local WAVES_CLEARED = 0x006C0168   -- 20 x {s16 group, u32 alive, u8 cleared}, 1
 local XP            = 0x4940       -- game manager offset (SAVEDIFF / save.dat slot+0x4940)
 local HB_INDEX      = 1            -- this copy reports after HB_INDEX*REPORT_FRAMES frames (build.py makes copies)
 local SAMPLE_FRAMES = 2500         -- about 40 seconds
-local REPORT_FRAMES = 22500        -- about 7.5 minutes; 24 copies fit the 64-script limit
+local REPORT_FRAMES = 45000        -- about 15 minutes; 12 copies cover 3 hours (0.11.2: was
+                                   -- 7.5 minutes x 24 copies, which used 12 more of the 64 scripts)
 
 local function hex(v) return string.format("%X", v) end
 local function ok(p)
@@ -30,6 +31,14 @@ local last_frame, elapsed = nil, 0
 local window_start = (HB_INDEX - 1) * REPORT_FRAMES
 local samples, saves = {}, 0
 local done = false
+
+-- 0.12: player 0's health and meter value, e.g. " hp450/600 mv380"
+local function vitals(gm)
+    if not ok(gm) then return "" end
+    local actor = game.read_u32(0x005D1AB8 + 0x200)
+    local hp = ok(actor) and (game.read_u32(actor + 0x368) .. "/" .. game.read_u32(actor + 0x370)) or "-"
+    return " hp" .. hp .. " mv" .. math.floor(game.read_f32(gm + 0x4954))
+end
 
 local function sample(tag)
     local gm = game.read_u32(GAME_MANAGER)
@@ -51,7 +60,7 @@ local function sample(tag)
     samples[#samples + 1] = tag .. elapsed .. " f" .. hex(game.read_u32(FRAME)) .. " m" .. game.read_u32(MAP)
         .. " xp" .. xp .. " sp" .. game.read_u8(SPAWNER + 0x2092A) .. "," .. game.read_u16(SPAWNER + 0x20920)
         .. "," .. game.read_u16(SPAWNER + 0x20922) .. " ty" .. table.concat(types, ",")
-        .. " wc[" .. table.concat(waves, " ") .. "]"
+        .. " wc[" .. table.concat(waves, " ") .. "]" .. vitals(gm)
 end
 
 local function step()

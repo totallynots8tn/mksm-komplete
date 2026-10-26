@@ -33,7 +33,9 @@ local MAX_SLOTS   = 150          -- entries shuffled per area (write and instruc
 -- first, so a cutscene can still evict the outsider. If that happens, the
 -- converted entries go back to their own type and the area keeps its authored
 -- roster from then on. The outsider pool is the regular types the probe saw
--- spawning as common enemies; all of them need one memory slot.
+-- spawning as common enemies; all of them need one memory slot. 0.9: build.py
+-- widens it per variant (Wild: types seen as commons in 7+ areas; Chaos:
+-- every type seen as a common anywhere, from the QA logs' area census).
 local PRELOAD            = 0x00015DEE
 local DESC_CAP           = 0x20
 local DESC_LIST          = 0x24
@@ -44,6 +46,13 @@ local OUTSIDER_MIN       = 1            -- outsiders guaranteed per group with a
 local OUTSIDER_CHANCE    = 25           -- percent of the other plain entries that also become one
 local OUTSIDER_PER_GROUP = 3
 local OUTSIDER_TOTAL     = 30
+-- 0.10: room mixing. An area whose rooms each author one enemy type shows no
+-- variety from the signature-class swap alone, and the outsider path needs a
+-- single-type roster. So Wild/Chaos also swap plain entries between two types
+-- in different rooms: each swap keeps both per-type totals exact (the heap
+-- invariant), and the room that gave an entry gains one of the other type.
+local MIX_PER_ROOM       = 0            -- pairs swapped into each single-type room
+local MIX_TOTAL          = 0            -- pairs per area (a pair is two writes)
 
 local planned = false
 local witnesses = {}             -- a few shuffled entries; a revert means a reload
@@ -204,6 +213,95 @@ local function convert_outsiders(plain)
     end
 end
 
+-- Swap plain entries between rooms so a room that authors a single regular
+-- type ends up spawning two. Each pair moves one entry each way, so every
+-- type's area total, and with it its heap use, stays exactly as authored.
+local function mix_rooms(plain)
+    if MIX_PER_ROOM == 0 then
+        return
+    end
+    local per_group, stacks = {}, {}
+    for _, p in ipairs(plain) do
+        local kind = game.read_u32(p.entry)   -- the class swap has permuted kinds since
+        local list = per_group[p.group]
+        if list == nil then
+            list = {}
+            per_group[p.group] = list
+        end
+        local entries = list[kind]
+        if entries == nil then
+            entries = {}
+            list[kind] = entries
+        end
+        entries[#entries + 1] = p
+        local stack = stacks[kind]
+        if stack == nil then
+            stack = {}
+            stacks[kind] = stack
+        end
+        stack[#stack + 1] = p
+    end
+    local kinds, groups = {}, {}
+    for k in pairs(stacks) do
+        kinds[#kinds + 1] = k
+    end
+    for g in pairs(per_group) do
+        groups[#groups + 1] = g
+    end
+    table.sort(kinds)
+    table.sort(groups)
+    local swapped = 0
+    for _, group in ipairs(groups) do
+        local list, own = per_group[group], {}
+        for k, entries in pairs(list) do
+            if #entries > 0 then
+                own[#own + 1] = k
+            end
+        end
+        if #own == 1 then
+            local a, order = own[1], {}
+            for _, k in ipairs(kinds) do
+                if k ~= a then
+                    order[#order + 1] = k
+                end
+            end
+            while #order > 0 and swapped < MIX_TOTAL do
+                local b = table.remove(order, rnd() % #order + 1)
+                for _ = 1, MIX_PER_ROOM do
+                    if #list[a] == 0 or swapped >= MIX_TOTAL then
+                        break
+                    end
+                    local stack, eb = stacks[b], nil
+                    for i = #stack, 1, -1 do
+                        if stack[i].group ~= group and not stack[i].done then
+                            eb = table.remove(stack, i)
+                            break
+                        end
+                    end
+                    if eb == nil then
+                        break
+                    end
+                    local ea = table.remove(list[a], rnd() % #list[a] + 1)
+                    local other = per_group[eb.group][b]
+                    for i = 1, #other do
+                        if other[i] == eb then
+                            table.remove(other, i)
+                            break
+                        end
+                    end
+                    game.write_u32(ea.entry, b)
+                    game.write_u32(eb.entry, a)
+                    ea.done, eb.done = true, true
+                    if #witnesses < 4 then
+                        witnesses[#witnesses + 1] = { entry = ea.entry, from = a, to = b }
+                    end
+                    swapped = swapped + 1
+                end
+            end
+        end
+    end
+end
+
 local function shuffle_area(skip_started)
     planned = true
     if fatality_area() then
@@ -233,7 +331,7 @@ local function shuffle_area(skip_started)
                     classes[sig] = class
                     total = total + 1
                     if sig == GENERIC then
-                        plain[#plain + 1] = { entry = entry, group = group }
+                        plain[#plain + 1] = { entry = entry, group = group, kind = kind }
                     end
                 end
             end
@@ -256,7 +354,7 @@ local function shuffle_area(skip_started)
                     eligible[kind] = ok
                 end
                 if ok and signature(entry) == GENERIC then
-                    plain[#plain + 1] = { entry = entry, group = group }
+                    plain[#plain + 1] = { entry = entry, group = group, kind = kind }
                 end
             end
         end
@@ -289,6 +387,7 @@ local function shuffle_area(skip_started)
             end
         end
     end
+    mix_rooms(plain)
     convert_outsiders(plain)
 end
 
@@ -330,12 +429,8 @@ local hooks = {
             if index >= GROUP_LIMIT then
                 return
             end
-            local reloaded = memory_reloaded()
-            local new_area = refresh_census()
-            if new_area or reloaded then
-                allocs = {}          -- the heaps were rebuilt: no instances to recycle yet
-            end
-            if new_area or reloaded or (planned and reverted()) then
+            local reloaded = memory_reloaded()   -- also resets instance counts per heap (core.lua)
+            if refresh_census() or reloaded or (planned and reverted()) then
                 planned = false
                 seen_started = {}
             end

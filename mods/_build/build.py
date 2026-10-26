@@ -37,25 +37,38 @@ LDK_SUMMARY = ("{x}: enemy groups get {x} as many enemies as reinforcements, wit
     "enemies are never starved and the game doesn't crash. Install all three variants; enable one.")
 
 # Shaolin Shuffle ships as three conflicting variants (outsiders per room); one is enabled.
+# Outsider pools (0.9): Normal keeps the v1 pool; Wild adds the regular types
+# the QA logs saw as commons in 7+ areas; Chaos adds every type seen as a common.
+OUTSIDERS_V1 = [10, 11, 12, 13, 14, 15, 26, 27]
+OUTSIDERS_WILD = OUTSIDERS_V1 + [18, 42, 43]
+OUTSIDERS_CHAOS = OUTSIDERS_WILD + [4, 8, 9, 17, 22, 30]
 SHUFFLE_LEVELS = {
-    'randomizer':       dict(minimum=1, chance=25, per_group=3, total=30),
-    'randomizer_wild':  dict(minimum=1, chance=50, per_group=5, total=45),
-    'randomizer_chaos': dict(minimum=2, chance=80, per_group=8, total=60),
+    'randomizer':       dict(minimum=1, chance=25, per_group=3, total=30, pool=OUTSIDERS_V1,
+                             mix_room=0, mix_total=0),
+    'randomizer_wild':  dict(minimum=1, chance=50, per_group=5, total=45, pool=OUTSIDERS_WILD,
+                             mix_room=1, mix_total=24),
+    'randomizer_chaos': dict(minimum=2, chance=80, per_group=8, total=60, pool=OUTSIDERS_CHAOS,
+                             mix_room=2, mix_total=40),
 }
 
-def shuffle_variant(minimum, chance, per_group, total):
+def shuffle_variant(minimum, chance, per_group, total, pool, mix_room, mix_total):
     source = assemble('core.lua', 'randomizer_body.lua')
     for old, new in (('local OUTSIDER_MIN       = 1 ', f'local OUTSIDER_MIN       = {minimum} '),
                      ('local OUTSIDER_CHANCE    = 25 ', f'local OUTSIDER_CHANCE    = {chance} '),
                      ('local OUTSIDER_PER_GROUP = 3\n', f'local OUTSIDER_PER_GROUP = {per_group}\n'),
-                     ('local OUTSIDER_TOTAL     = 30\n', f'local OUTSIDER_TOTAL     = {total}\n')):
+                     ('local OUTSIDER_TOTAL     = 30\n', f'local OUTSIDER_TOTAL     = {total}\n'),
+                     ('local MIX_PER_ROOM       = 0 ', f'local MIX_PER_ROOM       = {mix_room} '),
+                     ('local MIX_TOTAL          = 0 ', f'local MIX_TOTAL          = {mix_total} '),
+                     ('local OUTSIDERS          = { 10, 11, 12, 13, 14, 15, 26, 27 }\n',
+                      'local OUTSIDERS          = { ' + ', '.join(map(str, pool)) + ' }\n')):
         assert source.count(old) == 1, old
         source = source.replace(old, new)
     return source
 
-SHUFFLE_SUMMARY = ("{level}: shuffles enemy types across every spawn slot of the area, and brings in an "
-    "outsider enemy type from another level where an area has only one regular type (like Goro's Lair): "
-    "{detail}. Memory is checked for every spawn; bosses keep their places. "
+SHUFFLE_SUMMARY = ("{level}: swaps enemy types between spawn slots that behave the same, and trades plain "
+    "spawn slots between rooms so a room that authors one enemy type spawns several ({detail}). "
+    "Areas with a single regular type (like Goro's Lair) get an outsider enemy type from another level "
+    "instead. Per-type totals never change, so memory use stays vanilla; bosses keep their places. "
     "Install all three variants; enable one.")
 
 def with_save(name, index=1):
@@ -66,7 +79,7 @@ def with_save(name, index=1):
 # Recomp runs at most 64 routine scripts across all enabled mods; the v1 set
 # uses 5 besides the probe, so the probe must stay well under 59.
 ROUTINE_LIMIT = 64
-HEARTBEATS = 24     # one every ~7.5 minutes of gameplay: about 3 hours
+HEARTBEATS = 12     # one every ~15 minutes of gameplay: about 3 hours (0.11.2; was 24 x 7.5 min)
 SAVESTATS = 20      # one per statue save
 
 def heartbeat(index):
@@ -79,22 +92,22 @@ def numbered(name, index):
 
 # folder, id, name, readme, version, summary, {script: source}, extra manifest fields
 MODLIST = [
-    ('ldk', 'ldk', 'Legendary Dark Knight Mode', 'ldk.md', '3.9.2', LDK_SUMMARY.format(x='x2'),
+    ('ldk', 'ldk', 'Legendary Dark Knight Mode', 'ldk.md', '3.10.0', LDK_SUMMARY.format(x='x2'),
      {'ldk.lua': lambda: ldk_variant(2)}, {'conflicts': ['ldk_x3', 'ldk_x4']}),
-    ('ldk_x3', 'ldk_x3', 'Legendary Dark Knight Mode (x3 Hard)', 'ldk.md', '3.9.2', LDK_SUMMARY.format(x='x3'),
+    ('ldk_x3', 'ldk_x3', 'Legendary Dark Knight Mode (x3 Hard)', 'ldk.md', '3.10.0', LDK_SUMMARY.format(x='x3'),
      {'ldk.lua': lambda: ldk_variant(3)}, {'conflicts': ['ldk', 'ldk_x4']}),
-    ('ldk_x4', 'ldk_x4', 'Legendary Dark Knight Mode (x4 Legendary)', 'ldk.md', '3.9.2', LDK_SUMMARY.format(x='x4'),
+    ('ldk_x4', 'ldk_x4', 'Legendary Dark Knight Mode (x4 Legendary)', 'ldk.md', '3.10.0', LDK_SUMMARY.format(x='x4'),
      {'ldk.lua': lambda: ldk_variant(4)}, {'conflicts': ['ldk', 'ldk_x3']}),
-    ('randomizer', 'randomizer', 'Shaolin Shuffle (Enemy Randomizer)', 'randomizer.md', '0.8.2',
-     SHUFFLE_SUMMARY.format(level='Normal', detail='one or more outsiders in every room, about a quarter of the spawns'),
+    ('randomizer', 'randomizer', 'Shaolin Shuffle (Enemy Randomizer)', 'randomizer.md', '0.10.0',
+     SHUFFLE_SUMMARY.format(level='Normal', detail='a modest swap: slots keep their room, single-type areas get an outsider'),
      {'randomizer.lua': lambda: shuffle_variant(**SHUFFLE_LEVELS['randomizer'])},
      {'conflicts': ['randomizer_wild', 'randomizer_chaos']}),
-    ('randomizer_wild', 'randomizer_wild', 'Shaolin Shuffle (Wild)', 'randomizer.md', '0.8.2',
-     SHUFFLE_SUMMARY.format(level='Wild', detail='one or more outsiders in every room, about half the spawns'),
+    ('randomizer_wild', 'randomizer_wild', 'Shaolin Shuffle (Wild)', 'randomizer.md', '0.10.0',
+     SHUFFLE_SUMMARY.format(level='Wild', detail='every one-type room trades a slot with another room, so rooms spawn several types; single-type areas get outsiders from 11 enemy types'),
      {'randomizer.lua': lambda: shuffle_variant(**SHUFFLE_LEVELS['randomizer_wild'])},
      {'conflicts': ['randomizer', 'randomizer_chaos']}),
-    ('randomizer_chaos', 'randomizer_chaos', 'Shaolin Shuffle (Chaos)', 'randomizer.md', '0.8.2',
-     SHUFFLE_SUMMARY.format(level='Chaos', detail='two or more outsiders in every room, most of the spawns'),
+    ('randomizer_chaos', 'randomizer_chaos', 'Shaolin Shuffle (Chaos)', 'randomizer.md', '0.10.0',
+     SHUFFLE_SUMMARY.format(level='Chaos', detail='every one-type room trades up to two slots and most plain spawns move, from every one of the 17 regular enemy types seen as common enemies'),
      {'randomizer.lua': lambda: shuffle_variant(**SHUFFLE_LEVELS['randomizer_chaos'])},
      {'conflicts': ['randomizer', 'randomizer_wild']}),
     ('env_kill_xp', 'env_kill_xp', 'Environmental Kill XP', 'env_kill_xp.md', '2.0.0',
@@ -103,11 +116,11 @@ MODLIST = [
     ('coop_solo', 'coop_solo', 'Solo Co-op Paths', 'coop_solo.md', '0.6.2',
      "Experimental: in single player, level layout scripts are told it's co-op (istwoplayer yes, isoneplayer no) so they choose co-op layouts and secret routes, but map-trigger conditions still see the real player count so solo-progression plates can fire. 0.5 also rewrites a co-op plate's player-2 trigger conditions into copies of the player-1 condition. Co-op plates work in single player: colored plates of either player's color activate, and a plate stays pressed for about 15 seconds after you step off, so one player can stand on each plate in turn. Engine-side co-op logic stays single player.",
      {'coop_solo.lua': lambda: text('coop_solo.lua')}, {}),
-    ('mk_upgrade', 'mk_upgrade', 'Extended Upgrades (prototype)', 'upgrade.md', '0.1.0',
-     "PROTOTYPE, experimental: the spine of a larger upgrade system. Extra XP from Legendary Dark Knight unlocks passive perks (blade dismemberment, brutality-anim EX moves, stamina) at XP thresholds. Effects are inert pending reverse-engineering; the mod writes nothing to game memory and is safe to install.",
+    ('mk_upgrade', 'mk_upgrade', 'Extended Upgrades: XP Shop (preview)', 'upgrade.md', '0.5.3',
+     "Experimental XP shop; everything it sells comes on top of what the game gives. Pause > Moves > Basic Moves becomes Upgrades: Health +1 to +4 (5,000 / 10,000 / 15,000 / 20,000 XP; +100 / +200 / +400 / +800 max health in solo, above the game's own four, applied at once) and Stamina +1 to +4 (same costs; blocks, specials and the long jump cost less, as if the blue bar held 125 / 150 / 200 / 300%; each co-op player buys their own). Skill and Team stay vanilla; EX moves and the weapon store come in later updates. Bought through the game's own Upgrade dialog. Labels in the game's language (EN/ES/DE/IT/FR). Uses no content files, so it works alongside language packs (if a pack has no room for the labels, the menu stays vanilla).",
      {'upgrade.lua': lambda: text('upgrade.lua')}, {}),
-    ('mksmk_probe', 'mksmk_probe', 'MKSMK Probe (diagnostics)', 'probe.md', '0.11.0',
-     "Diagnostics only, changes nothing: records kills, XP awards and enemy spawns, traces the map triggers behind co-op plates, snapshots the shuffle eligibility of every area you visit, and samples the dismember/brutality/upgrade command signatures, and watches the save data for every value that changes (XP, upgrades, abilities). Reports are written to the session log at your first, second and third save; 0.11 adds a heartbeat about every 7 minutes of play (so a soft-lock or crash between saves still leaves data) and the XP balance and playtime of every save.",
+    ('mksmk_probe', 'mksmk_probe', 'MKSMK Probe (diagnostics)', 'probe.md', '0.12.0',
+     "Diagnostics only, changes nothing: records kills, XP awards and enemy spawns, traces the map triggers behind co-op plates, snapshots the shuffle eligibility of every area you visit, and samples the dismember/brutality/upgrade command signatures, and watches the save data for every value that changes (XP, upgrades, abilities). Reports are written to the session log at your first, second and third save; 0.11 adds a heartbeat (every 15 minutes of play since 0.11.2, which frees 12 of the 64 script slots) (so a soft-lock or crash between saves still leaves data) and the XP balance and playtime of every save.",
      {'probe_events.lua': lambda: with_save('probe_body.lua', 1),
       'probe_events_2.lua': lambda: with_save('probe_body.lua', 2),
       'probe_events_3.lua': lambda: with_save('probe_body.lua', 3),
