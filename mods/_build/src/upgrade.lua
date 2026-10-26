@@ -1,4 +1,4 @@
--- Extended Upgrades 0.6.1: XP shop, Health, Stamina and fatality inputs.
+-- Extended Upgrades 0.7.2: XP shop, Health, Stamina, weapons and fatality inputs.
 --
 -- Turns pause-menu Moves categories into the XP shop. Nothing new is added
 -- to the menu; existing rows get new text, costs and behaviour, and
@@ -6,12 +6,14 @@
 --   * Basic Moves -> Upgrades: Basic Attacks -> Health (+1-4: 1, 2, 4 and 8
 --     game health-upgrade steps, above the game's own four) and Air Attacks
 --     -> Stamina (+1-4: everything that spends the blue bar costs less, as if
---     it held 125, 150, 200 and 300%). Running Attacks stays vanilla.
+--     it held 125, 150, 200 and 300%). Running Attacks -> Weapons: one row
+--     per weapon type lying in the current area; buying one brings that
+--     weapon to where you stand, as often as you like.
 --   * Fatalities: a row not discovered yet (its input shows as ???) can be
 --     bought, which reveals the input. Every fatality works without being
 --     discovered; this sells the knowledge, not the move.
--- Skill and Team keep their vanilla rows. EX moves and weapons come later,
--- each as its own step (a failing callback switches the whole script off,
+-- Skill and Team keep their vanilla rows. EX moves come later, as their own
+-- step (a failing callback switches the whole script off,
 -- so they ship apart). See analysis/xp_shop/REPORT.md section 9.
 -- Analysis: analysis/xp_shop/REPORT.md (sections 7, 9 and 11).
 --
@@ -70,6 +72,30 @@
 --     game (save offset 0x5C: the entries after the performed counter). After
 --     SyncOwned we price the rows it left unowned; buying one appends its
 --     name, so the next sync and every later load show it revealed.
+--   * Weapons: the weapon manager at 0x5A3AC0 (built at boot by 0xBE070)
+--     holds one object per weapon type in a table at +8 (0x27C each, count
+--     +0x56FC). A map does not create weapons, it places these: a weapon is
+--     in the area when it has a scene node (+0x174 != -1) or a physics body
+--     (+0x124). While nobody holds it (+0x10C), the per-weapon update
+--     (0xBD620 -> 0xBEF10) counts +0x230 down and at 0 respawns it (0xBECC0)
+--     at its home: the position at +0x234 when +0x244 is set. That is where a
+--     thrown or broken weapon flies back to. A purchase sets home to the
+--     buyer's feet, refills durability (+0x26C = +0x268) and sets the
+--     countdown to 1, for the weapon and the pair half at +0x17C: on the next
+--     unpaused frame the game itself brings it over, with its sparkle. Types
+--     the area never placed get no update, so only those in the area are
+--     sold (they are also the only ones whose models are loaded). Thrown, a
+--     summoned weapon flies back to where it was bought; broken, it goes
+--     back to where the level put it: every respawn passes the thunk
+--     0x12BEE (ecx = the weapon), where we put its original home back
+--     first when its durability is spent (a pair's first half decides).
+--     New weapons in an area are announced with the game's "you can acquire
+--     new abilities" popup: opening the Moves list (0x9C590, thunk 0x1425F)
+--     shows it modally (0x9BE60) while byte 0x4EE890 is set and something
+--     can be bought; any purchase clears that byte. Around that call we set
+--     it and point the popup's text (407) at ours, once per area (map
+--     [0x505970]) per session, when one of its weapons can be afforded,
+--     then put both back.
 --   * Text: the strings are a pointer array at [0x5B04A4] (count [0x5AC508]).
 --     We write our strings over unused "(PH)" move-list placeholders, only where
 --     they fit, and point our rows at them. Every value we change is remembered,
@@ -117,6 +143,7 @@ local CAN_PURCHASE  = 0x000116CC
 -- the preview video (0x9D3A0) show the row's text and video on a yes.
 local ASKED_TO_BUY  = 0x0009E5D9    -- the purchase dispatcher (A on a row)
 local ASKED_FOR_ANY = 0x0009BC0E    -- "anything to buy under here?" (colours the category)
+local ASKED_FOR_VIDEO = 0x0009D3A0  -- the preview video: a weapon row has none of its own
 local IS_COMBO      = 0x00015EDE
 local BUY_COMBO     = 0x00013954
 local UPGRADE       = 0x0001647E
@@ -130,43 +157,100 @@ local FATALITY_HINT = 616           -- (PH) text that becomes the Fatalities cat
 local FAT_LIST      = 0x004DF5DC    -- discovered fatalities: name text indices, saved with the game
 local FAT_COUNT     = 0x004DFC1C
 local FAT_MAX       = 400
+local RUNNING_TEXT  = 405           -- "Running Attacks", the third Basic Moves group
+local WEAPON_SLOT   = 2             -- its position in Basic Moves
+local WEAPON_TEXT   = 617           -- (PH) texts: the Weapons group's name and description,
+local WEAPON_DESC   = 683
+local WEAPON_ROWS   = { 684, 693, 694, 696 }   -- a row name per weapon type in the area,
+local WEAPON_ROW_DESC = 697                    -- and the rows' shared description
+local WEAPON_LABEL  = 16            -- names are padded to this many characters, so a
+                                    -- placeholder keeps its room after a short name
+local WEAPON_COST   = 2000          -- per summon (placeholder until the economy pass)
+local WEAPONS       = 0x005A3AC0    -- weapon manager: objects at +8, count at +0x56FC
+local W_STRIDE      = 0x27C
+local W_COUNT       = 0x56FC
+local W_NAME        = 0x0C
+local W_HOLDER      = 0x10C         -- character carrying it, 0 when free
+local W_BODY        = 0x124         -- physics body, 0 when none
+local W_MODEL       = 0x12C         -- -1 for the model-less pickup slots
+local W_NODE        = 0x174         -- scene node it is placed at, -1 when none
+local W_HALF        = 0x178         -- the second half of a pair
+local W_NEXT        = 0x17C         -- a pair's second half
+local W_COUNTDOWN   = 0x230         -- respawn countdown: at 0 the weapon goes home
+local W_HOME        = 0x234         -- home position, used while W_HOME_ON is set
+local W_HOME_ON     = 0x244
+local W_DUR_MAX     = 0x268
+local W_DUR         = 0x26C
+local W_SEEN        = 0x220         -- position of the home matrix +0x1F0 (the last pickup spot)
+local RESPAWN       = 0x00012BEE    -- thunk to the respawn 0xBECC0, fastcall: ecx = weapon
+local MOVES_OPEN    = 0x0001425F    -- the Moves list opens (0x9C590), the popup inside it
+local POPUP_FLAG    = 0x004EE890    -- byte: show the "new abilities" popup (purchases clear it)
+local POPUP_TEXT    = 407           -- that popup's text
+local MAP           = 0x00505970    -- the current map (area) number
+local WEAPON_POPUP  = 698           -- (PH) text that takes our popup message
+local POSITION      = 0x80          -- entity position: x, y, z floats
+local WEAPON_SIDE   = 150.0         -- the weapon lands this far beside the buyer,
+local WEAPON_FLOOR  = 57.0          -- this far below his position (on the floor)
 local UPGRADE_TEXT  = 455           -- "Upgrade" in the loaded language tells us which it is
 
 -- Text in the game's code page (cp1252). The "(PH)" placeholders we overwrite
 -- are 45-62 bytes in the five built-in languages (English is the shortest).
 -- health[3] takes the bonus health and stamina[3] the bar size in percent;
--- fatality is the Fatalities category's description (45 bytes at most).
+-- fatality is the Fatalities category's description, weapon the Weapons
+-- group (name, description, row description, the row when the area has
+-- none, the popup message) and weapons the names by weapon object (45 bytes
+-- at most, names 16).
 local LANGUAGES = {
     { tag = "Upgr", category = { "Upgrades", "Spend EXP on health and stamina." },
       health = { "Health", "Health +%d", "Max health +%d,\non top of the game's.",
                  "Extra health on top of the game's." },
       stamina = { "Stamina", "Stamina +%d", "Stamina %d%%.\nBlocks and specials\ncost less.",
                   "Blocks and specials cost less stamina." },
-      fatality = "Buy a ??? fatality's\ninput with EXP." },
+      fatality = "Buy a ??? fatality's\ninput with EXP.",
+      weapon = { "Weapons", "Summon this area's weapons.", "Appears where you buy it.\nThrown, it returns.", "None here",
+                 "Weapons for sale here:\nUpgrades > Weapons." },
+      weapons = { kama01 = "Kamas", sword = "Sword", broadsword = "Broadsword", axe = "Axe",
+                  hooksword01 = "Hook swords", shard = "Shard", shard1h = "Shard" } },
     { tag = "Mejo", category = { "Mejoras", "Gasta EXP en salud y energ\237a." },
       health = { "Salud", "Salud +%d", "Vida m\225xima +%d,\nadem\225s de la del juego.",
                  "Salud extra, adem\225s de la del juego." },
       stamina = { "Energ\237a", "Energ\237a +%d", "Energ\237a %d%%.\nBloquear y especiales\ncuestan menos.",
                   "Bloquear y especiales gastan menos." },
-      fatality = "Compra la secuencia de\nun ??? con EXP." },
+      fatality = "Compra la secuencia de\nun ??? con EXP.",
+      weapon = { "Armas", "Invoca las armas de esta zona.", "Aparece donde la compras;\nlanzada, vuelve.", "Ninguna aqu\237",
+                 "Armas a la venta aqu\237:\nMejoras > Armas." },
+      weapons = { kama01 = "Kamas", sword = "Espada", broadsword = "Mandoble", axe = "Hacha",
+                  hooksword01 = "Espadas gancho", shard = "Fragmento", shard1h = "Fragmento" } },
     { tag = "Verb", category = { "Verbesserungen", "EXP f\252r Leben und Ausdauer ausgeben." },
       health = { "Leben", "Leben +%d", "Max. Leben +%d,\nzus\228tzlich zum Spiel.",
                  "Mehr Leben, zus\228tzlich zum Spiel." },
       stamina = { "Ausdauer", "Ausdauer +%d", "Ausdauer %d%%.\nBlock, Spezial\nkosten weniger.",
                   "Blocken und Spezial kosten weniger." },
-      fatality = "Kaufe die Eingabe\neines ??? mit EXP." },
+      fatality = "Kaufe die Eingabe\neines ??? mit EXP.",
+      weapon = { "Waffen", "Waffen dieses Gebiets rufen.", "Erscheint am Kaufort,\nkehrt geworfen zur\252ck.", "Keine hier",
+                 "Hier gibt es Waffen:\nVerbesserungen > Waffen." },
+      weapons = { kama01 = "Kamas", sword = "Schwert", broadsword = "Breitschwert", axe = "Axt",
+                  hooksword01 = "Hakenschwerter", shard = "Splitter", shard1h = "Splitter" } },
     { tag = "Pote", category = { "Potenziamenti", "Spendi EXP per salute ed energia." },
       health = { "Salute", "Salute +%d", "Salute max +%d,\noltre a quella del gioco.",
                  "Salute extra oltre a quella del gioco." },
       stamina = { "Energia", "Energia +%d", "Energia %d%%.\nParate e speciali\ncostano meno.",
                   "Parate e speciali costano meno." },
-      fatality = "Compra la sequenza\ndi un ??? con EXP." },
+      fatality = "Compra la sequenza\ndi un ??? con EXP.",
+      weapon = { "Armi", "Evoca le armi di questa zona.", "Appare dove la compri;\nlanciata, torna l\236.", "Nessuna qui",
+                 "Armi in vendita qui:\nPotenziamenti > Armi." },
+      weapons = { kama01 = "Kama", sword = "Spada", broadsword = "Spadone", axe = "Ascia",
+                  hooksword01 = "Spade uncinate", shard = "Frammento", shard1h = "Frammento" } },
     { tag = "Am\233l", category = { "Am\233liorations", "D\233pensez l'EXP en sant\233 et endurance." },
       health = { "Sant\233", "Sant\233 +%d", "Sant\233 max +%d,\nen plus de celle du jeu.",
                  "Sant\233 en plus de celle du jeu." },
       stamina = { "Endurance", "Endurance +%d", "Endurance %d%%.\nGarde, sp\233ciaux\nmoins chers.",
                   "Garde et sp\233ciaux co\251tent moins." },
-      fatality = "Ach\232te la saisie\nd'un ??? avec l'EXP." },
+      fatality = "Ach\232te la saisie\nd'un ??? avec l'EXP.",
+      weapon = { "Armes", "Invoque les armes de la zone.", "Appara\238t o\249 tu l'ach\232tes;\nlanc\233e, revient.", "Aucune ici",
+                 "Armes \224 vendre ici :\nAm\233liorations > Armes." },
+      weapons = { kama01 = "Kamas", sword = "\201p\233e", broadsword = "Claymore", axe = "Hache",
+                  hooksword01 = "\201p\233es crochets", shard = "\201clat", shard1h = "\201clat" } },
 }
 
 -- Each shop group takes over one Basic Moves group (source = its vanilla
@@ -216,6 +300,11 @@ local tree = nil                -- the tree copy our changes were made to
 local changed = {}              -- [address] = { was = vanilla value, now = ours }
 local costs = {}                -- per player: { base = vanilla costs, now = ours, level }
 local ticked = nil              -- { record, stamina before } around one Tick
+local area = {}                 -- the weapon objects the Weapons rows sell, row k -> area[k]
+local announced = {}            -- [map] = true once the popup announced its weapons (this session)
+local popup = nil               -- { at, was, ours, flag } while our message is in the popup
+local summoned = {}             -- [weapon] = { first, spot, home, on, seen }: its home before
+                                -- we moved it to the purchase spot (spot), as raw words
 
 -- Exact powers of two, so f32 <-> Lua number conversions don't drift.
 local POW2 = {}
@@ -308,6 +397,42 @@ local function row_figure(kind, k)
     return BAR[k]
 end
 
+-- Whether a weapon object is in the current area: placed at a node or lying
+-- as a physics body (only those get the update that respawns them).
+local function in_area(w)
+    return game.read_u32(w + W_NODE) ~= 0xFFFFFFFF or game.read_u32(w + W_BODY) ~= 0
+end
+
+-- The weapon types in the current area: first halves with a model, at most
+-- one per row.
+local function area_weapons()
+    local list = {}
+    local n = game.read_u32(WEAPONS + W_COUNT)
+    if n > 35 then return list end
+    for i = 0, n - 1 do
+        local w = WEAPONS + 8 + i * W_STRIDE
+        if game.read_u8(w + W_HALF) == 0 and game.read_u32(w + W_MODEL) ~= 0xFFFFFFFF and in_area(w) then
+            list[#list + 1] = w
+            if #list == #WEAPON_ROWS then break end
+        end
+    end
+    return list
+end
+
+-- A weapon's row label in the loaded language (the object's own name if we
+-- have none for it), padded to WEAPON_LABEL.
+local function weapon_label(lang, w)
+    local name = {}
+    for i = 0, WEAPON_LABEL - 1 do
+        local b = game.read_u8(w + W_NAME + i)
+        if b == 0 then break end
+        name[#name + 1] = string.char(b)
+    end
+    local label = lang.weapons[table.concat(name)] or table.concat(name)
+    label = label:sub(1, WEAPON_LABEL)
+    return label .. string.rep(" ", WEAPON_LABEL - #label)
+end
+
 -- Our strings, in the loaded language: true, false if any of them can't
 -- fit, nil when the budget ran out first. Checked on every menu open, so a
 -- reloaded text table is caught. The order is fixed, so a resumed sync picks
@@ -325,6 +450,15 @@ local function place_text()
         end
     end
     all[#all + 1] = { FATALITY_HINT, lang.fatality }
+    local w = lang.weapon
+    all[#all + 1] = { WEAPON_TEXT, w[1] }
+    all[#all + 1] = { WEAPON_DESC, w[2] }
+    all[#all + 1] = { WEAPON_ROW_DESC, w[3] }
+    all[#all + 1] = { WEAPON_POPUP, w[5] }
+    for k = 1, #area > 0 and #area or 1 do
+        local label = area[k] and weapon_label(lang, area[k]) or w[4] .. string.rep(" ", WEAPON_LABEL - #w[4])
+        all[#all + 1] = { WEAPON_ROWS[k], label }
+    end
     local result = true
     for _, t in ipairs(all) do
         local placed = put_text(t[1], t[2])
@@ -514,6 +648,20 @@ local function shop_nodes(root)
     return nil
 end
 
+-- The Weapons group in a Basic Moves category: Running Attacks, or ours
+-- (whose row count follows the area).
+local function weapon_group(c)
+    local count, list = game.read_u32(c + 0x0C), game.read_u32(c + 0x14)
+    local g = WEAPON_SLOT < count and game.read_u32(list + WEAPON_SLOT * 4) or 0
+    if not plausible(g) or game.read_u32(g + 4) ~= 1 then return nil end
+    local gname, rows = game.read_u32(g + 0x18), game.read_u32(g + 0x0C)
+    if (gname == RUNNING_TEXT and rows == #WEAPON_ROWS)
+            or (gname == WEAPON_TEXT and rows >= 1 and rows <= #WEAPON_ROWS) then
+        return g
+    end
+    return nil
+end
+
 -- The shop kind, store and row index (1-n) when node is one of our shop rows.
 local function shop_row(node)
     if not ready or not plausible(node) or game.read_u32(node + 4) ~= 0 then return nil end
@@ -526,6 +674,11 @@ local function shop_row(node)
             for k = 1, #group.rows do
                 if game.read_u32(kids + (k - 1) * 4) == node then return "basic", group, k end
             end
+        end
+    end
+    if gname == WEAPON_TEXT and game.read_u32(node + 0x28) == WEAPON_COST then
+        for k = 1, #WEAPON_ROWS do
+            if game.read_u32(kids + (k - 1) * 4) == node then return "weapon", nil, k end
         end
     end
     if gname == FATALITY_TEXT and game.read_u32(node + 0x28) == FATALITY_COST then
@@ -604,6 +757,23 @@ local function patch_root(m, root)
                 end
             end
         end
+        -- Weapons: a row per weapon type in the area (one "none here" row
+        -- when there is none), always buyable again.
+        local g = weapon_group(c)
+        if g then
+            local rows = #area > 0 and #area or 1
+            if not (patch(g + 0x18, WEAPON_TEXT) and patch(g + 0x1C, WEAPON_DESC) and patch(g + 0x0C, rows)) then
+                return false
+            end
+            local kids = game.read_u32(g + 0x14)
+            for k = 1, rows do
+                local node = game.read_u32(kids + (k - 1) * 4)
+                if plausible(node) and not (patch(node + 0x18, WEAPON_ROWS[k]) and patch(node + 0x1C, WEAPON_ROW_DESC)
+                        and patch(node + 0x28, #area > 0 and WEAPON_COST or 0) and patch(node + 0x2C, 0)) then
+                    return false
+                end
+            end
+        end
     end
     -- Fatalities: SyncOwned has just marked the discovered ones owned; the
     -- rest get a price. Hovering a ??? row shows nothing (see CanPurchase), so
@@ -633,6 +803,7 @@ local function sync()
     local blob = game.read_u32(MPD)
     if m == nil or not plausible(blob) then return end
     if blob ~= tree then changed = {}; tree = blob end     -- a fresh copy is vanilla
+    area = area_weapons()                                  -- the menu is paused: stable while it syncs
     local placed = place_text()
     if placed == false then ready = false; unpatch() return end
     if placed == nil then resume = true return end
@@ -641,12 +812,18 @@ local function sync()
     if root and not patch_root(m, root) then resume = true end
 end
 
+-- Row k's weapon is still in the area and nobody holds it.
+local function weapon_free(k)
+    local w = area[k]
+    return w ~= nil and in_area(w) and game.read_u32(w + W_HOLDER) == 0
+end
+
 -- The row is the next to buy in its store (a fatality: not discovered yet,
 -- with room in the list), affordable, and its cost really is ours.
 local function can_buy(node, kind, store, k)
     local m = manager()
     if m == nil then return false end
-    local cost = kind == "fatality" and FATALITY_COST or store.rows[k].cost
+    local cost = (kind == "fatality" and FATALITY_COST) or (kind == "weapon" and WEAPON_COST) or store.rows[k].cost
     if game.read_u32(node + 0x28) ~= cost then return false end
     local player = menu_player()
     if player == nil then return false end
@@ -655,6 +832,8 @@ local function can_buy(node, kind, store, k)
                 or discovered(game.read_u32(node + 0x18)) ~= false then
             return false
         end
+    elseif kind == "weapon" then
+        if not weapon_free(k) then return false end
     elseif shop_level(m, player, store.kind) ~= k - 1 then
         return false
     end
@@ -665,6 +844,37 @@ end
 -- max health straight away). A fatality goes into the discovered list, which
 -- the game saves, so its input stays revealed like one the player performed.
 local function apply_purchase(m, kind, store, k, node)
+    if kind == "weapon" then
+        local player, w = menu_player(), area[k]
+        if player == nil or w == nil or not in_area(w) then return end
+        local at = ENTITY + player * ENTITY_STRIDE + POSITION
+        local x, y, z = f32_to(game.read_u32(at)), f32_to(game.read_u32(at + 4)), f32_to(game.read_u32(at + 8))
+        if x == nil or y == nil or z == nil then return end
+        local home = { f32_from(x + WEAPON_SIDE), f32_from(y - WEAPON_FLOOR), f32_from(z) }
+        local parts = { w }
+        local half = game.read_u32(w + W_NEXT)
+        if plausible(half) then parts[2] = half end
+        for _, part in ipairs(parts) do
+            -- remember where the level keeps it, unless that is our own last spot
+            local now = { game.read_u32(part + W_HOME), game.read_u32(part + W_HOME + 4),
+                          game.read_u32(part + W_HOME + 8) }
+            local s = summoned[part]
+            if not (s and s.spot[1] == now[1] and s.spot[2] == now[2] and s.spot[3] == now[3]) then
+                s = { first = w, home = now, on = game.read_u8(part + W_HOME_ON),
+                      seen = { game.read_u32(part + W_SEEN), game.read_u32(part + W_SEEN + 4),
+                               game.read_u32(part + W_SEEN + 8) } }
+            end
+            s.spot = home
+            summoned[part] = s
+            for i = 1, 3 do game.write_u32(part + W_HOME + (i - 1) * 4, home[i]) end
+            game.write_u8(part + W_HOME_ON, 1)
+            game.write_u32(part + W_DUR, game.read_u32(part + W_DUR_MAX))
+            game.write_u32(part + W_COUNTDOWN, 1)
+        end
+        -- the row stays bought (the menu plays its purchase jingle for that)
+        -- until the next menu open, whose sync puts it up for sale again
+        return
+    end
     if kind == "fatality" then
         local name, count = game.read_u32(node + 0x18), game.read_u32(FAT_COUNT)
         if count < FAT_MAX and discovered(name) == false then
@@ -682,6 +892,60 @@ local function apply_purchase(m, kind, store, k, node)
     else
         ensure_stamina(m, STAMINA + player * STAMINA_STRIDE)
     end
+end
+
+-- Before the Moves list opens: in an area (map) not announced yet this
+-- session whose weapons one can afford, the abilities popup will show our
+-- message (the game shows it when the flag is set and anything is for sale).
+local function arm_popup()
+    popup = nil
+    local m, player = manager(), menu_player()
+    if not ready or m == nil or player == nil or #area == 0 then return end
+    local key = game.read_u32(MAP)
+    if announced[key] then return end
+    local xp = game.read_u32(m + XP + player * PLAYER_STRIDE)
+    local afford = false
+    for k = 1, #area do
+        if weapon_free(k) and xp >= WEAPON_COST then afford = true end
+    end
+    local list, ours = game.read_u32(TEXT_PTRS), text_at(WEAPON_POPUP)
+    if not afford or not plausible(list) or ours == nil then return end
+    popup = { at = list + POPUP_TEXT * 4, was = game.read_u32(list + POPUP_TEXT * 4), ours = ours,
+              flag = game.read_u8(POPUP_FLAG) }
+    game.write_u32(popup.at, ours)
+    game.write_u8(POPUP_FLAG, 1)
+    announced[key] = true
+end
+
+-- After the Moves list opened (the popup, modal, has closed): the game's text
+-- and flag back.
+local function disarm_popup()
+    local p = popup
+    popup = nil
+    if p == nil then return end
+    if game.read_u32(p.at) == p.ours then game.write_u32(p.at, p.was) end
+    game.write_u8(POPUP_FLAG, p.flag)
+end
+
+-- Before a respawn: a summoned weapon whose durability is spent goes back to
+-- the home the level gave it, not to its purchase spot. A record whose home
+-- is no longer our spot is stale (the level placed the weapon again).
+local function respawning(w)
+    local s = summoned[w]
+    if s == nil then return end
+    if game.read_u32(w + W_HOME) ~= s.spot[1] or game.read_u32(w + W_HOME + 4) ~= s.spot[2]
+            or game.read_u32(w + W_HOME + 8) ~= s.spot[3] then
+        summoned[w] = nil
+        return
+    end
+    local dur = game.read_u32(s.first + W_DUR)
+    if dur ~= 0 and dur < 0x80000000 then return end       -- thrown, not broken
+    for i = 1, 3 do
+        game.write_u32(w + W_HOME + (i - 1) * 4, s.home[i])
+        game.write_u32(w + W_SEEN + (i - 1) * 4, s.seen[i])
+    end
+    game.write_u8(w + W_HOME_ON, s.on)
+    summoned[w] = nil
 end
 
 local function set_al(ctx, v)
@@ -706,6 +970,7 @@ return {
             -- fatality those are the input: only the purchase itself and the
             -- category's "anything to buy" search hear it.
             if kind == "fatality" and from ~= ASKED_TO_BUY and from ~= ASKED_FOR_ANY then return end
+            if kind == "weapon" and from == ASKED_FOR_VIDEO then return end
             if kind then set_al(ctx, can_buy(node, kind, store, k) and 1 or 0) end
         end,
     },
@@ -772,6 +1037,8 @@ return {
             end
         end,
     },
+    { address = RESPAWN, before = function(ctx) respawning(ctx.ecx) end },
+    { address = MOVES_OPEN, before = function(ctx) arm_popup() end, after = function(ctx) disarm_popup() end },
     {
         -- Once per stamina record per frame: keep that player's costs scaled,
         -- (on player 0's record) the shop's health on top, and afterwards

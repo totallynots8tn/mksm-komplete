@@ -162,7 +162,12 @@ for k = 1, 4 do
     assert(H.r32(health[k] + 0x28) == 5000 * k and H.r32(health[k] + 0x2C) == 0, "health row " .. k)
     assert(H.r32(stamina[k] + 0x28) == 5000 * k and H.r32(stamina[k] + 0x2C) == 0, "stamina row " .. k)
 end
-assert(H.r32(group[3] + 0x18) == 405 and H.r32(rows[3][1] + 0x18) == 493, "running attacks touched")
+-- Running Attacks became Weapons; with no weapon in the area it shows one
+-- "none here" row that can't be bought
+assert(H.r32(group[3] + 0x18) == 617 and text(617) == "Weapons", "weapons group")
+assert(text(H.r32(group[3] + 0x1C)) == "Summon this area's weapons.", "weapons group desc")
+assert(H.r32(group[3] + 0x0C) == 1, "weapon rows with none in the area: " .. H.r32(group[3] + 0x0C))
+assert(text(H.r32(rows[3][1] + 0x18)) == "None here       " and H.r32(rows[3][1] + 0x28) == 0, "none-here row")
 assert(H.r32(skill + 0x18) == 464, "skill touched")
 for k = 1, 4 do
     assert(H.r32(ex[k] + 0x18) == 1409 + k and H.r32(ex[k] + 0x28) == 0 and H.r32(ex[k] + 0x2C) == 1,
@@ -262,6 +267,148 @@ H.w32(MGR + 0x88, 2)
 assert(ask(CAN, fat[3], 0) == 0, "fatality for sale in versus")
 H.w32(MGR + 0x88, 0)
 assert(H.r32(FAT_COUNT) == 2, "list changed without a purchase")
+xp(20000)
+
+-- 4c. weapons: one row per weapon type in the area (first halves with a
+-- model, placed at a node or lying as a body); buying one sets its home to
+-- the buyer's feet, refills it and starts the countdown, for both halves of
+-- a pair, and the row stays for sale
+local WPN = 0x5A3AC0
+local function weapon(i, name, half, body, node, model)
+    local w = WPN + 8 + i * 0x27C
+    for k = 1, #name do H.w8(w + 0x0C + k - 1, name:byte(k)) end
+    H.w8(w + 0x0C + #name, 0)
+    H.w8(w + 0x178, half); H.w32(w + 0x124, body); H.w32(w + 0x174, node); H.w32(w + 0x12C, model)
+    H.w32(w + 0x268, 1000); H.w32(w + 0x26C, 400); H.w32(w + 0x10C, 0); H.w32(w + 0x230, 0)
+    return w
+end
+local sword = weapon(0, "sword", 0, 0, 0xFFFFFFFF, 0x122)                 -- not in this area
+local slot = weapon(1, "weapon_pickup00", 0, 0, 5, 0xFFFFFFFF)            -- no model: never sold
+local kama1 = weapon(2, "kama01", 0, 0x81824F00, 0xFFFFFFFF, 0x11A)       -- lying on the floor
+local kama2 = weapon(3, "kama02", 1, 0x8182C700, 0xFFFFFFFF, 0x11C)
+H.w32(kama1 + 0x17C, kama2)
+local function level_home(w)                     -- where the level put the kamas (the gate)
+    H.wf32(w + 0x234, 4518.25); H.wf32(w + 0x238, -5941.75); H.wf32(w + 0x23C, 3748.5)
+    H.w8(w + 0x244, 1); H.wf32(w + 0x220, 4400.5)
+end
+level_home(kama1); level_home(kama2)
+H.w32(WPN + 0x56FC, 4)
+local POS1 = 0x5D1AB8 + 0x80
+H.wf32(POS1, 100); H.wf32(POS1 + 4, -200); H.wf32(POS1 + 8, 300)
+local function resync() H.invoke(m, SYNC, {}, nil); for _ = 1, 3 do ask(CAN, combo_leaf[0], 1) end end
+resync()
+assert(#H.failed == 0, H.failed[1])
+local wrow = rows[3]
+assert(H.r32(group[3] + 0x0C) == 1 and text(H.r32(wrow[1] + 0x18)) == "Kamas           ", "kama row")
+assert(H.r32(wrow[1] + 0x28) == 2000 and H.r32(wrow[1] + 0x2C) == 0, "kama row price")
+assert(text(H.r32(wrow[1] + 0x1C)) == "Appears where you buy it.\nThrown, it returns.", "weapon row desc")
+xp(20000)
+assert(ask(CAN, wrow[1], 0) == 1 and ask(COMBO, wrow[1], 0) == 1, "kamas not for sale")
+assert(ask(CAN, wrow[1], 0, DESCRIPTION) == 1, "weapon description hidden")
+assert(ask(CAN, wrow[1], 0, PREVIEW) == 0, "weapon row plays a running-attack video")
+H.w32(kama1 + 0x10C, 0x5D1AB8)
+assert(ask(CAN, wrow[1], 0) == 0, "for sale while held")
+H.w32(kama1 + 0x10C, 0)
+xp(1999)
+assert(ask(CAN, wrow[1], 0) == 0, "affordable at 1999")
+xp(20000)
+H.w8(MGR + 0x1C4 + 15, 0)
+buy(wrow[1], 3, true)
+assert(#H.failed == 0, H.failed[1])
+for _, w in ipairs({ kama1, kama2 }) do
+    assert(H.rf32(w + 0x234) == 250 and H.rf32(w + 0x238) == -257 and H.rf32(w + 0x23C) == 300,
+        string.format("home %s,%s,%s", H.rf32(w + 0x234), H.rf32(w + 0x238), H.rf32(w + 0x23C)))
+    assert(H.r8(w + 0x244) == 1 and H.r32(w + 0x26C) == 1000 and H.r32(w + 0x230) == 1, "summon fields")
+end
+assert(H.r32(sword + 0x230) == 0 and H.r32(sword + 0x26C) == 400, "sword touched")
+assert(H.r32(MGR + 0x4940) == 18000, "weapon XP")
+assert(H.r32(wrow[1] + 0x2C) == 1, "row not left bought for the jingle")
+resync()
+assert(H.r32(wrow[1] + 0x2C) == 0 and ask(CAN, wrow[1], 0) == 1, "not for sale again after the next menu open")
+assert(H.r8(MGR + 0x1C4 + 15) == 0, "combo slot left unlocked by a weapon")
+local RESPAWN = 0x12BEE
+local function respawn(w) H.invoke(m, RESPAWN, { ecx = w }, nil) end
+local function at_gate(w)
+    return H.rf32(w + 0x234) == 4518.25 and H.rf32(w + 0x238) == -5941.75 and H.rf32(w + 0x23C) == 3748.5
+        and H.r8(w + 0x244) == 1 and H.rf32(w + 0x220) == 4400.5
+end
+-- thrown (durability left): it flies back to the purchase spot
+respawn(kama1); respawn(kama2)
+assert(H.rf32(kama1 + 0x234) == 250 and H.rf32(kama2 + 0x234) == 250, "thrown kamas sent to the gate")
+-- bought again elsewhere: the new spot, and the level's home still on record
+H.wf32(POS1, 1000)
+buy(wrow[1], 3, true)
+assert(H.rf32(kama1 + 0x234) == 1150 and H.rf32(kama2 + 0x234) == 1150, "re-buy spot")
+-- broken (the first half's durability decides): both halves go back to the gate
+H.w32(kama1 + 0x26C, 0xFFFFFFF6)
+respawn(kama1); respawn(kama2)
+assert(#H.failed == 0, H.failed[1])
+assert(at_gate(kama1) and at_gate(kama2), "broken kamas not sent back to the gate: " .. H.rf32(kama1 + 0x234))
+-- after that the record is gone: a later respawn changes nothing
+H.wf32(kama1 + 0x234, 77)
+respawn(kama1)
+assert(H.rf32(kama1 + 0x234) == 77, "respawn of an unsummoned weapon touched")
+level_home(kama1)
+-- the level placed the kamas again (a new area) after a purchase: the old
+-- record is stale and a break leaves the new home alone
+buy(wrow[1], 3, true)
+H.wf32(kama1 + 0x234, 9999)
+H.w32(kama1 + 0x26C, 0)
+respawn(kama1)
+assert(H.rf32(kama1 + 0x234) == 9999, "stale record applied")
+level_home(kama1); level_home(kama2)
+H.wf32(POS1, 100)
+-- a second type in the area gets the next row; a model-less slot never does
+H.w32(sword + 0x174, 7)
+resync()
+assert(H.r32(group[3] + 0x0C) == 2, "rows with two weapon types: " .. H.r32(group[3] + 0x0C))
+assert(text(H.r32(wrow[1] + 0x18)) == "Sword           " and text(H.r32(wrow[2] + 0x18)) == "Kamas           ",
+    "two rows: " .. text(H.r32(wrow[1] + 0x18)) .. "|" .. text(H.r32(wrow[2] + 0x18)))
+-- the area loses its weapons: one "none here" row again, not for sale
+H.w32(sword + 0x174, 0xFFFFFFFF); H.w32(kama1 + 0x124, 0); H.w32(kama2 + 0x124, 0)
+resync()
+assert(H.r32(group[3] + 0x0C) == 1 and text(H.r32(wrow[1] + 0x18)) == "None here       ", "none here again")
+assert(H.r32(wrow[1] + 0x28) == 0 and ask(CAN, wrow[1], 0) == 0, "none-here row for sale")
+H.w32(kama1 + 0x124, 0x81824F00); H.w32(kama2 + 0x124, 0x8182C700)
+resync()
+assert(text(H.r32(wrow[1] + 0x18)) == "Kamas           ", "kamas back")
+xp(20000)
+-- the "new abilities" popup announces an area's weapons once: while the
+-- Moves list opens (the popup is modal inside it) its flag is set and its
+-- text is ours; afterwards both are the game's again
+local MOVES, FLAG = 0x1425F, 0x4EE890
+local POPUP_MSG = "Weapons for sale here:\nUpgrades > Weapons."
+local function open_moves()
+    local seen = {}
+    H.invoke(m, MOVES, {}, function() seen.text = text(407); seen.flag = H.r8(FLAG) end)
+    assert(#H.failed == 0, H.failed[1])
+    return seen
+end
+local vanilla407 = text(407)
+local MAP = 0x505970
+H.w32(MAP, 64)
+H.w8(FLAG, 0)
+local seen = open_moves()
+assert(seen.text == POPUP_MSG and seen.flag == 1, "popup not armed: " .. seen.text)
+assert(text(407) == vanilla407 and H.r8(FLAG) == 0, "popup text or flag not put back")
+seen = open_moves()
+assert(seen.text == vanilla407 and seen.flag == 0, "same area announced twice")
+-- back in the same area later (the kamas get new bodies): still announced
+H.w32(kama1 + 0x124, 0x81825000); resync()
+seen = open_moves()
+assert(seen.text == vanilla407 and seen.flag == 0, "same map announced on a revisit")
+-- nothing affordable in a new area: no announcement (the game wouldn't show
+-- it anyway), but the area stays unannounced until one is
+H.w32(MAP, 71); xp(1999)
+seen = open_moves()
+assert(seen.text == vanilla407 and seen.flag == 0, "announced without the XP")
+-- once affordable it is announced; a flag the game had set itself stays set
+xp(20000); H.w8(FLAG, 1)
+seen = open_moves()
+assert(seen.text == POPUP_MSG and seen.flag == 1, "new area not announced")
+assert(text(407) == vanilla407 and H.r8(FLAG) == 1, "the game's own flag cleared")
+H.w8(FLAG, 0); H.w32(MAP, 64)
+H.w32(kama1 + 0x124, 0x81824F00); resync()
 xp(20000)
 
 -- 5. stamina: the menu player's costs shrink at once, the other player's don't
@@ -434,7 +581,7 @@ end
 put(455, "Mejorar")
 for _, i in ipairs({ 574, 598 }) do placeholder(i, 62) end
 for _, i in ipairs({ 581, 582, 583, 584, 593, 594, 599, 601, 602, 603, 604, 611, 612, 613,
-                     616, 718, 719, 783, 784 }) do
+                     616, 617, 683, 684, 693, 694, 696, 697, 698, 718, 719, 783, 784 }) do
     placeholder(i, 56)
 end
 for _, i in ipairs({ 596, 597 }) do placeholder(i, 54) end
@@ -447,13 +594,16 @@ assert(text(784) == "Energ\237a 300%.\nBloquear y especiales\ncuestan menos.", "
 assert(text(718) == "Energ\237a +3", "spanish stamina row 3")
 assert(H.r32(skill + 0x18) == 464 and H.r32(team + 0x18) == 465, "spanish tree")
 assert(text(616) == "Compra la secuencia de\nun ??? con EXP.", "spanish fatalities hint")
+assert(text(617) == "Armas" and text(684) == "Kamas           ", "spanish weapons")
+assert(text(698) == "Armas a la venta aqu\237:\nMejoras > Armas.", "spanish popup")
 
 -- 16. the text table reloads with placeholders too short: every field is put back
 local vanilla = { [basic + 0x18] = 402, [group[1] + 0x18] = 403, [group[2] + 0x18] = 404,
                   [group[2] + 0x0C] = 4, [health[1] + 0x18] = 485, [health[1] + 0x1C] = 585,
                   [health[1] + 0x28] = 0, [health[1] + 0x2C] = 1, [stamina[2] + 0x18] = 490,
                   [stamina[4] + 0x28] = 0, [skill + 0x18] = 464, [ex[1] + 0x18] = 1410,
-                  [fat[3] + 0x28] = 0, [fatal + 0x1C] = 500 }
+                  [fat[3] + 0x28] = 0, [fatal + 0x1C] = 500,
+                  [group[3] + 0x18] = 405, [group[3] + 0x0C] = 4, [rows[3][1] + 0x18] = 493 }
 -- (the first instance holds the vanilla values; a second one would only
 -- ever see a fresh tree in the game)
 for _, i in ipairs({ 582, 584, 594, 597, 784 }) do placeholder(i, 20) end
@@ -473,7 +623,7 @@ assert(io.open(tmp, "wb")):write(small):close()
 local tiny = H.load(tmp)
 os.remove(tmp)
 for _, i in ipairs({ 574, 598, 581, 582, 583, 584, 593, 594, 596, 597, 599, 601, 602, 603, 604,
-                     611, 612, 613, 616, 718, 719, 783, 784 }) do
+                     611, 612, 613, 616, 617, 683, 684, 693, 694, 696, 697, 698, 718, 719, 783, 784 }) do
     placeholder(i, 56)
 end
 H.w8(SHOP0, 0x81)
@@ -523,4 +673,4 @@ assert(#H.failed == 0 and H.r32(MGR + 0x94) == 1400, "level 7: " .. H.r32(MGR + 
 
 assert(#H.failed == 0, H.failed[1])
 print("errors", #H.failed, "first sync writes", first_writes, "max_instr", H.max_instr)
-print("xp shop: health, stamina, fatalities, tick, languages, fallback all pass")
+print("xp shop: health, stamina, weapons, fatalities, tick, languages, fallback all pass")

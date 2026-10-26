@@ -306,3 +306,57 @@ Method: two paused snapshots, bar low then bar full (`pausesnap.py`: all of .dat
   - The rest of that press stays boosted.
   - With too little stamina, you get the plain special.
 - **0.4.0 live failure → 0.4.1:** `f32_from` used `math.frexp`, which the runtime Lua 5.4 lacks. The first purchase errored, the callback's writes were dropped and the game kept the XP. Probe SAVEDIFF also showed `mgr+0x8C` going 600.0 → 580.0 under damage, so it is **current** health as a float, not max; 0.4.1 no longer writes it.
+
+## 12. Weapon store, rung 3: static RE (2026-10-26)
+
+User design: buying a weapon makes it appear in front of the player, as many times as they like, one weapon at a time. The user's idea is a stash: let the game's own code make the weapons and keep them out of sight, then bring one out on purchase. Section 9.3's notes were partly wrong; this replaces them.
+
+**Every weapon already exists.** The weapon manager at `0x5A3AC0` (vtable `0x4A2588`, the "pickup entity vtable" in 9.3) is built once at boot by `0xBE070`. Its table of weapon objects sits at `+8`, `0x27C` bytes each, count at `+0x56FC` (at most 35, `util_sarray`). The constructor creates one object per weapon type with `0xBD830(class, name, half, model, model, durability, text)` and adds it with `0xBDCF0`:
+
+| class | names (in order) |
+|---|---|
+| 0x54 | sword, shard (half), one more sword-class blade with durability 2000 (name at `0x4A2564`) |
+| 0x55 | broadsword, shard1h (half) |
+| 0x57 | `0x4A2174` (durability 1, no models) |
+| 0x58 | kama01 + kama02, hooksword01 + hooksword02 (pairs; the second half has `+0x178` = 1 and hangs off the first's `+0x17C`) |
+
+So a map doesn't create a weapon; it places one of these.
+
+**Weapon object** (vtable `0x4A24D4`):
+- `+0x04` class;
+- `+0x0C` name;
+- `+0x10C` holder: the character carrying it, 0 when free;
+- `+0x124` physics body or attach parent;
+- `+0x12C` / `+0x130` model ids;
+- `+0x174` the scene node it is placed at (an index into the instance table at `0x5CE880`), −1 when not placed;
+- `+0x178` / `+0x17C` pair links;
+- `+0x264` name text;
+- `+0x268` / `+0x26C` durability, max and current.
+
+**Placing, picking up, dropping:**
+- **Place** `0xBAA90`: when the weapon has no body, `+0x174 = 0x1A6EC0(node)` looks up a named node in the level.
+- **Pick up** `0xBD900`, a manager method reached through its vtable: thunks `0x11DDE` / `0x14CDC` → `0xBE4C0` / `0xBE4D0`. `0xBC080` finds the nearest weapon that is placed or has a body, has no holder and is not a second half, measured to the player's position (entity `+0x80..+0x88`). The pickup marker with the same name is then deleted from the list at `[0x5ACEAC]` (FindAndRemove `0xABE40`; it calls the marker's vtable `+4`, then its destructor). Attach `0xBC500` sets `+0x10C` and refills durability (`+0x26C = +0x268`). `0x76810` binds the weapon to the character (entity `+0x2794`).
+- **Throw or drop** `0xBB470`: computes a trajectory from the holder, clears `+0x10C`, and the weapon becomes a physics object (`+0x124` set at `0xBA184` / `0xBA244`) that can be picked up again.
+- **Markers** are the map's weapon pickup objects. Their classes are `broadsword` / `kama01` / `staff` / `sword`, with vtables `0x4A0784` / `0x4A07BC` / `0x4A07EC` / `0x4A081C` and shared methods `0xAFDF0` (collected), `0xAFDB0`, `0xAFDE0`, `0xAC6D0`, `0xA8A60`, `0xA8A70`. Each marker is `[vtable][x][y][z][w]…`, with its name at `+0x20`.
+- **Types per map:** `0xB9FC0` keeps a list of weapon types (id + 256-byte descriptor; it skips `weapon_pickup`). It is probably the map's model load list. Not traced.
+
+**Summon plan, field writes only.** For the bought type's object:
+1. clear `+0x10C` and `+0x124`;
+2. refill `+0x26C`;
+3. set `+0x174` to a scene node at the player.
+
+The game's own pickup (`0xBC080` → `0xBD900`) then finds it at distance 0 and attaches it. FindAndRemove finds no marker by that name, so it does nothing.
+
+**Open, needs a live session** (`tools/livemem/weapons.py watch`):
+1. what a placed weapon's fields look like, and what pickup, drop and break do to them;
+2. which scene node index the player has, or another node that sits where the player stands;
+3. whether a type the map didn't place has its model loaded. If not, summoning it would draw or attach a missing model, the same class of crash as the Kitana NULL model. The first write test therefore uses a type the map has.
+
+**Live results (2026-10-26, Liu Kang, a mine area with the kama pair on the floor; `tools/livemem/weapons.py`):**
+- Kama01/02 lie in the world as physics bodies (`+0x124`), node −1. Pickup sets `+0x10C` to the player entity and leaves the body. Each hit costs 15–40 durability (`+0x26C`). At −10 the holder is cleared. The player entity's `+0x2794` is the held weapon's **class** (0x58), not a pointer.
+- A thrown or broken weapon returns to its spawn point. `+0x110` is its **current** position, rewritten every frame. `+0x1F0` is refreshed at pickup.
+- **Respawn** `0xBECC0` (thunk `0x12BEE`) places the weapon at its home matrix `+0x1F0`, using the position at **`+0x234..+0x23C`** when byte **`+0x244`** is set (it is, for the kamas).
+- The per-weapon update `0xBD620` (thunk `0x15DD5` → `0xBEF10`) runs only for weapons in the world (node or body). While a weapon is free, it counts **`+0x230`** down and respawns the weapon at 0, with the sparkle effect `0xBA7F0` at the spawn point. It is skipped while the game is paused.
+- **Proven:** writing `+0x234` = player position and `+0x230 = 1` on both halves made the kama appear beside the player on the next frame, with no throw. The same `+0x234` write also made a thrown kama fly back to the player.
+- **Limit:** weapons the area never placed (no node, no body) get no update, and placing them (`0xBAAF0`) does nothing. This route can only summon types present in the current area. Those are also the only ones with a loaded model, so it cannot crash on a missing model.
+- The table has no `staff` weapon object, although `staff` is a pickup marker class. The weapon objects are sword, shard, broadsword, shard1h, kama01/02, axe and hooksword01/02, plus 21 `weapon_pickup` slots with no models.

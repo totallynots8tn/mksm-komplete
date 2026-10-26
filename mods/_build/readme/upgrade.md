@@ -1,4 +1,4 @@
-# Extended Upgrades: XP Shop 0.6.1 (preview, experimental)
+# Extended Upgrades: XP Shop 0.7.2 (preview, experimental)
 
 The XP shop spends XP in the game's own upgrade menu, on the game's own menu
 entries. Nothing new is added to the menu, and everything it sells comes **on
@@ -14,13 +14,23 @@ included, is unchanged.
 | --- | --- | --- | --- |
 | Upgrades > Health | Health +1 to +4 | 5,000 / 10,000 / 15,000 / 20,000 XP | 1 / 2 / 4 / 8 health-upgrade steps (+100 / +200 / +400 / +800 max health in solo), above the game's own 4 |
 | Upgrades > Stamina | Stamina +1 to +4 | 5,000 / 10,000 / 15,000 / 20,000 XP | everything that spends the blue bar costs less: it plays as 125 / 150 / 200 / 300% |
-| Upgrades > Running Attacks | — | — | stays vanilla |
+| Upgrades > Weapons | one row per weapon lying in the current area | 2,000 XP per summon | the weapon appears beside you at full durability |
 | Fatalities | any row still showing ??? | 5,000 XP each | reveals that fatality's input and video |
 
 - **Buying:** pick the next row and confirm in the usual Upgrade dialog. Health
   and Stamina rows are bought in order. Rows
   only unlock when you have the XP, and as with Combos the description stays
   hidden until you can buy a row.
+- **Weapons** sells the weapons of the area you are in: the kamas where kamas
+  lie, a sword where a sword lies. Buying one brings it to where you stand,
+  at full durability, the moment you unpause. If you throw it, it flies back
+  to that spot. If it breaks, it goes back to where the level keeps it, as
+  usual; buy it again to bring it to you. You can buy a weapon as often as
+  you like, but not while you are holding it. The first time you open Moves
+  in an area whose weapons you can afford, the game's "new abilities" popup
+  tells you they are for sale. An area without weapons shows "None
+  here". The game's own respawn does the moving, so a weapon the area never
+  had can't be summoned (yet).
 - **Fatalities** all work without being discovered; the game only hides
   their inputs until you perform one. A ??? row stays hidden while you browse
   (no input, no video); press A on it to buy. Buying reveals its input the same
@@ -52,11 +62,19 @@ shop turns itself off and the menu goes back to vanilla.
 
 ## Coming next
 
-A weapon store and EX moves (L2 + special),
+EX moves (L2 + special),
 each in a menu entry that already exists and each released on its own. The reverse-engineering is in
 `analysis/xp_shop/REPORT.md` in the project repository.
 
 ## Changelog
+
+- **0.7.2:** the "new abilities" popup announces an area's weapons, once per
+  area per session, when you open Moves and can afford one; the purchase jingle plays
+  for weapons too (the row stays bought until the menu opens again).
+- **0.7.1:** a summoned weapon that breaks goes back to its own spot in the
+  level instead of where you bought it, so it doesn't come back for free.
+- **0.7.0:** Running Attacks becomes **Weapons**: summon the current area's
+  weapons to where you stand (2,000 XP each time, placeholder price).
 
 - **0.6.1:** hovering a ??? fatality no longer shows its input and video
   (0.6.0 told the menu's description and video panels the row was buyable,
