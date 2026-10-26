@@ -1,4 +1,4 @@
--- Extended Upgrades 0.8.1: XP shop, Health, Stamina, weapons, EX moves and fatality inputs.
+-- Extended Upgrades 0.8.2: XP shop, Health, Stamina, weapons, EX moves and fatality inputs.
 --
 -- Turns pause-menu Moves categories into the XP shop. Nothing new is added
 -- to the menu; existing rows get new text, costs and behaviour, and
@@ -12,9 +12,10 @@
 --   * Fatalities: a row not discovered yet (its input shows as ???) can be
 --     bought, which reveals the input. Every fatality works without being
 --     discovered; this sells the knowledge, not the move.
---   * Skill -> EX Moves: four unlocks, one per special button (* ~ | ^).
---     With one bought, L2 + that attack button (no R2) does the special as
---     an EX: its strongest variant, for extra stamina (the blue bar; the red
+--   * Skill -> EX Moves: one row per special button (* ~ | ^), bought tier by
+--     tier like the special itself (as many tiers as it has). With a tier
+--     bought, L2 + that attack button (no R2) does the special as an EX at
+--     that tier, for extra stamina (the blue bar; the red
 --     orbs stay the fatality meter). L2 + a button without EX stays vanilla
 --     (block), and L2 + R2 + a button stays free.
 -- Team keeps its vanilla rows (a failing callback switches the whole script off,
@@ -111,7 +112,7 @@
 --     translator 0x129480 (eax = joypad object) gets R2 instead of L2 for
 --     that frame, so the game does the special itself. Pressing it marks an
 --     EX: for that special the evaluator, and only it (by return address),
---     gets the exact top tier, and its stamina extra comes off when the
+--     gets the EX tier (never above the top tier), and its stamina extra comes off when the
 --     special spends its own (script command 0x1F1 -> wrapper thunk
 --     0x1406B, once per move), scaled like every cost.
 --     Never above the top tier: slot 3 has a hidden ==6 variant.
@@ -207,7 +208,9 @@ local POPUP_FLAG    = 0x004EE890    -- byte: show the "new abilities" popup (pur
 local POPUP_TEXT    = 407           -- that popup's text
 local MAP           = 0x00505970    -- the current map (area) number
 local SKILL_TEXT    = 464           -- "Skill" category: becomes EX Moves
-local EX_FLAG       = 19            -- EX unlock flags: level slots 19-22, one per game slot
+local EX_FLAG       = 19            -- EX tiers: level slots 19-22, one per game slot
+local EX_PRICES     = { 5000, 10000, 15000, 20000, 25000 }  -- EX tier 1-5 (placeholders)
+local EX_LABEL      = 10            -- row names ("EX * 2/4") padded to this, like weapon names
 local EX_LEAF_SLOT  = { 0, 2, 1, 3 } -- leaf * ~ | ^ -> game slot (the grant's mapping)
 local EX_COST       = 25            -- extra stamina per EX special, before Stamina upgrades
 local GET_LEVEL     = 0x000111C2    -- GetLevel(player, slot), cdecl -> eax
@@ -323,14 +326,14 @@ local SHOP = {
 }
 
 -- The EX store: Skill, a category whose four leaves hang directly off it.
--- Each row tracks its own flag byte (owned at 1).
+-- Each row tracks its own tier byte (0 to the button's top tier).
 local EX_STORE = {
     source = SKILL_TEXT, text = 614, desc = 618, leaves = 4,
     vanilla = { 1410, 1411, 1412, 1413 },
-    rows = { { cost = 7500, name = 619, desc = 699, sym = "*" },
-             { cost = 7500, name = 701, desc = 702, sym = "~" },
-             { cost = 7500, name = 703, desc = 704, sym = "|" },
-             { cost = 7500, name = 711, desc = 712, sym = "^" } },
+    rows = { { name = 619, desc = 699, sym = "*" },
+             { name = 701, desc = 702, sym = "~" },
+             { name = 703, desc = 704, sym = "|" },
+             { name = 711, desc = 712, sym = "^" } },
 }
 
 local function plausible(p)
@@ -502,6 +505,8 @@ end
 -- fit, nil when the budget ran out first. Checked on every menu open, so a
 -- reloaded text table is caught. The order is fixed, so a resumed sync picks
 -- up where the last one stopped.
+local ex_tier                           -- row k's EX tier (defined with the EX store below)
+
 local function place_text()
     local lang = language()
     local all = { { SHOP.category.text, lang.category[1] }, { SHOP.category.desc, lang.category[2] } }
@@ -515,8 +520,12 @@ local function place_text()
         end
     end
     all[#all + 1] = { FATALITY_HINT, lang.fatality }
-    for _, row in ipairs(EX_STORE.rows) do
-        all[#all + 1] = { row.name, "EX " .. row.sym }
+    local m = manager()
+    for k, row in ipairs(EX_STORE.rows) do
+        local t, top = nil, nil
+        if m then t, top = ex_tier(m, k) end
+        local label = t and string.format("EX %s %d/%d", row.sym, t, top) or "EX " .. row.sym
+        all[#all + 1] = { row.name, label .. string.rep(" ", EX_LABEL - #label) }
         all[#all + 1] = { row.desc, string.format(lang.ex[3], row.sym) }
     end
     all[#all + 1] = { EX_STORE.text, lang.ex[1] }
@@ -825,6 +834,17 @@ local function flag_addr(m, k)
     return m + LEVELS + player * 0x1C + EX_FLAG + EX_LEAF_SLOT[k]
 end
 
+-- Row k's EX tier for the menu player, its top tier for their character, and
+-- the byte that holds the tier.
+function ex_tier(m, k)                   -- (declared above place_text, which uses it)
+    local addr, player = flag_addr(m, k), menu_player()
+    if addr == nil then return nil end
+    local id = game.read_u32(m + 0xCC + player * 4)
+    local tops = TOP_TIER[id] or TOP_TIER[0]
+    local top, t = tops[EX_LEAF_SLOT[k] + 1], game.read_u8(addr)
+    return t < top and t or top, top, addr
+end
+
 local function char_of(m, player)
     local id = game.read_u32(m + CHARACTER + player * 4)
     if id ~= 0 and id ~= 1 and id ~= 0x58 and id ~= 0x52 then id = 0 end
@@ -887,15 +907,16 @@ local function patch_root(m, root)
             end
         end
     end
-    -- EX Moves: owned follows each button's flag
+    -- EX Moves: each row costs its next tier and is owned at the top one
     local ec = ex_nodes(root)
     if ec then
         if not (patch(ec + 0x18, EX_STORE.text) and patch(ec + 0x1C, EX_STORE.desc)) then return false end
         local kids = game.read_u32(ec + 0x14)
         for k, row in ipairs(EX_STORE.rows) do
-            local node, addr = game.read_u32(kids + (k - 1) * 4), flag_addr(m, k)
-            if plausible(node) and addr and not (patch(node + 0x18, row.name) and patch(node + 0x1C, row.desc)
-                    and patch(node + 0x28, row.cost) and patch(node + 0x2C, game.read_u8(addr) >= 1 and 1 or 0)) then
+            local node, t, top = game.read_u32(kids + (k - 1) * 4), ex_tier(m, k)
+            if plausible(node) and t and not (patch(node + 0x18, row.name) and patch(node + 0x1C, row.desc)
+                    and patch(node + 0x28, EX_PRICES[t < top and t + 1 or top])
+                    and patch(node + 0x2C, t >= top and 1 or 0)) then
                 return false
             end
         end
@@ -948,7 +969,13 @@ end
 local function can_buy(node, kind, store, k)
     local m = manager()
     if m == nil then return false end
-    local cost = (kind == "fatality" and FATALITY_COST) or (kind == "weapon" and WEAPON_COST) or store.rows[k].cost
+    local cost = (kind == "fatality" and FATALITY_COST) or (kind == "weapon" and WEAPON_COST)
+    if kind == "ex" then
+        local t, top = ex_tier(m, k)
+        if t == nil or t >= top then return false end
+        cost = EX_PRICES[t + 1]
+    end
+    cost = cost or store.rows[k].cost
     if game.read_u32(node + 0x28) ~= cost then return false end
     local player = menu_player()
     if player == nil then return false end
@@ -960,8 +987,7 @@ local function can_buy(node, kind, store, k)
     elseif kind == "weapon" then
         if not weapon_free(k) then return false end
     elseif kind == "ex" then
-        local addr = flag_addr(m, k)
-        if addr == nil or game.read_u8(addr) ~= 0 then return false end
+        -- (the next tier: checked with the cost above)
     elseif shop_level(m, player, store.kind) ~= k - 1 then
         return false
     end
@@ -973,8 +999,8 @@ end
 -- the game saves, so its input stays revealed like one the player performed.
 local function apply_purchase(m, kind, store, k, node)
     if kind == "ex" then
-        local addr = flag_addr(m, k)
-        if addr and game.read_u8(addr) == 0 then game.write_u8(addr, 1) end
+        local t, top, addr = ex_tier(m, k)
+        if t and t < top then game.write_u8(addr, t + 1) end
         return
     end
     if kind == "weapon" then
@@ -1102,9 +1128,10 @@ local function boost_level(ctx)
     if due == nil or game.read_u32(FRAME) - due > EX_WINDOW then return end
     local m = manager()
     if m == nil or game.read_u8(DEMO) == 1 then return end
-    if game.read_u8(m + LEVELS + player * 0x1C + EX_FLAG + slot) ~= 1 then return end
+    local t = game.read_u8(m + LEVELS + player * 0x1C + EX_FLAG + slot)
+    if t == 0 then return end
     local top = TOP_TIER[char_of(m, player)][slot + 1]
-    if (ctx.eax & 0xFF) < top then ctx.eax = (ctx.eax & 0xFFFFFF00) | top end
+    ctx.eax = (ctx.eax & 0xFFFFFF00) | (t < top and t or top)
 end
 
 -- Before a port's pad becomes action bits: L2 (without R2) + an attack
@@ -1121,7 +1148,7 @@ local function ex_remap(obj)
     if held and game.read_u8(obj + held) == 0 then ex_held[player + 1] = nil; held = nil end
     if game.read_u8(obj + J_LT) < LT_MIN or game.read_u8(obj + J_RT) ~= 0 then return end
     for _, b in ipairs(EX_BUTTONS) do
-        if game.read_u8(obj + b[1]) ~= 0 and game.read_u8(m + LEVELS + player * 0x1C + EX_FLAG + b[2]) == 1 then
+        if game.read_u8(obj + b[1]) ~= 0 and game.read_u8(m + LEVELS + player * 0x1C + EX_FLAG + b[2]) ~= 0 then
             if held == nil then                     -- a new press: EX if the stamina covers it
                 local have = f32_to(game.read_u32(STAMINA + player * STAMINA_STRIDE + STAMINA_NOW))
                 if have == nil or have < ex_cost(m, player) then return end

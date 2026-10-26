@@ -171,9 +171,10 @@ assert(text(H.r32(rows[3][1] + 0x18)) == "None here       " and H.r32(rows[3][1]
 -- Skill became the EX store: four rows, none owned (no flags yet)
 assert(H.r32(skill + 0x18) == 614 and text(614) == "EX Moves", "ex store")
 assert(text(H.r32(skill + 0x1C)) == "Hold L2 with a special for its EX version.", "ex store desc")
-for k, sym in ipairs({ "*", "~", "|", "^" }) do
-    assert(text(H.r32(ex[k] + 0x18)) == "EX " .. sym and H.r32(ex[k] + 0x28) == 7500
-        and H.r32(ex[k] + 0x2C) == 0, "ex row " .. k)
+-- (rows carry the tier: Liu Kang's * ~ | ^ top out at 4 4 3 5; tier 1 costs 5000)
+for k, label in ipairs({ "EX * 0/4  ", "EX ~ 0/4  ", "EX | 0/3  ", "EX ^ 0/5  " }) do
+    assert(text(H.r32(ex[k] + 0x18)) == label and H.r32(ex[k] + 0x28) == 5000
+        and H.r32(ex[k] + 0x2C) == 0, "ex row " .. k .. ": " .. text(H.r32(ex[k] + 0x18)))
 end
 assert(text(H.r32(ex[1] + 0x1C)) == "L2 + *: top-tier move.\nCosts extra stamina.", "ex row desc")
 assert(H.r32(team + 0x18) == 465 and H.r32(gear[1] + 0x18) == 1022 and H.r32(gear[1] + 0x2C) == 1,
@@ -190,7 +191,10 @@ xp(5000)
 assert(ask(CAN, health[1], 0) == 1, "not buyable at 5000")
 assert(ask(CAN, health[2], 0) == 0, "row 2 before row 1")
 assert(ask(CAN, stamina[1], 0) == 1 and ask(CAN, stamina[2], 0) == 0, "stamina order")
-assert(ask(CAN, ex[1], 0) == 0 and ask(CAN, ex[1], 1) == 0, "ex row affordable at 5000")
+assert(ask(CAN, ex[1], 0) == 1, "ex tier 1 not for sale at 5000")
+xp(4999)
+assert(ask(CAN, ex[1], 0) == 0 and ask(CAN, ex[1], 1) == 0, "ex tier 1 affordable at 4999")
+xp(5000)
 assert(ask(CAN, gear[1], 0) == 0 and ask(COMBO, gear[1], 0) == 0, "team answers changed")
 assert(ask(CAN, combo_leaf[0], 1) == 1 and ask(CAN, combo_leaf[1], 0) == 0, "combo answer changed")
 assert(ask(COMBO, health[3], 0) == 1 and ask(COMBO, stamina[2], 0) == 1, "shop rows not routed as combos")
@@ -543,7 +547,9 @@ assert(m[0x8DF60] == nil, "HUD bar still hooked")
 assert(#H.failed == 0, H.failed[1])
 
 -- 10. re-sync: owned follows the shop levels, cheaply; the game's own count
--- plays no part
+-- plays no part. (Player 2 opened the menu last: one sync puts player 1's
+-- EX tier labels back first.)
+H.invoke(m, SYNC, {}, nil); for _ = 1, 3 do ask(CAN, combo_leaf[0], 1) end
 H.w8(SHOP0, 0x93)
 H.w32(MGR + 0xE0, 4)
 H.max_writes = 0
@@ -571,8 +577,8 @@ H.w32(MGR + 0x88, 2)
 assert(ask(CAN, health[1], 0) == 0 and ask(CAN, ex[1], 0) == 0, "versus")
 H.w32(MGR + 0x88, 0)
 
--- 13. EX moves: buying a row sets its button's flag (leaf * ~ | ^ -> game
--- slot 0 2 1 3 -> level slot 19 + it). While L2 is held, the move system's
+-- 13. EX moves: buying a row raises its button's tier (leaf * ~ | ^ -> game
+-- slot 0 2 1 3 -> level slot 19 + it), one tier at a time, up to the top. While L2 is held, the move system's
 -- question (and only it) gets the exact top tier, if the stamina covers the
 -- cost, which comes off once, when the move spends its own
 H.w32(STAM_N, 2)
@@ -580,10 +586,17 @@ xp(7500)
 assert(ask(CAN, ex[1], 0) == 1 and ask(CAN, ex[2], 0) == 1, "ex rows not for sale")
 buy(ex[2], 2, true)
 assert(#H.failed == 0, H.failed[1])
-assert(H.r8(MGR + 0x1C4 + 21) == 1 and H.r8(MGR + 0x1C4 + 20) == 0, "ex flag for ~ not slot 21")
-assert(H.r32(MGR + 0x4940) == 0, "ex XP")
-assert(ask(CAN, ex[2], 0) == 0, "owned ex row for sale")
-H.w8(MGR + 0x1C4 + 19, 1)                      -- * owned too (game slot 0)
+assert(H.r8(MGR + 0x1C4 + 21) == 1 and H.r8(MGR + 0x1C4 + 20) == 0, "ex tier for ~ not in slot 21")
+assert(H.r32(MGR + 0x4940) == 2500, "ex XP: " .. H.r32(MGR + 0x4940))
+assert(ask(CAN, ex[2], 0) == 0, "tier 2 for sale before the menu reopens (row still prices tier 1)")
+H.invoke(m, SYNC, {}, nil); for _ = 1, 3 do ask(CAN, combo_leaf[0], 1) end
+assert(text(H.r32(ex[2] + 0x18)) == "EX ~ 1/4  " and H.r32(ex[2] + 0x28) == 10000, "tier 2 row")
+xp(10000)
+assert(ask(CAN, ex[2], 0) == 1, "tier 2 not for sale")
+H.w8(MGR + 0x1C4 + 21, 4)                      -- ~ at its top: owned, not for sale
+H.invoke(m, SYNC, {}, nil); for _ = 1, 3 do ask(CAN, combo_leaf[0], 1) end
+assert(H.r32(ex[2] + 0x2C) == 1 and ask(CAN, ex[2], 0) == 0, "maxed ex row for sale")
+H.w8(MGR + 0x1C4 + 19, 4)                      -- * at tier 4 too (game slot 0)
 local NOW0 = STAM + 0x10
 local PAD = 0x63AC20                           -- joypad object of port p at + p * 0xE4
 local LT, RT, X, Y, B = 8, 9, 4, 5, 3          -- its analog bytes
@@ -655,6 +668,10 @@ pad(0, { [LT] = 0xFF, [Y] = 0xFF })            -- Y is ~ (slot 2), owned
 assert(level(0, 2, 1, 0x9D650) == 1, "boosted for the menu")
 assert(level(0, 2, 1) == 4, "~ not boosted to its top tier 4")
 assert(level(0, 2, 4) == 4, "a maxed special changed")
+H.w8(MGR + 0x1C4 + 21, 2)                      -- EX ~ tier 2: the tier-2 variant, whatever R2 owns
+pad(0, {}); pad(0, { [LT] = 0xFF, [Y] = 0xFF })
+assert(level(0, 2, 4) == 2 and level(0, 2, 1) == 2, "EX tier 2 not reported as 2")
+H.w8(MGR + 0x1C4 + 21, 4)
 spend(0)
 assert(stam() == 75, "EX on ~ not charged")
 -- a press whose move never spends: its extra expires
@@ -673,7 +690,7 @@ assert(math.abs(stam() - (100 - 25 / 1.5)) < 1e-3, "scaled EX cost: " .. stam())
 pad(0, {})
 H.w8(SHOP0, 0x81)
 -- player 2 (Kung Lao, port 1): his own flags, top tiers and stamina
-H.w32(MGR + 0xCC + 4, 1); H.w8(MGR + 0x1C4 + 0x1C + 21, 1); H.wf32(NOW0 + 0x24, 100)
+H.w32(MGR + 0xCC + 4, 1); H.w8(MGR + 0x1C4 + 0x1C + 21, 3); H.wf32(NOW0 + 0x24, 100)
 lt, rt = pad(1, { [LT] = 0xFF, [Y] = 0xFF })
 assert(rt == 0xFF and level(1, 2, 1) == 3, "KL ~ EX")
 spend(1)
