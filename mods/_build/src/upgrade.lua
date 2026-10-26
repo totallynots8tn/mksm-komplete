@@ -1,15 +1,18 @@
--- Extended Upgrades 0.5.3: XP shop, Health and Stamina only.
+-- Extended Upgrades 0.6.1: XP shop, Health, Stamina and fatality inputs.
 --
--- Turns the pause menu's Basic Moves category into the XP shop. Nothing new
--- is added to the menu; existing rows get new text, costs and behaviour, and
+-- Turns pause-menu Moves categories into the XP shop. Nothing new is added
+-- to the menu; existing rows get new text, costs and behaviour, and
 -- everything sold comes on top of what the game itself gives:
 --   * Basic Moves -> Upgrades: Basic Attacks -> Health (+1-4: 1, 2, 4 and 8
 --     game health-upgrade steps, above the game's own four) and Air Attacks
 --     -> Stamina (+1-4: everything that spends the blue bar costs less, as if
 --     it held 125, 150, 200 and 300%). Running Attacks stays vanilla.
--- Skill and Team keep their vanilla rows. EX moves, weapons and fatalities
--- come later, each as its own step (a failing callback switches the whole
--- script off, so they ship apart). See analysis/xp_shop/REPORT.md section 9.
+--   * Fatalities: a row not discovered yet (its input shows as ???) can be
+--     bought, which reveals the input. Every fatality works without being
+--     discovered; this sells the knowledge, not the move.
+-- Skill and Team keep their vanilla rows. EX moves and weapons come later,
+-- each as its own step (a failing callback switches the whole script off,
+-- so they ship apart). See analysis/xp_shop/REPORT.md section 9.
 -- Analysis: analysis/xp_shop/REPORT.md (sections 7, 9 and 11).
 --
 -- How the menu works (default.xbe):
@@ -60,6 +63,13 @@
 --   * Meter (0.2/0.3 sold its levels early): the story's setfatalitylevel
 --     (thunk 0x1116D) adds without a cap, and the HUD has layouts for levels
 --     1-3 only, so we still clamp it at 3 for saves that bought a level.
+--   * Fatalities: SyncOwned marks a Fatalities row owned (input shown) when
+--     its name text index is in the discovered list at 0x4DF5DC (count
+--     [0x4DFC1C], 400 slots), which the fatality handler appends to when one
+--     is performed. Nothing in gameplay reads it, and it is saved with the
+--     game (save offset 0x5C: the entries after the performed counter). After
+--     SyncOwned we price the rows it left unowned; buying one appends its
+--     name, so the next sync and every later load show it revealed.
 --   * Text: the strings are a pointer array at [0x5B04A4] (count [0x5AC508]).
 --     We write our strings over unused "(PH)" move-list placeholders, only where
 --     they fit, and point our rows at them. Every value we change is remembered,
@@ -102,6 +112,11 @@ local TEXT_COUNT    = 0x005AC508
 
 local SYNC_OWNED    = 0x00013A12
 local CAN_PURCHASE  = 0x000116CC
+-- CanPurchase's callers, by return address. Two more ask it about the
+-- highlighted row while you hover it: the description panel (0x9CE58) and
+-- the preview video (0x9D3A0) show the row's text and video on a yes.
+local ASKED_TO_BUY  = 0x0009E5D9    -- the purchase dispatcher (A on a row)
+local ASKED_FOR_ANY = 0x0009BC0E    -- "anything to buy under here?" (colours the category)
 local IS_COMBO      = 0x00015EDE
 local BUY_COMBO     = 0x00013954
 local UPGRADE       = 0x0001647E
@@ -109,37 +124,49 @@ local METER_LEVELUP = 0x0001116D    -- the setfatalitylevel script command
 local STAMINA_TICK  = 0x00016965    -- Tick(record), fastcall: once per record per frame
 
 local BASIC_TEXT    = 402           -- "Basic Moves" category
+local FATALITY_TEXT = 400           -- "Fatalities" category: its leaves hang directly off it
+local FATALITY_COST = 5000          -- per revealed input (placeholder until the economy pass)
+local FATALITY_HINT = 616           -- (PH) text that becomes the Fatalities category's description
+local FAT_LIST      = 0x004DF5DC    -- discovered fatalities: name text indices, saved with the game
+local FAT_COUNT     = 0x004DFC1C
+local FAT_MAX       = 400
 local UPGRADE_TEXT  = 455           -- "Upgrade" in the loaded language tells us which it is
 
 -- Text in the game's code page (cp1252). The "(PH)" placeholders we overwrite
 -- are 45-62 bytes in the five built-in languages (English is the shortest).
--- health[3] takes the bonus health and stamina[3] the bar size in percent.
+-- health[3] takes the bonus health and stamina[3] the bar size in percent;
+-- fatality is the Fatalities category's description (45 bytes at most).
 local LANGUAGES = {
     { tag = "Upgr", category = { "Upgrades", "Spend EXP on health and stamina." },
       health = { "Health", "Health +%d", "Max health +%d,\non top of the game's.",
                  "Extra health on top of the game's." },
       stamina = { "Stamina", "Stamina +%d", "Stamina %d%%.\nBlocks and specials\ncost less.",
-                  "Blocks and specials cost less stamina." } },
+                  "Blocks and specials cost less stamina." },
+      fatality = "Buy a ??? fatality's\ninput with EXP." },
     { tag = "Mejo", category = { "Mejoras", "Gasta EXP en salud y energ\237a." },
       health = { "Salud", "Salud +%d", "Vida m\225xima +%d,\nadem\225s de la del juego.",
                  "Salud extra, adem\225s de la del juego." },
       stamina = { "Energ\237a", "Energ\237a +%d", "Energ\237a %d%%.\nBloquear y especiales\ncuestan menos.",
-                  "Bloquear y especiales gastan menos." } },
+                  "Bloquear y especiales gastan menos." },
+      fatality = "Compra la secuencia de\nun ??? con EXP." },
     { tag = "Verb", category = { "Verbesserungen", "EXP f\252r Leben und Ausdauer ausgeben." },
       health = { "Leben", "Leben +%d", "Max. Leben +%d,\nzus\228tzlich zum Spiel.",
                  "Mehr Leben, zus\228tzlich zum Spiel." },
       stamina = { "Ausdauer", "Ausdauer +%d", "Ausdauer %d%%.\nBlock, Spezial\nkosten weniger.",
-                  "Blocken und Spezial kosten weniger." } },
+                  "Blocken und Spezial kosten weniger." },
+      fatality = "Kaufe die Eingabe\neines ??? mit EXP." },
     { tag = "Pote", category = { "Potenziamenti", "Spendi EXP per salute ed energia." },
       health = { "Salute", "Salute +%d", "Salute max +%d,\noltre a quella del gioco.",
                  "Salute extra oltre a quella del gioco." },
       stamina = { "Energia", "Energia +%d", "Energia %d%%.\nParate e speciali\ncostano meno.",
-                  "Parate e speciali costano meno." } },
+                  "Parate e speciali costano meno." },
+      fatality = "Compra la sequenza\ndi un ??? con EXP." },
     { tag = "Am\233l", category = { "Am\233liorations", "D\233pensez l'EXP en sant\233 et endurance." },
       health = { "Sant\233", "Sant\233 +%d", "Sant\233 max +%d,\nen plus de celle du jeu.",
                  "Sant\233 en plus de celle du jeu." },
       stamina = { "Endurance", "Endurance +%d", "Endurance %d%%.\nGarde, sp\233ciaux\nmoins chers.",
-                  "Garde et sp\233ciaux co\251tent moins." } },
+                  "Garde et sp\233ciaux co\251tent moins." },
+      fatality = "Ach\232te la saisie\nd'un ??? avec l'EXP." },
 }
 
 -- Each shop group takes over one Basic Moves group (source = its vanilla
@@ -184,6 +211,7 @@ local resume = false            -- a sync ran out of budget; finish it next call
 local pending = nil             -- { kind, store, k } while the game runs our purchase
 local saved = nil               -- the level slot Upgrade is about to change
 local asked = nil               -- node passed to CanPurchase / IsCombo
+local asked_from = nil          -- CanPurchase's return address: which menu code asks
 local tree = nil                -- the tree copy our changes were made to
 local changed = {}              -- [address] = { was = vanilla value, now = ours }
 local costs = {}                -- per player: { base = vanilla costs, now = ours, level }
@@ -296,6 +324,7 @@ local function place_text()
             all[#all + 1] = { row.desc, string.format(words[3], row_figure(group.kind, k)) }
         end
     end
+    all[#all + 1] = { FATALITY_HINT, lang.fatality }
     local result = true
     for _, t in ipairs(all) do
         local placed = put_text(t[1], t[2])
@@ -499,6 +528,35 @@ local function shop_row(node)
             end
         end
     end
+    if gname == FATALITY_TEXT and game.read_u32(node + 0x28) == FATALITY_COST then
+        return "fatality", nil, nil
+    end
+    return nil
+end
+
+-- Whether a name text index is in the game's discovered-fatality list (nil
+-- when the count is not one we understand).
+local function discovered(name)
+    local count = game.read_u32(FAT_COUNT)
+    if count > FAT_MAX then return nil end
+    for i = 0, count - 1 do
+        if game.read_u32(FAT_LIST + i * 4) == name then return true end
+    end
+    return false
+end
+
+-- The Fatalities category under a character root: its leaves hang directly
+-- off it, like Skill's (nil when absent or not shaped like that).
+local function fatality_node(root)
+    local n, kids = game.read_u32(root + 0x0C), game.read_u32(root + 0x14)
+    if n > 16 or not plausible(kids) then return nil end
+    for i = 0, n - 1 do
+        local c = game.read_u32(kids + i * 4)
+        if plausible(c) and game.read_u32(c + 0x18) == FATALITY_TEXT then
+            local count, list = game.read_u32(c + 0x0C), game.read_u32(c + 0x14)
+            if count >= 1 and count <= 16 and plausible(list) then return c end
+        end
+    end
     return nil
 end
 
@@ -547,6 +605,21 @@ local function patch_root(m, root)
             end
         end
     end
+    -- Fatalities: SyncOwned has just marked the discovered ones owned; the
+    -- rest get a price. Hovering a ??? row shows nothing (see CanPurchase), so
+    -- the category's own description says they are for sale.
+    local fat = fatality_node(root)
+    if fat then
+        if not patch(fat + 0x1C, FATALITY_HINT) then return false end
+        local kids = game.read_u32(fat + 0x14)
+        for k = 0, game.read_u32(fat + 0x0C) - 1 do
+            local node = game.read_u32(kids + k * 4)
+            if plausible(node) and game.read_u32(node + 4) == 0 and game.read_u32(node + 0x2C) == 0
+                    and not patch(node + 0x28, FATALITY_COST) then
+                return false
+            end
+        end
+    end
     return true
 end
 
@@ -568,21 +641,38 @@ local function sync()
     if root and not patch_root(m, root) then resume = true end
 end
 
--- The row is the next to buy in its store, affordable, and its cost really
--- is ours.
+-- The row is the next to buy in its store (a fatality: not discovered yet,
+-- with room in the list), affordable, and its cost really is ours.
 local function can_buy(node, kind, store, k)
     local m = manager()
     if m == nil then return false end
-    if game.read_u32(node + 0x28) ~= store.rows[k].cost then return false end
+    local cost = kind == "fatality" and FATALITY_COST or store.rows[k].cost
+    if game.read_u32(node + 0x28) ~= cost then return false end
     local player = menu_player()
     if player == nil then return false end
-    if shop_level(m, player, store.kind) ~= k - 1 then return false end
-    return game.read_u32(m + XP + player * PLAYER_STRIDE) >= store.rows[k].cost
+    if kind == "fatality" then
+        if game.read_u32(node + 0x2C) ~= 0 or game.read_u32(FAT_COUNT) >= FAT_MAX
+                or discovered(game.read_u32(node + 0x18)) ~= false then
+            return false
+        end
+    elseif shop_level(m, player, store.kind) ~= k - 1 then
+        return false
+    end
+    return game.read_u32(m + XP + player * PLAYER_STRIDE) >= cost
 end
 
 -- Record the bought row and apply it at once (the pause menu shows the new
--- max health straight away).
-local function apply_purchase(m, kind, store, k)
+-- max health straight away). A fatality goes into the discovered list, which
+-- the game saves, so its input stays revealed like one the player performed.
+local function apply_purchase(m, kind, store, k, node)
+    if kind == "fatality" then
+        local name, count = game.read_u32(node + 0x18), game.read_u32(FAT_COUNT)
+        if count < FAT_MAX and discovered(name) == false then
+            game.write_u32(FAT_LIST + count * 4, name)
+            game.write_u32(FAT_COUNT, count + 1)
+        end
+        return
+    end
     local player = menu_player()
     if player == nil then return end
     if shop_level(m, player, store.kind) ~= k - 1 then return end
@@ -605,12 +695,17 @@ return {
         before = function(ctx)
             if resume then sync() end
             asked = game.read_u32(ctx.esp + 4)
+            asked_from = game.read_u32(ctx.esp)
         end,
         after = function(ctx)
-            local node = asked
-            asked = nil
+            local node, from = asked, asked_from
+            asked, asked_from = nil, nil
             local kind, store, k
             if node then kind, store, k = shop_row(node) end
+            -- A yes makes the description and the preview video show, and for a
+            -- fatality those are the input: only the purchase itself and the
+            -- category's "anything to buy" search hear it.
+            if kind == "fatality" and from ~= ASKED_TO_BUY and from ~= ASKED_FOR_ANY then return end
             if kind then set_al(ctx, can_buy(node, kind, store, k) and 1 or 0) end
         end,
     },
@@ -628,14 +723,14 @@ return {
         before = function(ctx)
             local node = game.read_u32(SELECTED)
             local kind, store, k = shop_row(node)
-            pending = kind and can_buy(node, kind, store, k) and { kind, store, k } or nil
+            pending = kind and can_buy(node, kind, store, k) and { kind, store, k, node } or nil
         end,
         after = function(ctx)
             local p = pending
             pending = nil
             local m = manager()
             if p == nil or m == nil or ctx.eax & 0xFF ~= 1 then return end
-            apply_purchase(m, p[1], p[2], p[3])
+            apply_purchase(m, p[1], p[2], p[3], p[4])
         end,
     },
     {

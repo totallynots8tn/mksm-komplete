@@ -61,8 +61,8 @@ local function text(i)
     return table.concat(s)
 end
 
--- tree: one root with Basic Moves (3 groups of 4), Combos, Skill (4 leaves)
--- and Team (2 leaves)
+-- tree: one root with Basic Moves (3 groups of 4), Combos, Skill (4 leaves),
+-- Team (2 leaves) and Fatalities (3 leaves, the first already discovered)
 local next_node = BLOB + 0x100
 local function node(kind, name, parent, n)
     local p = next_node
@@ -72,12 +72,13 @@ local function node(kind, name, parent, n)
     return p
 end
 local function child(parent, i, c) H.w32(parent + 0x30 + i * 4, c) end
-local root = node(3, 0, nil, 4)
+local root = node(3, 0, nil, 5)
 local basic = node(2, 402, root, 3)
 local combos = node(1, 463, root, 2)
 local skill = node(1, 464, root, 4)
 local team = node(1, 465, root, 2)
-child(root, 0, basic); child(root, 1, combos); child(root, 2, skill); child(root, 3, team)
+local fatal = node(1, 400, root, 3)
+child(root, 0, basic); child(root, 1, combos); child(root, 2, skill); child(root, 3, team); child(root, 4, fatal)
 local group, rows = {}, {}
 for j = 1, 3 do
     group[j] = node(1, 402 + j, basic, 4); child(basic, j - 1, group[j])
@@ -102,6 +103,14 @@ for k = 1, 2 do
     gear[k] = node(0, 1021 + k, team, 0); child(team, k - 1, gear[k])
     H.w32(gear[k] + 0x2C, 1)
 end
+local fat = {}
+for k = 1, 3 do
+    fat[k] = node(0, 1061 + k, fatal, 0); child(fatal, k - 1, fat[k])
+    H.w32(fat[k] + 0x1C, 1181 + k)                 -- the input text
+end
+local FAT_LIST, FAT_COUNT = 0x4DF5DC, 0x4DFC1C
+H.w32(FAT_LIST, 1062); H.w32(FAT_COUNT, 1)         -- Shaolin Soccer, performed once
+H.w32(fat[1] + 0x2C, 1)                            -- so SyncOwned showed its input
 -- a second character (Kung Lao, id 1) with its own Basic Moves
 local root2 = node(3, 1, nil, 1)
 local basic2 = node(2, 402, root2, 2)
@@ -116,13 +125,17 @@ H.w32(BLOB + 0x0C, 2); H.w32(BLOB + 0x10, BLOB + 0x20); H.w32(BLOB + 0x20, root)
 local health, stamina = rows[1], rows[2]
 
 local function xp(v, player) H.w32(MGR + 0x4940 + (player or 0) * 0x50, v) end
-local function ask_with(mod, address, node_ptr, vanilla)
+-- CanPurchase's callers by return address: the purchase dispatcher (the
+-- default here), the "anything to buy" search, and the two that run while a
+-- row is hovered (description panel, preview video)
+local TO_BUY, FOR_ANY, DESCRIPTION, PREVIEW = 0x9E5D9, 0x9BC0E, 0x9CE58, 0x9D3A0
+local function ask_with(mod, address, node_ptr, vanilla, from)
     local ctx = { esp = 0xD0000100, eax = 0xABCDEF00 | vanilla }
-    H.w32(ctx.esp + 4, node_ptr)
+    H.w32(ctx.esp, from or TO_BUY); H.w32(ctx.esp + 4, node_ptr)
     H.invoke(mod, address, ctx, nil)
     return ctx.eax & 0xFF, ctx.eax >> 8
 end
-local function ask(address, node_ptr, vanilla) return ask_with(m, address, node_ptr, vanilla) end
+local function ask(address, node_ptr, vanilla, from) return ask_with(m, address, node_ptr, vanilla, from) end
 
 -- before the menu opens the shop is off: vanilla answers stand
 assert(ask(CAN, health[1], 0) == 0 and ask(CAN, ex[1], 0) == 0, "shop active before sync")
@@ -213,6 +226,43 @@ assert(H.r32(MGR + 0x4940) == 0, "XP not deducted")
 xp(20000)
 buy(health[2], 2, false)
 assert(H.r8(SHOP0) == 0x81 and H.r32(MGR + 0x4940) == 20000, "declined purchase applied")
+
+-- 4b. fatalities: the rows SyncOwned left unowned got a price; buying one
+-- appends its name to the discovered list (the game saves it), and only once
+assert(H.r32(fat[1] + 0x28) == 0, "discovered fatality priced")
+assert(H.r32(fatal + 0x1C) == 616 and text(616) == "Buy a ??? fatality's\ninput with EXP.", "fatalities hint")
+assert(H.r32(fat[2] + 0x28) == 5000 and H.r32(fat[3] + 0x28) == 5000, "undiscovered fatalities not priced")
+assert(H.r32(fat[2] + 0x18) == 1063 and H.r32(fat[2] + 0x1C) == 1183, "fatality text touched")
+assert(ask(CAN, fat[1], 0) == 0 and ask(COMBO, fat[1], 0) == 0, "discovered fatality for sale")
+assert(ask(CAN, fat[2], 0) == 1 and ask(COMBO, fat[2], 0) == 1, "fatality not for sale")
+-- hovering it must not reveal the input or the video: those callers get the
+-- game's own answer, while the category still reads as having something to buy
+assert(ask(CAN, fat[2], 0, DESCRIPTION) == 0, "hover shows the fatality input")
+assert(ask(CAN, fat[2], 0, PREVIEW) == 0, "hover plays the fatality video")
+assert(ask(CAN, fat[2], 0, FOR_ANY) == 1, "fatalities category not marked buyable")
+assert(ask(CAN, health[2], 0, DESCRIPTION) == 1, "shop row description hidden")    -- +2 is next
+xp(4999)
+assert(ask(CAN, fat[2], 0) == 0, "fatality affordable at 4999")
+xp(20000)
+buy(fat[2], 2, true)
+assert(#H.failed == 0, H.failed[1])
+assert(H.r32(FAT_COUNT) == 2 and H.r32(FAT_LIST + 4) == 1063, "fatality not revealed")
+assert(H.r32(FAT_LIST) == 1062, "discovered list reordered")
+assert(H.r32(MGR + 0x4940) == 15000, "fatality XP")
+assert(H.r8(MGR + 0x1C4 + 14) == 0, "combo slot left unlocked by a fatality")
+H.w32(fat[2] + 0x2C, 0)                            -- even if a row reads unowned again
+assert(ask(CAN, fat[2], 0) == 0, "revealed fatality for sale twice")
+H.w32(fat[2] + 0x2C, 1)
+H.w32(FAT_COUNT, 400)
+assert(ask(CAN, fat[3], 0) == 0, "for sale with the list full")
+H.w32(FAT_COUNT, 401)
+assert(ask(CAN, fat[3], 0) == 0, "for sale with a count we don't understand")
+H.w32(FAT_COUNT, 2)
+H.w32(MGR + 0x88, 2)
+assert(ask(CAN, fat[3], 0) == 0, "fatality for sale in versus")
+H.w32(MGR + 0x88, 0)
+assert(H.r32(FAT_COUNT) == 2, "list changed without a purchase")
+xp(20000)
 
 -- 5. stamina: the menu player's costs shrink at once, the other player's don't
 buy(stamina[1], 1, true)
@@ -384,7 +434,7 @@ end
 put(455, "Mejorar")
 for _, i in ipairs({ 574, 598 }) do placeholder(i, 62) end
 for _, i in ipairs({ 581, 582, 583, 584, 593, 594, 599, 601, 602, 603, 604, 611, 612, 613,
-                     718, 719, 783, 784 }) do
+                     616, 718, 719, 783, 784 }) do
     placeholder(i, 56)
 end
 for _, i in ipairs({ 596, 597 }) do placeholder(i, 54) end
@@ -396,12 +446,14 @@ assert(text(597) == "Vida m\225xima +800,\nadem\225s de la del juego.", "spanish
 assert(text(784) == "Energ\237a 300%.\nBloquear y especiales\ncuestan menos.", "spanish stamina desc")
 assert(text(718) == "Energ\237a +3", "spanish stamina row 3")
 assert(H.r32(skill + 0x18) == 464 and H.r32(team + 0x18) == 465, "spanish tree")
+assert(text(616) == "Compra la secuencia de\nun ??? con EXP.", "spanish fatalities hint")
 
 -- 16. the text table reloads with placeholders too short: every field is put back
 local vanilla = { [basic + 0x18] = 402, [group[1] + 0x18] = 403, [group[2] + 0x18] = 404,
                   [group[2] + 0x0C] = 4, [health[1] + 0x18] = 485, [health[1] + 0x1C] = 585,
                   [health[1] + 0x28] = 0, [health[1] + 0x2C] = 1, [stamina[2] + 0x18] = 490,
-                  [stamina[4] + 0x28] = 0, [skill + 0x18] = 464, [ex[1] + 0x18] = 1410 }
+                  [stamina[4] + 0x28] = 0, [skill + 0x18] = 464, [ex[1] + 0x18] = 1410,
+                  [fat[3] + 0x28] = 0, [fatal + 0x1C] = 500 }
 -- (the first instance holds the vanilla values; a second one would only
 -- ever see a fresh tree in the game)
 for _, i in ipairs({ 582, 584, 594, 597, 784 }) do placeholder(i, 20) end
@@ -421,7 +473,7 @@ assert(io.open(tmp, "wb")):write(small):close()
 local tiny = H.load(tmp)
 os.remove(tmp)
 for _, i in ipairs({ 574, 598, 581, 582, 583, 584, 593, 594, 596, 597, 599, 601, 602, 603, 604,
-                     611, 612, 613, 718, 719, 783, 784 }) do
+                     611, 612, 613, 616, 718, 719, 783, 784 }) do
     placeholder(i, 56)
 end
 H.w8(SHOP0, 0x81)
@@ -471,4 +523,4 @@ assert(#H.failed == 0 and H.r32(MGR + 0x94) == 1400, "level 7: " .. H.r32(MGR + 
 
 assert(#H.failed == 0, H.failed[1])
 print("errors", #H.failed, "first sync writes", first_writes, "max_instr", H.max_instr)
-print("xp shop: health, stamina, tick, languages, fallback all pass")
+print("xp shop: health, stamina, fatalities, tick, languages, fallback all pass")

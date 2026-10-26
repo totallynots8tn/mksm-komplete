@@ -1,4 +1,4 @@
-# Extended Upgrades: XP Shop 0.5.3 (preview, experimental)
+# Extended Upgrades: XP Shop 0.6.1 (preview, experimental)
 
 The XP shop spends XP in the game's own upgrade menu, on the game's own menu
 entries. Nothing new is added to the menu, and everything it sells comes **on
@@ -6,19 +6,26 @@ top of** what the game gives you.
 
 ## What it does
 
-Pause > Moves > **Basic Moves** becomes **Upgrades**. Every other category,
-Skill and Team included, is unchanged.
+Pause > Moves > **Basic Moves** becomes **Upgrades**, and the **Fatalities**
+you haven't discovered can be bought. Every other category, Skill and Team
+included, is unchanged.
 
 | Category | Row | Cost | Effect |
 | --- | --- | --- | --- |
 | Upgrades > Health | Health +1 to +4 | 5,000 / 10,000 / 15,000 / 20,000 XP | 1 / 2 / 4 / 8 health-upgrade steps (+100 / +200 / +400 / +800 max health in solo), above the game's own 4 |
 | Upgrades > Stamina | Stamina +1 to +4 | 5,000 / 10,000 / 15,000 / 20,000 XP | everything that spends the blue bar costs less: it plays as 125 / 150 / 200 / 300% |
 | Upgrades > Running Attacks | — | — | stays vanilla |
+| Fatalities | any row still showing ??? | 5,000 XP each | reveals that fatality's input and video |
 
 - **Buying:** pick the next row and confirm in the usual Upgrade dialog. Health
   and Stamina rows are bought in order. Rows
   only unlock when you have the XP, and as with Combos the description stays
   hidden until you can buy a row.
+- **Fatalities** all work without being discovered; the game only hides
+  their inputs until you perform one. A ??? row stays hidden while you browse
+  (no input, no video); press A on it to buy. Buying reveals its input the same
+  way performing it would, and it is saved like a discovery (it also counts
+  in the stats' discovered fatalities).
 - **Health** applies at once and heals you by what your max health gained.
   It stacks on the game's own health upgrades: pick those up in the world as
   usual, and the shop's steps stay on top. In co-op the shop's Health is shared,
@@ -45,12 +52,18 @@ shop turns itself off and the menu goes back to vanilla.
 
 ## Coming next
 
-A weapon store, fatalities you haven't learned, and EX moves (L2 + special),
+A weapon store and EX moves (L2 + special),
 each in a menu entry that already exists and each released on its own. The reverse-engineering is in
 `analysis/xp_shop/REPORT.md` in the project repository.
 
 ## Changelog
 
+- **0.6.1:** hovering a ??? fatality no longer shows its input and video
+  (0.6.0 told the menu's description and video panels the row was buyable,
+  and they treat buyable as unlocked); the Fatalities category says the rows
+  are for sale instead.
+- **0.6.0:** buy the inputs of fatalities you haven't discovered yet
+  (5,000 XP each, in the Fatalities menu).
 - **0.5.3:** steeper top tiers. Stamina plays as 125 / 150 / 200 / 300%
   (+3 and +4 were 175 / 200%), and Health adds 1 / 2 / 4 / 8 steps (+3 and +4
   were 3 / 4), so Health +4 is +800 max health in solo.

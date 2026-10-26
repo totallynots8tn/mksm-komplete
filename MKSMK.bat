@@ -11,8 +11,8 @@ rem a time. When a rung passes QA, freeze it into a new release\v1.x, point
 rem BASE there and drop the mod from LADDER.
 set "BASE=%REPO%release\v1.1"
 set "BASE_NAME=v1.1"
-set LADDER="%REPO%mods\ldk_x3" "%REPO%mods\mksmk_probe"
-set "LADDER_NAMES=LDK x3"
+set LADDER="%REPO%mods\mk_upgrade" "%REPO%mods\ldk_x3" "%REPO%mods\mksmk_probe"
+set "LADDER_NAMES=XP Shop, LDK x3"
 where py >nul 2>nul && (set "PY=py -3") || (set "PY=python")
 where pyw >nul 2>nul && (set "PYW=pyw -3") || (set "PYW=pythonw")
 for /f %%e in ('echo prompt $E^| cmd') do set "E=%%e"
