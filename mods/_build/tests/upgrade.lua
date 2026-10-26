@@ -188,11 +188,12 @@ assert(H.r32(skill + 0x18) == 464, "skill touched")
 for k = 1, 4 do
     assert(H.r32(ex[k] + 0x18) == 1409 + k and H.r32(ex[k] + 0x2C) == 1, "skill row " .. k .. " touched")
 end
--- Specials: X's moves 1 and 2 are owned on R2, none is EX yet: move 1 is on
--- sale again as its EX; the others stay as the game has them
+-- Specials: X's moves 1 and 2 are owned on R2, none is EX yet: both are on
+-- sale again as their EX; move 3 stays as the game has it
 assert(H.r32(move[1] + 0x18) == 713 and text(713) == "Special 1 EX", "move 1's EX name: " .. text(713))
 assert(H.r32(move[1] + 0x2C) == 0 and H.r32(move[1] + 0x28) == 5000, "move 1's EX not on sale")
-assert(H.r32(move[2] + 0x18) == 1532 and H.r32(move[2] + 0x2C) == 1, "move 2 changed before its turn")
+assert(text(H.r32(move[2] + 0x18)) == "Special 2 EX" and H.r32(move[2] + 0x2C) == 0
+    and H.r32(move[2] + 0x28) == 10000, "move 2's EX not on sale with move 1's")
 assert(H.r32(move[3] + 0x18) == 1533 and H.r32(move[3] + 0x2C) == 0 and H.r32(move[3] + 0x28) == 6500,
     "move 3 (not owned on R2) changed")
 assert(H.r32(team + 0x18) == 465 and H.r32(gear[1] + 0x18) == 1022 and H.r32(gear[1] + 0x2C) == 1,
@@ -594,29 +595,41 @@ H.w32(MGR + 0x88, 2)
 assert(ask(CAN, health[1], 0) == 0 and ask(CAN, ex[1], 0) == 0, "versus")
 H.w32(MGR + 0x88, 0)
 
--- 13. EX moves: buying a row raises its button's tier (leaf * ~ | ^ -> game
--- slot 0 2 1 3 -> level slot 19 + it), one tier at a time, up to the top. While L2 is held, the move system's
--- question (and only it) gets the exact top tier, if the stamina covers the
--- cost, which comes off once, when the move spends its own
+-- 13. EX moves: every move owned on R2 is for sale as its EX, in any order
+-- (Specials group * ~ | -> game slot 0 2 1 -> level slot 19 + it: a bit per
+-- move, bit 7 marks the form). While L2 is held, the move system's question
+-- (and only it) passes exactly the EX moves, if the stamina covers the cost,
+-- which comes off once, when the move spends its own
 H.w32(STAM_N, 2)
 H.w8(MGR + 0x1C4 + 19, 0)                      -- (X is Specials group 1 -> game slot 0 -> EX byte 19)
-xp(5000)
-assert(ask(CAN, move[1], 0) == 1, "move 1's EX not for sale")
-buy(move[1], 1, true)
+xp(10000)
+assert(ask(CAN, move[2], 0) == 1, "move 2's EX not for sale before move 1's")
+buy(move[2], 1, true)
 assert(#H.failed == 0, H.failed[1])
-assert(H.r8(MGR + 0x1C4 + 19) == 1 and H.r8(MGR + 0x1C4) == 4, "EX tier not 1, or the R2 tier touched")
+assert(H.r8(MGR + 0x1C4 + 19) == 0x82 and H.r8(MGR + 0x1C4) == 4, "EX bit not set, or the R2 tier touched")
 assert(H.r32(MGR + 0x4940) == 0, "EX XP")
-assert(ask(CAN, move[1], 0) == 0, "move 1's EX for sale twice")
--- the next menu: move 1 shows as its EX, owned; move 2 is on sale as its EX
-H.w32(move[1] + 0x2C, 1)                       -- (SyncOwned: owned on R2)
-H.invoke(m, SYNC, {}, nil); for _ = 1, 3 do ask(CAN, combo_leaf[0], 1) end
-assert(H.r32(move[1] + 0x2C) == 1 and text(H.r32(move[1] + 0x18)) == "Special 1 EX", "move 1 not shown as EX")
-assert(text(H.r32(move[2] + 0x18)) == "Special 2 EX" and H.r32(move[2] + 0x2C) == 0
-    and H.r32(move[2] + 0x28) == 10000, "move 2's EX not on sale next")
+assert(ask(CAN, move[2], 0) == 0, "move 2's EX for sale twice")
+-- the next menu: move 2 shows as its EX, owned; move 1 is still on sale
+H.w32(move[2] + 0x2C, 1)                       -- (SyncOwned: owned on R2)
+resync()
+assert(H.r32(move[2] + 0x2C) == 1 and text(H.r32(move[2] + 0x18)) == "Special 2 EX", "move 2 not shown as EX")
+assert(text(H.r32(move[1] + 0x18)) == "Special 1 EX" and H.r32(move[1] + 0x2C) == 0
+    and H.r32(move[1] + 0x28) == 5000, "move 1's EX not still on sale")
 assert(H.r32(move[3] + 0x18) == 1533, "move 3 renamed before it is owned on R2")
-xp(9999)
-assert(ask(CAN, move[2], 0) == 0, "move 2's EX affordable at 9999")
-H.w8(MGR + 0x1C4 + 19, 4)                      -- * at tier 4 too (game slot 0)
+xp(4999)
+assert(ask(CAN, move[1], 0) == 0, "move 1's EX affordable at 4999")
+xp(5000)
+buy(move[1], 1, true)
+assert(H.r8(MGR + 0x1C4 + 19) == 0x83, "move 1's EX not added to move 2's")
+-- up to 0.9.0 the byte counted the EX moves, in order: 1 reads as move 1
+H.w8(MGR + 0x1C4 + 19, 1)
+H.w32(move[1] + 0x2C, 1)
+resync()
+assert(H.r32(move[1] + 0x2C) == 1 and H.r32(move[2] + 0x2C) == 0, "a 0.9.0 count not read as its moves")
+xp(10000)
+buy(move[2], 1, true)
+assert(H.r8(MGR + 0x1C4 + 19) == 0x83, "a 0.9.0 count not carried into the bits")
+H.w8(MGR + 0x1C4 + 19, 0x8B)                   -- * moves 1, 2 and 4 are EX (R2 owns 1-4)
 local NOW0 = STAM + 0x10
 local PAD = 0x63AC20                           -- joypad object of port p at + p * 0xE4
 local LT, RT, X, Y, B = 8, 9, 4, 5, 3          -- its analog bytes
@@ -628,12 +641,15 @@ local function pad(player, held)               -- one frame of the pad translato
     assert(#H.failed == 0, H.failed[1])
     return H.r8(obj + LT), H.r8(obj + RT)
 end
-local function level(player, slot, real, from)
-    local ctx = { esp = 0xD0000300, eax = real }
-    H.w32(ctx.esp, from or EVAL); H.w32(ctx.esp + 4, player); H.w32(ctx.esp + 8, slot)
+local function cond(player, id, real, from)     -- GetLevel, asked about condition id (in ebp)
+    local ctx = { esp = 0xD0000300, eax = real, ebp = id }
+    H.w32(ctx.esp, from or EVAL); H.w32(ctx.esp + 4, player); H.w32(ctx.esp + 8, 0)
     H.invoke(m, 0x111C2, ctx, nil)
     assert(#H.failed == 0, H.failed[1])
     return ctx.eax
+end
+local function level(player, slot, j, real, from)   -- ... about move j of a slot
+    return cond(player, 0x3174 + slot * 5 + j - 1, real, from)
 end
 local function spend(player)
     local ctx = { esp = 0xD0000400 }
@@ -643,18 +659,19 @@ local function spend(player)
 end
 local function stam(player) return H.rf32(NOW0 + (player or 0) * 0x24) end
 H.w32(0x5CE878, 1000); H.wf32(NOW0, 100)
--- L2 + X (* owned): the game sees R2 + X, the special is EX
+-- L2 + X (* has EX moves): the game sees R2 + X, and only the EX moves pass
 local lt, rt = pad(0, { [LT] = 0xFF, [X] = 0xFF })
 assert(lt == 0 and rt == 0xFF, "L2 + X not turned into R2 + X")
-assert(level(0, 0, 4) == 4 and stam() == 100, "EX move not picked, or charged at the pick")
-assert(level(0, 0, 2) == 2, "EX above the player's own (R2) tier")
+assert(level(0, 0, 1, 4) == 1 and level(0, 0, 4, 4) == 4 and stam() == 100,
+    "EX move not picked, or charged at the pick")
+assert(level(0, 0, 3, 4) == 0, "move 3 (no EX) picked on L2")
+assert(level(0, 0, 4, 2) == 0, "the EX of a move not owned on R2 picked")
+assert(cond(0, 0x3183, 3) == 3 and cond(0, 0x25B0, 1) == 1, "another condition touched")
 spend(0)
 assert(stam() == 75, "EX stamina not charged: " .. stam())
 spend(0)
 assert(stam() == 75, "charged twice for one move")
-H.w8(MGR + 0x1C4 + 19, 1)                      -- EX * 1/4: a follow-up of the chain (picked
-assert(level(0, 0, 4) == 1, "a follow-up after the charge escaped the EX tier")   -- after the charge) stays at 1
-H.w8(MGR + 0x1C4 + 19, 4)
+assert(level(0, 0, 3, 4) == 0, "a follow-up after the charge escaped the EX moves")
 -- still holding X: the press stays R2, but it isn't a new EX
 H.w32(0x5CE878, 1010)
 lt, rt = pad(0, { [LT] = 0xFF, [X] = 0xFF })
@@ -704,14 +721,15 @@ H.w32(MGR + 0x88, 0); pad(0, {})
 -- a plain R2 special is never boosted or charged extra, and nothing but the
 -- evaluator is answered
 H.w32(0x5CE878, 2000)
-assert(level(0, 0, 2) == 2, "a plain special boosted")
-pad(0, { [LT] = 0xFF, [Y] = 0xFF })            -- Y is ~ (slot 2), owned
-assert(level(0, 2, 1, 0x9D650) == 1, "boosted for the menu")
-assert(level(0, 2, 4) == 4 and level(0, 2, 1) == 1, "~ EX not limited to the R2 tier")
-assert(level(0, 2, 4) == 4, "a maxed special changed")
-H.w8(MGR + 0x1C4 + 21, 2)                      -- EX ~ tier 2: the tier-2 variant, whatever R2 owns
+assert(level(0, 0, 3, 2) == 2, "a plain special changed")
+H.w8(MGR + 0x1C4 + 21, 4)                      -- Y is ~ (slot 2): a 0.9.0 count of 4, moves 1-4
+pad(0, { [LT] = 0xFF, [Y] = 0xFF })
+assert(level(0, 2, 3, 1, 0x9D650) == 1, "answered for the menu")
+assert(level(0, 2, 1, 1) == 1 and level(0, 2, 2, 1) == 0, "~ EX not limited to the moves owned on R2")
+assert(level(0, 2, 4, 4) == 4, "~ EX move 4 not picked")
+H.w8(MGR + 0x1C4 + 21, 0x82)                   -- EX ~ move 2 alone
 pad(0, {}); pad(0, { [LT] = 0xFF, [Y] = 0xFF })
-assert(level(0, 2, 4) == 2 and level(0, 2, 1) == 1, "EX tier 2 not the lower of 2 and the R2 tier")
+assert(level(0, 2, 2, 4) == 2 and level(0, 2, 1, 4) == 0, "EX ~ move 2 alone: not exactly it")
 H.w8(MGR + 0x1C4 + 21, 4)
 spend(0)
 assert(stam() == 75, "EX on ~ not charged")
@@ -721,7 +739,6 @@ pad(0, { [LT] = 0xFF, [Y] = 0xFF })
 H.w32(0x5CE878, 2100)
 spend(0)
 assert(stam() == 100, "an expired EX charged")
-assert(level(0, 2, 1) == 1, "an expired EX boosted")
 pad(0, {})
 -- Stamina +2 (150%): the extra is scaled too
 H.w8(SHOP0, 0x91)
@@ -730,10 +747,10 @@ spend(0)
 assert(math.abs(stam() - (100 - 25 / 1.5)) < 1e-3, "scaled EX cost: " .. stam())
 pad(0, {})
 H.w8(SHOP0, 0x81)
--- player 2 (Kung Lao, port 1): his own flags, top tiers and stamina
+-- player 2 (Kung Lao, port 1): his own flags (a 0.9.0 count of 3: moves 1-3) and stamina
 H.w32(MGR + 0xCC + 4, 1); H.w8(MGR + 0x1C4 + 0x1C + 21, 3); H.wf32(NOW0 + 0x24, 100)
 lt, rt = pad(1, { [LT] = 0xFF, [Y] = 0xFF })
-assert(rt == 0xFF and level(1, 2, 5) == 3, "KL ~ EX not capped at his top tier 3")
+assert(rt == 0xFF and level(1, 2, 3, 3) == 3 and level(1, 2, 4, 3) == 0, "KL ~ EX not his moves 1-3")
 spend(1)
 assert(stam(1) == 80, "player 2's charge (Stamina +1: 20): " .. stam(1))
 pad(1, {})

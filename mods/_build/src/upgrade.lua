@@ -1,4 +1,4 @@
--- Extended Upgrades 0.9.0: XP shop, Health, Stamina, weapons, EX moves and fatality inputs.
+-- Extended Upgrades 0.9.1: XP shop, Health, Stamina, weapons, EX moves and fatality inputs.
 --
 -- Turns pause-menu Moves categories into the XP shop. Nothing new is added
 -- to the menu; existing rows get new text, costs and behaviour, and
@@ -14,7 +14,7 @@
 --     discovered; this sells the knowledge, not the move.
 --   * Specials: every move row can be bought twice. The first purchase is
 --     the game's (the move, on R2); once that is owned, the row is for sale
---     again as its EX ("Special 2 EX"), in order. L2 + the move's input (no
+--     again as its EX ("Special 2 EX"), in any order. L2 + the move's input (no
 --     R2) does an EX move as its EX version, for extra stamina (the blue bar;
 --     the red orbs stay the fatality meter). L2 + an input without its EX
 --     stays vanilla (block), and L2 + R2 + a button stays free.
@@ -102,24 +102,25 @@
 --     [0x505970]) per session, when one of its weapons can be afforded,
 --     then put both back.
 --   * EX (analysis/ex_specials/REPORT.md): a special's variant is picked by the
---     move system's condition evaluator 0x1CD780, which asks GetLevel
---     (thunk 0x111C2) for slots 0-3 and compares with >= for the lower tiers
---     and == for the top one. While L2 (left trigger: the analog byte at pad
---     state +0xC, 0x63ABD4 + p * 0x16; in the joypad object 0x63AC20 + p *
---     0xE4 the analog bytes from +2 are A B X Y Black White LT RT) is held
---     without R2 and an attack button whose EX the player owns is pressed
---     (flag level slots 19-22, read by nothing else), the pad-to-action
---     translator 0x129480 (eax = joypad object) gets R2 instead of L2, and
---     keeps getting it until L2 is let go, so the game does the special and
---     its whole input chain (a tier-4 fireball is R2 + X, X, X; between the
---     presses plain L2 would be block). Pressing it marks an
---     EX: for that special the evaluator, and only it (by return address),
---     gets the lower of the EX tier (how many of that button's moves are EX)
---     and the player's own (R2) tier, so L2 does exactly the EX moves; its
---     stamina extra comes off when the
---     special spends its own (script command 0x1F1 -> wrapper thunk
---     0x1406B, once per move), scaled like every cost.
---     Never above the top tier: slot 3 has a hidden ==6 variant.
+--     move system's condition evaluator 0x1CD780(entity, id), which keeps the
+--     condition id in ebp and asks GetLevel (thunk 0x111C2) for its slot.
+--     Ids 0x3174-0x3182 are slots 0, 1 and 2, five each: level >= 1 to 4 and
+--     == 5 (the top), so a button's move j is picked by the condition on
+--     level j (the level its row j buys). While L2 (left trigger: the analog
+--     byte at pad state +0xC, 0x63ABD4 + p * 0x16; in the joypad object
+--     0x63AC20 + p * 0xE4 the analog bytes from +2 are A B X Y Black White LT
+--     RT) is held without R2 and an attack button with an EX bought is
+--     pressed (flag level slots 19-22: a bit per move, read by nothing else),
+--     the pad-to-action translator 0x129480 (eax = joypad object) gets R2
+--     instead of L2, and keeps getting it until L2 is let go, so the game does
+--     the special and its whole input chain (a tier-4 fireball is R2 + X, X,
+--     X; between the presses plain L2 would be block). Pressing it marks an
+--     EX: the evaluator, and only it (by return address), then gets level j
+--     for the condition on a move j whose EX is bought (and owned on R2) and
+--     0 for any other of those ids, so L2 does exactly the EX moves; its
+--     stamina extra comes off when the special spends its own (script
+--     command 0x1F1 -> wrapper thunk 0x1406B, once per move), scaled like
+--     every cost. Slot 3 (^, with its hidden ==6 variant) is left alone.
 --   * An EX row is bought through the combo purchase like the shop's other
 --     rows: the game's own special purchase would raise the R2 tier, so for
 --     a row on sale as its EX we answer IsSpecial (thunk 0x12B71) no.
@@ -217,13 +218,15 @@ local MAP           = 0x00505970    -- the current map (area) number
 local SPECIALS_TEXT = 461           -- "Specials": a group per button (menu order), a row per move
 local IS_SPECIAL    = 0x00012B71    -- IsSpecial(node): the dispatcher's "buy as a special?"
 local EX_NAMES      = { 713, 714, 716, 717, 793 }   -- (PH) texts: "<move j's name> EX"
-local EX_FLAG       = 19            -- EX tiers (EX moves per button): level slots 19-22, one per game slot
+local EX_FLAG       = 19            -- EX moves: level slots 19-22, one per game slot, a bit per move
 local EX_PRICES     = { 5000, 10000, 15000, 20000, 25000 }  -- the EX of move 1-5 (placeholders)
-local EX_LEAF_SLOT  = { 0, 2, 1, 3 } -- leaf * ~ | ^ -> game slot (the grant's mapping)
+local EX_LEAF_SLOT  = { 0, 2, 1 }   -- Specials group * ~ | -> game slot (^, slot 3, waits for its button)
 local EX_COST       = 25            -- extra stamina per EX special, before Stamina upgrades
 local GET_LEVEL     = 0x000111C2    -- GetLevel(player, slot), cdecl -> eax
 local EVAL_FROM     = 0x001CD780    -- the move system's condition evaluator: GetLevel
 local EVAL_TO       = 0x001CE400    -- calls returning in here pick a special's variant
+local EX_COND       = 0x3174        -- move conditions: c = id - EX_COND in 0-14 is slot c // 5,
+local EX_CONDS      = 15            -- level c % 5 + 1
 local SPEND         = 0x0001406B    -- a scripted move spends stamina: (player, cost level), cdecl
 local PAD_MAP       = 0x00129480    -- one port's pad -> action bits; eax = its joypad object
 local PADS          = 0x0063AC20    -- joypad object of port p at + p * 0xE4
@@ -237,15 +240,6 @@ local DEMO          = 0x005143A5    -- 1 in the attract demo: GetLevel reports 1
 local FRAME         = 0x005CE878    -- frame counter
 local EX_WINDOW     = 60            -- frames between the variant pick and its stamina spend
 
--- Exact top tier per character id and game slot (the Specials groups'
--- sizes, verified against the menu data). The variant pickers compare the
--- top tier with equality, so the boost must report exactly these.
-local TOP_TIER = {
-    [0]    = { 4, 3, 4, 5 },        -- Liu Kang
-    [1]    = { 3, 5, 3, 5 },        -- Kung Lao
-    [0x58] = { 1, 3, 3, 5 },        -- Sub-Zero
-    [0x52] = { 3, 3, 3, 5 },        -- Scorpion
-}
 local WEAPON_POPUP  = 698           -- (PH) text that takes our popup message
 local POSITION      = 0x80          -- entity position: x, y, z floats
 local WEAPON_SIDE   = 150.0         -- the weapon lands this far beside the buyer,
@@ -783,11 +777,25 @@ local function fatality_node(root)
     return nil
 end
 
--- The EX tier byte of the menu player for Specials group k (menu order).
+-- The EX flag byte of the menu player for Specials group k (menu order).
 local function flag_addr(m, k)
     local player = menu_player()
     if player == nil then return nil end
     return m + LEVELS + player * 0x1C + EX_FLAG + EX_LEAF_SLOT[k]
+end
+
+-- A flag byte's EX moves, a bit per move (bit 0 = Special 1). Up to 0.9.0
+-- the byte counted them, in order; bit 7 marks the bit form.
+local function ex_bits(b)
+    if b & 0x80 ~= 0 then return b & 0x1F end
+    return (1 << (b < 5 and b or 5)) - 1
+end
+
+-- The EX moves of Specials group k for the menu player, and their byte.
+local function ex_mask(m, k)
+    local addr = flag_addr(m, k)
+    if addr == nil then return 0, nil end
+    return ex_bits(game.read_u8(addr)), addr
 end
 
 -- The Specials category under a character root: a group per button.
@@ -879,21 +887,22 @@ local function patch_root(m, root)
             end
         end
     end
-    -- Specials: SyncOwned has just marked the moves owned on R2. Each button's
-    -- EX moves are named "<move> EX" and owned; the next one owned on R2 is
+    -- Specials: SyncOwned has just marked the moves owned on R2. A move whose
+    -- EX is bought is named "<move> EX" and owned; any other owned on R2 is
     -- for sale again as its EX.
     ex_rows = {}
     local sc = specials_node(root)
     if sc and player ~= nil then
         local groups, list = game.read_u32(sc + 0x0C), game.read_u32(sc + 0x14)
         for k = 1, groups < #EX_LEAF_SLOT and groups or #EX_LEAF_SLOT do
-            local g, t = game.read_u32(list + (k - 1) * 4), game.read_u8(flag_addr(m, k))
+            local g, bits = game.read_u32(list + (k - 1) * 4), ex_mask(m, k)
             local rows, leaves = 0, 0
             if plausible(g) then rows, leaves = game.read_u32(g + 0x0C), game.read_u32(g + 0x14) end
             for j = 1, rows <= #EX_NAMES and rows or #EX_NAMES do
                 local leaf = plausible(leaves) and game.read_u32(leaves + (j - 1) * 4) or 0
-                local sale = plausible(leaf) and j == t + 1 and vanilla(leaf + 0x2C) ~= 0
-                if plausible(leaf) and game.read_u32(leaf + 4) == 0 and (j <= t or sale) then
+                local ex = bits & (1 << (j - 1)) ~= 0
+                local sale = not ex and plausible(leaf) and vanilla(leaf + 0x2C) ~= 0
+                if plausible(leaf) and game.read_u32(leaf + 4) == 0 and (ex or sale) then
                     ex_rows[leaf] = { k = k, j = j, sale = sale }
                     local name = read_text(vanilla(leaf + 0x18), 40)
                     local placed = name and put_text(EX_NAMES[j], name .. " EX")
@@ -966,7 +975,7 @@ local function can_buy(node, kind, store, k)
     elseif kind == "weapon" then
         if not weapon_free(k) then return false end
     elseif kind == "ex" then
-        if not store.sale or game.read_u8(flag_addr(m, store.k)) ~= k - 1 then return false end
+        if not store.sale or ex_mask(m, store.k) & (1 << (k - 1)) ~= 0 then return false end
     elseif shop_level(m, player, store.kind) ~= k - 1 then
         return false
     end
@@ -978,8 +987,8 @@ end
 -- the game saves, so its input stays revealed like one the player performed.
 local function apply_purchase(m, kind, store, k, node)
     if kind == "ex" then
-        local addr = flag_addr(m, store.k)
-        if addr and game.read_u8(addr) == k - 1 then game.write_u8(addr, k) end
+        local bits, addr = ex_mask(m, store.k)
+        if addr then game.write_u8(addr, 0x80 | bits | (1 << (k - 1))) end
         store.sale = false
         return
     end
@@ -1092,32 +1101,34 @@ local function ex_cost(m, player)
     return scaled(EX_COST, shop_level(m, player, "stamina"))
 end
 
-local ex_player, ex_slot, ex_from = nil, nil, nil  -- GetLevel's arguments and caller
+local ex_player, ex_from = nil, nil  -- GetLevel's player and caller
 local ex_due = {}               -- [player + 1] = frame an EX was pressed; stamina due
 local ex_held = {}              -- [player + 1] = the attack byte of the EX press still held
 local ex_chain = {}             -- [player + 1] = true while an EX chain keeps L2 as R2
 local spender = nil             -- player passed to the stamina-spend wrapper
 
--- After GetLevel: the move system asks which variant of a special to pick.
--- With L2 held, that button's EX owned and the stamina to pay, report its
--- exact top tier; the stamina comes off when the move spends its own.
+-- After GetLevel: the move system asks whether a special's move may be
+-- picked (its condition id in ebp). During an EX chain, a move of buttons
+-- * ~ | passes only if its EX is bought (and it is owned on R2): it gets
+-- exactly its level, any other gets 0. The stamina comes off when the move
+-- spends its own.
 local function boost_level(ctx)
-    local player, slot, from = ex_player, ex_slot, ex_from
+    local player, from = ex_player, ex_from
     ex_player = nil
-    if player == nil or from < EVAL_FROM or from >= EVAL_TO or player > 1 or slot > 3 then return end
+    if player == nil or from < EVAL_FROM or from >= EVAL_TO or player > 1 then return end
     if not ex_chain[player + 1] then return end      -- the whole EX chain, follow-ups too
+    local c = ctx.ebp - EX_COND
+    if c < 0 or c >= EX_CONDS then return end
     local m = manager()
     if m == nil or game.read_u8(DEMO) == 1 then return end
-    local t = game.read_u8(m + LEVELS + player * 0x1C + EX_FLAG + slot)
-    if t == 0 then return end
-    local top, own = TOP_TIER[char_of(m, player)][slot + 1], ctx.eax & 0xFF
-    local level = t < top and t or top
-    if own < level then level = own end         -- only moves owned on R2 too
-    ctx.eax = (ctx.eax & 0xFFFFFF00) | level
+    local slot, level = c // 5, c % 5 + 1
+    local bits = ex_bits(game.read_u8(m + LEVELS + player * 0x1C + EX_FLAG + slot))
+    local pass = bits & (1 << (level - 1)) ~= 0 and ctx.eax & 0xFF >= level
+    ctx.eax = (ctx.eax & 0xFFFFFF00) | (pass and level or 0)
 end
 
 -- Before a port's pad becomes action bits: L2 (without R2) + an attack
--- button whose EX the player owns becomes R2 + that button, so the game does
+-- button with an EX bought becomes R2 + that button, so the game does
 -- the special, and L2 stays R2 until it is let go, so the special's input
 -- chain (X, X, X) goes through; each press marks an EX when the stamina
 -- covers the extra. Anything else passes untouched.
@@ -1278,8 +1289,7 @@ return {
     {
         address = GET_LEVEL,
         before = function(ctx)
-            ex_player, ex_slot, ex_from = game.read_u32(ctx.esp + 4), game.read_u32(ctx.esp + 8),
-                game.read_u32(ctx.esp)
+            ex_player, ex_from = game.read_u32(ctx.esp + 4), game.read_u32(ctx.esp)
         end,
         after = function(ctx) boost_level(ctx) end,
     },

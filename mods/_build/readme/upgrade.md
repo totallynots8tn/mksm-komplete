@@ -1,4 +1,4 @@
-# Extended Upgrades: XP Shop 0.9.0 (preview, experimental)
+# Extended Upgrades: XP Shop 0.9.1 (preview, experimental)
 
 The XP shop spends XP in the game's own upgrade menu, on the game's own menu
 entries. Nothing new is added to the menu, and everything it sells comes **on
@@ -16,7 +16,7 @@ included, is unchanged.
 | Upgrades > Health | Health +1 to +4 | 5,000 / 10,000 / 15,000 / 20,000 XP | 1 / 2 / 4 / 8 health-upgrade steps (+100 / +200 / +400 / +800 max health in solo), above the game's own 4 |
 | Upgrades > Stamina | Stamina +1 to +4 | 5,000 / 10,000 / 15,000 / 20,000 XP | everything that spends the blue bar costs less: it plays as 125 / 150 / 200 / 300% |
 | Upgrades > Weapons | one row per weapon lying in the current area | 2,000 XP per summon | the weapon appears beside you at full durability |
-| Specials > a button | each move you own, again as "<move> EX", in order | 5,000 / 10,000 / 15,000 / 20,000 / 25,000 XP (the button's 1st / 2nd / ... move) | L2 + that move's input (no R2): the move as an EX, for extra stamina |
+| Specials > X, Y or B | each move you own, again as "<move> EX", in any order | 5,000 / 10,000 / 15,000 / 20,000 / 25,000 XP (Special 1 / 2 / 3 / 4 / 5) | L2 + that move's input (no R2): the move as an EX, for extra stamina |
 | Fatalities | any row still showing ??? | 5,000 XP each | reveals that fatality's input and video |
 
 - **Buying:** pick the next row and confirm in the usual Upgrade dialog. Health
@@ -36,8 +36,11 @@ included, is unchanged.
 - **EX moves** (experimental): every row in Specials is bought twice. The
   first purchase is the game's own (the move, on R2); once you own it, the
   row is for sale again as "<move> EX", with the move's own input and video.
-  A button's moves get their EX in order (Special 1 EX before Special 2 EX).
-  With it bought, **L2 + the move's input** (no R2) does the move as an EX.
+  Every move you own is for sale as its EX right away, in any order. With
+  it bought, **L2 + the move's input** (no R2) does the move as an EX, and
+  L2 does only the moves whose EX you own: a chained move (Special 4 is
+  X, X, X) comes out on L2 only if the moves it chains through (Special 1
+  and 2) have their EX too. The ^ moves aren't sold as EX yet.
   Keep L2 held for the whole input: L2 + X, X, X does what R2 + X, X, X does
   (while L2 stays held after an EX press it counts as R2, not block). It costs extra stamina (a
   quarter of the blue bar, less with Stamina upgrades), once per move;
@@ -80,6 +83,9 @@ Combo extenders, in a menu entry that already exists. The reverse-engineering is
 
 ## Changelog
 
+- **0.9.1:** every move you own is for sale as its EX at once, in any order
+  (0.9.0 sold them one at a time). The ^ moves are no longer sold as EX
+  until their L2 input exists.
 - **0.9.0:** EX moves are bought in the game's own Specials menu: each move
   row can be bought a second time as its EX, in order, instead of in a
   Skill -> EX Moves store. Skill is vanilla again. EX bought in 0.8.x carry
