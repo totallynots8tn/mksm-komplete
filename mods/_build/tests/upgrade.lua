@@ -270,16 +270,8 @@ assert(ask(CAN, fat[2], 0) == 1 and ask(COMBO, fat[2], 0) == 1, "fatality not fo
 -- game's own answer, while the category still reads as having something to buy
 assert(ask(CAN, fat[2], 0, DESCRIPTION) == 0, "hover shows the fatality input")
 assert(ask(CAN, fat[2], 0, PREVIEW) == 0, "hover plays the fatality video")
-assert(ask(CAN, fat[2], 0, 0x9CAA7) == 1, "a ??? row not drawn buyable")
-local function under(row, from)                -- the row draw's "under Fatalities?"
-    local ctx = { esp = 0xD0000500, eax = 1, ebx = row }
-    H.w32(ctx.esp, from or 0x9CA7E)
-    H.invoke(m, 0x1664A, ctx, nil)
-    assert(#H.failed == 0, H.failed[1])
-    return ctx.eax & 0xFF
-end
-assert(under(fat[2]) == 0, "a ??? row skips the buyable look")
-assert(under(fat[1]) == 1 and under(fat[2], 0x9B000) == 1, "Under answered for others")
+assert(ask(CAN, fat[2], 0, 0x9CAA7) == 0, "a ??? row drawn buyable (it shows the name)")
+assert(m[0x1664A] == nil, "Under hooked")
 assert(ask(CAN, fat[2], 0, FOR_ANY) == 1, "fatalities category not marked buyable")
 assert(ask(CAN, health[2], 0, DESCRIPTION) == 1, "shop row description hidden")    -- +2 is next
 xp(4999)
@@ -661,6 +653,13 @@ end
 local function level(player, slot, j, real, from)   -- ... about move j of a slot
     return cond(player, 0x3174 + slot * 5 + j - 1, real, from)
 end
+local function slot_level(player, flags, from, real)   -- SlotLevel, asked by the move filter
+    local ctx = { esp = 0xD0000600, eax = real }
+    H.w32(ctx.esp, from); H.w32(ctx.esp + 4, player); H.w32(ctx.esp + 8, flags)
+    H.invoke(m, 0x12FD1, ctx, nil)
+    assert(#H.failed == 0, H.failed[1])
+    return ctx.eax
+end
 local function spend(player)
     local ctx = { esp = 0xD0000400 }
     H.w32(ctx.esp + 4, player); H.w32(ctx.esp + 8, 2)
@@ -677,6 +676,16 @@ assert(level(0, 0, 1, 4) == 1 and level(0, 0, 4, 4) == 4 and stam() == 100,
 assert(level(0, 0, 3, 4) == 0, "move 3 (no EX) picked on L2")
 assert(level(0, 0, 4, 2) == 0, "the EX of a move not owned on R2 picked")
 assert(cond(0, 0x3183, 3) == 3 and cond(0, 0x25B0, 1) == 1, "another condition touched")
+-- the move filter's tier checks (one call site each) get the same answers
+local X_MOVE = 0x10000000 | 0x0005               -- slot 0's flag (+ unrelated low bits)
+assert(slot_level(0, X_MOVE, 0x77B3A, 4) == 1 and slot_level(0, X_MOVE, 0x77BC7, 4) == 4,
+    "an EX move filtered out on L2")
+assert(slot_level(0, X_MOVE, 0x77B98, 4) == 0, "move 3 (no EX) let through the move filter")
+assert(slot_level(0, X_MOVE, 0x77B69, 1) == 0, "the EX of a move not owned on R2 let through")
+assert(slot_level(0, X_MOVE, 0x77B0C, 4) == 4, "the special itself filtered out")
+assert(slot_level(0, 0x20000000, 0x77B3A, 4) == 0, "| (no EX) let through during an X chain")
+assert(slot_level(0, 0x80000000, 0x77B98, 4) == 4 and slot_level(0, X_MOVE, 0x7AB00, 4) == 4,
+    "slot 3 or another caller touched")
 spend(0)
 assert(stam() == 75, "EX stamina not charged: " .. stam())
 spend(0)
@@ -732,6 +741,7 @@ H.w32(MGR + 0x88, 0); pad(0, {})
 -- evaluator is answered
 H.w32(0x5CE878, 2000)
 assert(level(0, 0, 3, 2) == 2, "a plain special changed")
+assert(slot_level(0, 0x10000000, 0x77B98, 4) == 4, "the move filter changed without L2")
 H.w8(MGR + 0x1C4 + 21, 4)                      -- Y is ~ (slot 2): a 0.9.0 count of 4, moves 1-4
 pad(0, { [LT] = 0xFF, [Y] = 0xFF })
 assert(level(0, 2, 3, 1, 0x9D650) == 1, "answered for the menu")

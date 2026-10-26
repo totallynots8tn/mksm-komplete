@@ -1,4 +1,4 @@
--- Extended Upgrades 0.9.3: XP shop, Health, Stamina, weapons, EX moves and fatality inputs.
+-- Extended Upgrades 0.9.4: XP shop, Health, Stamina, weapons, EX moves and fatality inputs.
 --
 -- Turns pause-menu Moves categories into the XP shop. Nothing new is added
 -- to the menu; existing rows get new text, costs and behaviour, and
@@ -117,7 +117,11 @@
 --     X; between the presses plain L2 would be block). Pressing it marks an
 --     EX: the evaluator, and only it (by return address), then gets level j
 --     for the condition on a move j whose EX is bought (and owned on R2) and
---     0 for any other of those ids, so L2 does exactly the EX moves; its
+--     0 for any other of those ids. The move filter 0x77810 (registration and
+--     each move start) asks too, through SlotLevel (thunk 0x12FD1: player and
+--     the move's slot flag 0x10000000 << slot, levels read straight from the
+--     manager, not through GetLevel), one call site per tier (>= 1 to 4, ==
+--     5); it gets the same answers. So L2 does exactly the EX moves; its
 --     stamina extra comes off when the special spends its own (script
 --     command 0x1F1 -> wrapper thunk 0x1406B, once per move), scaled like
 --     every cost. Slot 3 (^, with its hidden ==6 variant) is left alone.
@@ -172,10 +176,6 @@ local CAN_PURCHASE  = 0x000116CC
 local ASKED_TO_BUY  = 0x0009E5D9    -- the purchase dispatcher (A on a row)
 local ASKED_FOR_ANY = 0x0009BC0E    -- "anything to buy under here?" (colours the category)
 local ASKED_FOR_VIDEO = 0x0009D3A0  -- the preview video: a weapon row has none of its own
-local ASKED_FOR_ROW = 0x0009CAA7    -- a row is drawn: a yes draws it buyable (green, with the lock)
-local UNDER         = 0x0001664A    -- Under(node, text): node or an ancestor has that name, stdcall
-local ROW_FATAL     = 0x0009CA7E    -- the row draw asks it "under Fatalities?" first (row in ebx):
-                                    -- a yes skips the buyable look
 local EX_TRACE      = 793           -- (dev) the evaluator's answers go into this unused text; nil ships
 local IS_COMBO      = 0x00015EDE
 local BUY_COMBO     = 0x00013954
@@ -232,6 +232,15 @@ local EVAL_FROM     = 0x001CD780    -- the move system's condition evaluator: Ge
 local EVAL_TO       = 0x001CE400    -- calls returning in here pick a special's variant
 local EX_COND       = 0x3174        -- move conditions: c = id - EX_COND in 0-14 is slot c // 5,
 local EX_CONDS      = 15            -- level c % 5 + 1
+local SLOT_LEVEL    = 0x00012FD1    -- SlotLevel(player, flags): the level of a move's special, cdecl
+local MOVE_TIER     = {             -- its calls in the move filter 0x77810: the tier each
+    [0x00077B0C] = 0,               -- requires (0: the special at all, when entity
+    [0x00077B3A] = 1,               -- +0x3215 is 1; 5: exactly, the top tier)
+    [0x00077B69] = 2,
+    [0x00077B98] = 3,
+    [0x00077BC7] = 4,
+    [0x00077BF6] = 5,
+}
 local SPEND         = 0x0001406B    -- a scripted move spends stamina: (player, cost level), cdecl
 local PAD_MAP       = 0x00129480    -- one port's pad -> action bits; eax = its joypad object
 local PADS          = 0x0063AC20    -- joypad object of port p at + p * 0xE4
@@ -1107,29 +1116,49 @@ local function ex_cost(m, player)
 end
 
 local ex_player, ex_from = nil, nil  -- GetLevel's player and caller
+local lv_player, lv_flags, lv_from = nil, nil, nil  -- SlotLevel's arguments and caller
 local ex_due = {}               -- [player + 1] = frame an EX was pressed; stamina due
 local ex_held = {}              -- [player + 1] = the attack byte of the EX press still held
 local ex_chain = {}             -- [player + 1] = true while an EX chain keeps L2 as R2
 local spender = nil             -- player passed to the stamina-spend wrapper
 
+-- During player's EX chain, the level to report for move `level` of game
+-- slot `slot` (0: the special at all), given the real one: exactly its level
+-- if its EX is bought (and it is owned on R2), else 0, so only EX moves pass.
+-- nil: leave it (no chain, the demo, no manager).
+local function ex_answer(player, slot, level, real)
+    if not ex_chain[player + 1] then return nil end  -- the whole EX chain, follow-ups too
+    local m = manager()
+    if m == nil or game.read_u8(DEMO) == 1 then return nil end
+    local bits = ex_bits(game.read_u8(m + LEVELS + player * 0x1C + EX_FLAG + slot))
+    if level == 0 then return bits ~= 0 and real or 0 end
+    return (bits & (1 << (level - 1)) ~= 0 and real >= level) and level or 0
+end
+
 -- After GetLevel: the move system asks whether a special's move may be
--- picked (its condition id in ebp). During an EX chain, a move of buttons
--- * ~ | passes only if its EX is bought (and it is owned on R2): it gets
--- exactly its level, any other gets 0. The stamina comes off when the move
+-- picked (its condition id in ebp). The stamina comes off when the move
 -- spends its own.
 local function boost_level(ctx)
     local player, from = ex_player, ex_from
     ex_player = nil
     if player == nil or from < EVAL_FROM or from >= EVAL_TO or player > 1 then return end
-    if not ex_chain[player + 1] then return end      -- the whole EX chain, follow-ups too
     local c = ctx.ebp - EX_COND
     if c < 0 or c >= EX_CONDS then return end
-    local m = manager()
-    if m == nil or game.read_u8(DEMO) == 1 then return end
-    local slot, level = c // 5, c % 5 + 1
-    local bits = ex_bits(game.read_u8(m + LEVELS + player * 0x1C + EX_FLAG + slot))
-    local pass = bits & (1 << (level - 1)) ~= 0 and ctx.eax & 0xFF >= level
-    ctx.eax = (ctx.eax & 0xFFFFFF00) | (pass and level or 0)
+    local level = ex_answer(player, c // 5, c % 5 + 1, ctx.eax & 0xFF)
+    if level then ctx.eax = (ctx.eax & 0xFFFFFF00) | level end
+end
+
+-- After SlotLevel: the move filter asks whether a move's special is owned up
+-- to the move's tier (the call site says which). Same answers.
+local function gate_move(ctx)
+    local player, flags, tier = lv_player, lv_flags, MOVE_TIER[lv_from]
+    lv_player = nil
+    if player == nil or tier == nil or player > 1 then return end
+    local slot = (flags & 0x10000000 ~= 0 and 0) or (flags & 0x20000000 ~= 0 and 1)
+        or (flags & 0x40000000 ~= 0 and 2)
+    if not slot then return end                     -- (^, slot 3: left alone)
+    local level = ex_answer(player, slot, tier, ctx.eax & 0xFF)
+    if level then ctx.eax = level end
 end
 
 -- Before a port's pad becomes action bits: L2 (without R2) + an attack
@@ -1222,12 +1251,11 @@ return {
             local kind, store, k
             if node then kind, store, k = shop_row(node) end
             -- A yes makes the description and the preview video show, and for a
-            -- fatality those are the input: only the purchase itself, the
-            -- category's "anything to buy" search and the row's colour hear it.
-            if kind == "fatality" and from ~= ASKED_TO_BUY and from ~= ASKED_FOR_ANY
-                    and from ~= ASKED_FOR_ROW then
-                return
-            end
+            -- fatality those are the input: only the purchase itself and the
+            -- category's "anything to buy" search hear it. (The row's own
+            -- look stays vanilla: lifting the game's skip for Fatalities
+            -- showed the names, so ??? rows stay white.)
+            if kind == "fatality" and from ~= ASKED_TO_BUY and from ~= ASKED_FOR_ANY then return end
             if kind == "weapon" and from == ASKED_FOR_VIDEO then return end
             if kind then set_al(ctx, can_buy(node, kind, store, k) and 1 or 0) end
         end,
@@ -1322,16 +1350,20 @@ return {
         end,
     },
     {
-        -- The Moves list skips the buyable look for anything under
-        -- Fatalities; a ??? row we sell gets it like any other.
-        address = UNDER,
-        before = function(ctx) asked_from = game.read_u32(ctx.esp) end,
+        address = SLOT_LEVEL,
+        before = function(ctx)
+            lv_player, lv_flags, lv_from = game.read_u32(ctx.esp + 4), game.read_u32(ctx.esp + 8),
+                game.read_u32(ctx.esp)
+        end,
         after = function(ctx)
-            local from = asked_from
-            asked_from = nil
-            if from == ROW_FATAL and shop_row(ctx.ebx) == "fatality" then set_al(ctx, 0) end
+            local player, flags, from, real = lv_player, lv_flags, lv_from, ctx.eax
+            gate_move(ctx)
+            if player == 0 and MOVE_TIER[from] then          -- (dev) id 0xF0 + tier, slot flag's top byte
+                trace(0xF0 + MOVE_TIER[from] | (flags >> 20 & 0xF00), real, ctx.eax, ex_chain[1])
+            end
         end,
     },
+
     {
         address = SPEND,
         before = function(ctx) spender = game.read_u32(ctx.esp + 4) end,

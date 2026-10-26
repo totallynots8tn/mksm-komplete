@@ -1,4 +1,4 @@
-# Extended Upgrades: XP Shop 0.9.3 (preview, experimental)
+# Extended Upgrades: XP Shop 0.9.4 (preview, experimental)
 
 The XP shop spends XP in the game's own upgrade menu, on the game's own menu
 entries. Nothing new is added to the menu, and everything it sells comes **on
@@ -83,11 +83,11 @@ Combo extenders, in a menu entry that already exists. The reverse-engineering is
 
 ## Changelog
 
-- **0.9.3:** ??? fatality rows really are green now: the game skips the
-  buyable look for anything under Fatalities, and the shop lifts that for
-  the rows it sells.
-- **0.9.2:** ??? fatality rows are drawn green with the lock, like any row
-  you can buy (still without their input or video).
+- **0.9.4:** L2 really does only the moves whose EX you bought: the game
+  also checks a move's tier in its move filter, which reads the levels
+  directly, and that check now gets the EX answer too (before, L2 did the
+  whole R2 moveset). ??? fatality rows are back as in 0.9.1 (0.9.3's green
+  look showed their names).
 - **0.9.1:** every move you own is for sale as its EX at once, in any order
   (0.9.0 sold them one at a time). The ^ moves are no longer sold as EX
   until their L2 input exists.
