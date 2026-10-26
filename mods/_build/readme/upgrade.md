@@ -1,58 +1,71 @@
-# Extended Upgrades 0.1.0 (PROTOTYPE — experimental)
+# Extended Upgrades: XP Shop 0.5.3 (preview, experimental)
 
-A scaffold for a bigger upgrade system: the extra XP from **Legendary Dark
-Knight Mode** unlocks passive perks, so more enemies means more to spend on.
-Planned perk groups:
+The XP shop spends XP in the game's own upgrade menu, on the game's own menu
+entries. Nothing new is added to the menu, and everything it sells comes **on
+top of** what the game gives you.
 
-- **Blade dismemberment** — behead and sever limbs with blades, as move
-  attributes (`Decapitate`, `Sever Limbs`, `Cleaver`).
-- **EX / new moves** — reuse the game's brutality animations as enhanced
-  specials (`EX Finisher`, `EX Combo Breaker`).
-- **Stamina** — a stamina/guard meter and upgrades for it (`Endurance`,
-  `Recuperate`, `Iron Lungs`).
+## What it does
 
-## What actually runs in 0.1.0
+Pause > Moves > **Basic Moves** becomes **Upgrades**. Every other category,
+Skill and Team included, is unchanged.
 
-Only the **spine**: it watches each player's XP, keeps a running lifetime
-total (unaffected by spending), and *unlocks* the perks in `src/upgrade.lua`
-as that total crosses each threshold. The perk list and costs live in that
-file's `UPGRADES` table — that is the design surface to edit.
+| Category | Row | Cost | Effect |
+| --- | --- | --- | --- |
+| Upgrades > Health | Health +1 to +4 | 5,000 / 10,000 / 15,000 / 20,000 XP | 1 / 2 / 4 / 8 health-upgrade steps (+100 / +200 / +400 / +800 max health in solo), above the game's own 4 |
+| Upgrades > Stamina | Stamina +1 to +4 | 5,000 / 10,000 / 15,000 / 20,000 XP | everything that spends the blue bar costs less: it plays as 125 / 150 / 200 / 300% |
+| Upgrades > Running Attacks | — | — | stays vanilla |
 
-**Every gameplay effect is inert.** This mod performs **zero writes to game
-memory**, so it is completely safe to have installed — but you will not see
-any change in game yet. That is expected for a prototype.
+- **Buying:** pick the next row and confirm in the usual Upgrade dialog. Health
+  and Stamina rows are bought in order. Rows
+  only unlock when you have the XP, and as with Combos the description stays
+  hidden until you can buy a row.
+- **Health** applies at once and heals you by what your max health gained.
+  It stacks on the game's own health upgrades: pick those up in the world as
+  usual, and the shop's steps stay on top. In co-op the shop's Health is shared,
+  like the game's.
+- **Stamina** (the blue bar under health) applies at once. The game caps the
+  bar at 100 everywhere, so instead of a longer bar every block and special
+  costs less: at Stamina +4 everything costs a third, as if the bar held 300%. The bar refills as fast as before.
+  Each co-op player buys their own.
+- **Save:** the shop's levels are kept in unused progress counters, so they
+  are saved like any other progress. Uninstalling keeps the counters but the
+  effects stop: health and stamina go back to the game's own values on the
+  next area.
+- **From 0.3.0:** the Energy rows that raised the meter's level and the Weapons
+  store are gone. Weapons bought in 0.3.0 are not refunded and read as
+  nothing bought here.
 
-## Why the effects are not wired up
+## Languages
 
-A Recomp routine mod can only **read/write memory and hook addresses**. It can
-never **call** the game's functions — so it cannot directly play a brutality
-animation, detach a bone, or run an upgrade routine. Each effect therefore
-needs a verified *memory target*: a flag or field that, when written, makes the
-game do the thing itself (the way `mkapowerup` / `healthupgrade` flip internal
-state). Finding those targets is reverse-engineering, and it is what
-**MKSMK Probe 0.7** (`probe_upgrade`) is for: it logs the arguments and effects
-of the upgrade, mutilation (`enemy_detach_bone`, `enemy_detach_group`,
-`mutilate_collision`) and brutality/animation commands, and dumps the player
-state region to locate the stamina meter and confirm the XP slot.
+The labels follow the game's language: English, Spanish, German, Italian or
+French. No content files are replaced, so the mod installs alongside a
+language pack, which gets the English labels. The labels are written over
+unused placeholder text in memory. If a pack's placeholders are too short, the
+shop turns itself off and the menu goes back to vanilla.
 
-Once a target is known, `apply()` in `src/upgrade.lua` writes it, and a small
-hook (for dismemberment, on the detach/`bodydamage` path) reads the ownership
-flag. The framework is already shaped for that.
+## Coming next
 
-## Design notes / open questions
+A weapon store, fatalities you haven't learned, and EX moves (L2 + special),
+each in a menu entry that already exists and each released on its own. The reverse-engineering is in
+`analysis/xp_shop/REPORT.md` in the project repository.
 
-- **No menu.** Adding entries to the game's upgrade menu means editing menu
-  assets/data, which a routine mod cannot do. So perks unlock **passively at XP
-  thresholds** instead of being bought — this is the "loose fun" the extra XP
-  buys, with no UI work.
-- **XP slot.** `manager+0x48F0+player*0x50` is the per-player XP value the probe
-  already watches; the exact player index in single player is to be confirmed
-  from the `probe_upgrade` dump.
-- **Lifetime total.** Thresholds compare against XP *gained this session*, not a
-  save's stored balance, so a continued save starts at 0 and perks re-unlock as
-  you play. Cross-session persistence (tying unlocks to the save) is a later
-  step.
-- **Stamina.** The game may not expose a stamina meter at all; if not, this
-  becomes a new meter the mod maintains, which is a larger job.
+## Changelog
 
-Requires Shaolin Monks Recomp 0.2.0 or later.
+- **0.5.3:** steeper top tiers. Stamina plays as 125 / 150 / 200 / 300%
+  (+3 and +4 were 175 / 200%), and Health adds 1 / 2 / 4 / 8 steps (+3 and +4
+  were 3 / 4), so Health +4 is +800 max health in solo.
+- **0.5.2:** Stamina also discounts the bar's direct drain (1 every 5th frame
+  while you hold something), which skips the cost table. The thicker stamina bar is gone: the HUD frame has
+  a fixed window, so the extra height only showed as a second bar below it.
+- **0.5.1:** fractional costs (3 x 0.67 and so on) alternate between their
+  floor and ceiling instead of rounding, so they average exact.
+- **0.5.0:** Health and Stamina only. The EX store is out for now (Skill is
+  vanilla again) and comes back as its own update, so a problem in one part
+  can't switch off the rest of the shop.
+- **0.4.1:** fixes 0.4.0 turning itself off on the first purchase. The game's
+  Lua has no `math.frexp`, so the purchase errored, the game kept the XP, and
+  the shop stopped for the session. Health no longer touches the manager's
+  health float (`+0x8C`), which tracks current health, not max.
+- **0.4.0:** Health and Stamina stack on top of the game's own upgrades;
+  Stamina makes blocks and specials cheaper and the bar thicker; EX costs extra
+  stamina instead of meter orbs; the weapon store is parked.

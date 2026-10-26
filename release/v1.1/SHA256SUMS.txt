@@ -1,0 +1,7 @@
+9d3283d0a854ab4bee9fc97d049d276aa31beca6e334b0d0c04086fc4b3c78b3 *coop_solo-0.6.2.tar.xz
+481a5eae0922941e38af2cc27a4ffe4f26165c79cb55861d0f62f0bc9c0f59db *env_kill_xp-2.0.0.tar.xz
+93ff9c1aec4fa183eccb0cd4e6667152dce7164cdb3ea0e00dc9c2b7e29befdd *ldk_x3-3.9.6.tar.xz
+8a0137ba10c72b8db722018b57bcdb6d070c970e01f0749f28aedaca665bca23 *randomizer-0.6.6.tar.xz
+52d7a5cea4efc625e88d6313c2af44abdef56a792129622ea5f69a118fda0277 *unlock_all-1.1.0.tar.xz
+cebc5a8a9f10421054c661ebe2fff8c7c8c8f83fab31208ab5c7ee7bf4c886cf *mk_upgrade-0.5.3.tar.xz
+9edba4de778e488ee7cc1fa84b742a189e483202462560e8d8359339613ae597 *mksmk_probe-0.11.0.tar.xz

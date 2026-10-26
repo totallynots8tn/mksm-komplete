@@ -17,7 +17,7 @@ plain slots (no entrance flags, no mover data) ever change type.
 ## Variants
 
 Install all three; enable one. The variants conflict, so the launcher keeps
-only one enabled. To choose, use "Mods - choose LDK and Shuffle levels.bat" or
+only one enabled. To choose, use MKSMK.bat > Pick levels or
 the launcher's Mods screen.
 
 | Variant | Slot trades per one-type room | Outsiders per room (single-type areas) | Extra outsiders | Max per room | Max per area | Outsider types |

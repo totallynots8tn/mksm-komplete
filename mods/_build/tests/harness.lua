@@ -36,10 +36,20 @@ local function wr(a, v, n)
   staged[#staged+1] = {a=a, v=v, n=n}
   in_api = false
 end
+-- single-precision values, as the runtime's game.read_f32 / game.write_f32
+-- (routines.cpp): the same bytes as a u32, staged like any other write
+local function f32_bits(f)
+  if type(f) ~= "number" then error("Expected a number") end
+  return (string.unpack("<I4", string.pack("<f", f)))
+end
 H.game = {
   read_u8=function(a) return rd(a,1) end, read_u16=function(a) return rd(a,2) end, read_u32=function(a) return rd(a,4) end,
   write_u8=function(a,v) wr(a,v,1) end, write_u16=function(a,v) wr(a,v,2) end, write_u32=function(a,v) wr(a,v,4) end,
+  read_f32=function(a) return (string.unpack("<f", string.pack("<I4", rd(a,4)))) end,
+  write_f32=function(a,f) wr(a, f32_bits(f), 4) end,
 }
+function H.rf32(a) return (string.unpack("<f", string.pack("<I4", H.r32(a)))) end
+function H.wf32(a,f) H.w32(a, f32_bits(f)) end
 -- direct (game-side) memory access
 function H.r(a,n) local v=0 for i=n-1,0,-1 do v=(v<<8)|(mem[a+i] or 0) end return v end
 function H.w(a,v,n) for i=0,n-1 do mem[a+i]=(v>>(8*i))&0xFF end end
@@ -47,8 +57,16 @@ function H.r32(a) return H.r(a,4) end function H.w32(a,v) H.w(a,v,4) end
 function H.r16(a) return H.r(a,2) end function H.w16(a,v) H.w(a,v,2) end
 function H.w8(a,v) H.w(a,v,1) end function H.r8(a) return H.r(a,1) end
 
+-- The game's Lua 5.4 has only the standard math library: no frexp, ldexp,
+-- pow, cosh, sinh, tanh, log10 (the compat functions lupa may still carry).
+local STRICT_MATH = {}
+for _, k in ipairs({ "abs", "acos", "asin", "atan", "ceil", "cos", "deg", "exp", "floor", "fmod",
+                     "huge", "log", "max", "maxinteger", "min", "mininteger", "modf", "pi", "rad",
+                     "random", "randomseed", "sin", "sqrt", "tan", "tointeger", "type", "ult" }) do
+  STRICT_MATH[k] = math[k]
+end
 function H.load(path)
-  local env = setmetatable({game=H.game}, {__index=_G})
+  local env = setmetatable({game=H.game, math=STRICT_MATH}, {__index=_G})
   env.print=nil env.pcall=nil env.xpcall=nil env.load=nil env.dofile=nil env.loadfile=nil env.setmetatable=nil env.getmetatable=nil
   local f = assert(loadfile(path, "t", env))
   local hooks = f()

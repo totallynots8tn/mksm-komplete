@@ -121,7 +121,7 @@ Not verified in the running game yet.
 
 ## 6. Slice 1 QA (mk_upgrade 0.2.0 + Probe 0.11.1)
 
-To install, drag `mods\mk_upgrade` and then `mods\mksmk_probe` onto `Mods - install folder (drag here).bat`. That makes 60 of the 64 routine scripts. Then play:
+To install, drag `mods\mk_upgrade` and then `mods\mksmk_probe` onto `MKSMK.bat`. That makes 60 of the 64 routine scripts. Then play:
 
 1. Pause > Moves: **Health** replaces Skill, with rows Health Up 1–4.
 2. With at least 5,000 XP, Health Up 1 shows its description. Buy it through the Upgrade dialog: XP drops by 5,000 and the row reads owned. Rows 2–4 stay hidden.

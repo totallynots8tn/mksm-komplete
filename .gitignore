@@ -47,6 +47,7 @@ mods/*/pack/
 mods/_shelved/
 release/snapshots/
 release/v1/*.tar.xz
+release/v1.1/*.tar.xz
 release/v1.1-dev/*.tar.xz
 release/stable/*.tar.xz
 release/v1-retired/*.tar.xz

@@ -1,14 +1,17 @@
 """MKSMK mod tool: bulk uninstall / install for Shaolin Monks Recomp.
 
-Close the launcher and the game first. Double-click the .bat files next to
-this script, or run:
+Close the launcher and the game first. Run MKSMK.bat in the project folder
+for a menu, or:
 
-  python modtool.py refresh [folder]   uninstall all mods, then install the newest
-                                       package of every mod in [folder] (the .bat files
-                                       pass ..\\..\\release\\v1); without it:
-                                       dist/*.tar.xz of every mod under ..\\..\\mods
+  python modtool.py refresh [folder...] uninstall all mods, then install the newest
+                                       package of every mod in [folder] (release\\v1 is
+                                       the players' set); without it: dist/*.tar.xz of
+                                       every mod under ..\\..\\mods. With several folders
+                                       a later one wins for the same mod, so
+                                       "refresh release\\v1 mods\\mk_upgrade" is v1 plus
+                                       the dev XP shop.
   python modtool.py uninstall-all      remove every mod except language packs
-  python modtool.py install <folder>   install the newest package of each mod found
+  python modtool.py install <folder...> install the newest package of each mod found
                                        in <folder> (a mod folder with dist/, a folder
                                        of mod folders, or a folder of .tar.xz files)
   python modtool.py list               show installed mods
@@ -389,8 +392,11 @@ def main(argv):
         for line in removed:
             print("  - " + line)
     if command in ("refresh", "install"):
-        source = Path(args[1]) if command in ("install", "refresh") and len(args) > 1 else DEFAULT_SOURCE
-        packages, problems = find_packages(source.resolve())
+        packages, problems = {}, []
+        for source in [Path(a) for a in args[1:]] or [DEFAULT_SOURCE]:
+            found, trouble = find_packages(source.resolve())
+            packages.update(found)        # a later folder wins for the same mod
+            problems += trouble
         for problem in problems:
             print("  skipped: " + problem)
         newcomers = set()

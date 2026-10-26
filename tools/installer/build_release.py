@@ -113,7 +113,7 @@ def main():
                   + [(f"packages/{p.name}", p) for p in players])
     write_zip(OUT / "MKSM-Komplete-v1-contributor-tools.zip",
               [("README.txt", CONTRIB_README),
-               ("QA - start recorder.bat", ROOT / "QA - start recorder.bat"),
+               ("QA - start recorder.bat", ROOT / "tools" / "qa_recorder" / "QA - start recorder.bat"),
                ("tools/qa_recorder/record.py", ROOT / "tools" / "qa_recorder" / "record.py"),
                ("tools/livemem/peek.py", ROOT / "tools" / "livemem" / "peek.py")]
               + [(p.name, p) for p in probes])

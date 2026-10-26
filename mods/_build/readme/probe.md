@@ -222,7 +222,7 @@ in its trace.
   then keeps comparing. Every dword that changes is listed as
   `+offset:first>last(count)`. Unlock an ability, buy an upgrade or gain XP,
   then save, and the offsets that moved are those fields. Matched against
-  archived `save.dat` files (see `QA - start recorder.bat`), it maps the save
+  archived `save.dat` files (see the QA console in `MKSMK.bat`), it maps the save
   file to live memory, which New Game+ and Extended Upgrades need.
 
 
@@ -235,7 +235,7 @@ in its trace.
   after a reload to see whether discovered fatalities are kept.
 - **`HEARTBEAT`** samples end with player 0's health and meter (`hp450/600 mv380`).
 - `probe_upgrade` read player 0's XP from the wrong field; fixed.
-- Pairs with the QA Console (`QA - console.bat`), which reads the same
+- Pairs with the QA Console (`MKSMK.bat` > QA console), which reads the same
   fields live and turns each run's logs into `summary.md`.
 
 ## 0.11.1 and 0.11.2

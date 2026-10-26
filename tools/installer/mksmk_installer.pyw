@@ -1,7 +1,7 @@
 """MKSM Komplete+ installer: a small window over modtool, made for players.
 
 Every mod found is ticked; press Install, then Play. It does what
-"Mods - reinstall latest.bat" does: uninstall every mod (language packs are
+MKSMK.bat's "v1 release" does: uninstall every mod (language packs are
 left alone), then install and enable the ticked ones. Removed mods go to
 mods\\.mksmk-backup\\<time>\\, as with modtool. A mod that ships several
 variants (LDK in the dev builds) shows a level choice; one variant shows none.

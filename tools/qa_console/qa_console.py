@@ -1,9 +1,9 @@
 """MKSMK QA Console: one window for a playtest.
 
-  python tools/qa_console/qa_console.py        (or double-click "QA - console.bat")
+  python tools/qa_console/qa_console.py        (or MKSMK.bat > QA console)
 
 - Recording: keeps every save.dat version, game log and crash dump in
-  qa/<run>/ while you play (the same recorder as "QA - start recorder.bat").
+  qa/<run>/ while you play (the same recorder as tools/qa_recorder).
 - Live game state: XP, health, meter, EX flags, health upgrades, loaded enemy
   types, the spawner, fatality counters, read from the running game twice a
   second. Script errors from any mod show up here as they happen.

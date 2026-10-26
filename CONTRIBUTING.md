@@ -113,9 +113,11 @@ Install your build with `python modtool.py refresh <folder> --with-probe`
 
 ## QA: playtests become data
 
-1. Install the mods with the probe (`Mods - reinstall latest + probe.bat`).
-2. Start `QA - start recorder.bat` before the game. It archives every save
-   and the session logs into `qa/run-<date>-<time>/`.
+1. Run `MKSMK.bat` and pick **Playtest**: it installs the test set (the
+   current release plus the dev builds being tested) with the probe, then
+   opens the QA console.
+2. Press **Start recording** in the QA console before the game. It archives
+   every save and the session logs into `qa/run-<date>-<time>/`.
 3. Play normally. Save at a statue now and then: each save writes the probe
    reports (spawns and heap use, XP, save-data changes, upgrade commands). A
    heartbeat report is also written every few minutes of play.

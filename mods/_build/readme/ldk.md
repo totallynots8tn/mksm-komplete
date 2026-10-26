@@ -192,7 +192,7 @@ The same caps apply to all of them:
   mean bigger waves in rooms with spare memory.
 
 v1 ships x3 only (2026-10-25); the reinstall bats enable it. The dev build
-still makes x2 and x4 (`Dev - choose LDK and Shuffle levels`).
+still makes x2 and x4 (`MKSMK.bat` > Pick levels).
 
 The Oni Warlord boss is type 36, not 34 (the club-wielding warlord). 3.4
 didn't know that, so Boss Invasion put the Oni into regular spawn entries
