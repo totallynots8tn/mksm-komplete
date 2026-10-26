@@ -85,6 +85,11 @@ local move = {}
 for j = 1, 4 do
     move[j] = node(0, 1530 + j, xgroup, 0); child(xgroup, j - 1, move[j])
     H.w32(move[j] + 0x1C, 1500 + j); H.w32(move[j] + 0x20, 0x1000 + j); H.w32(move[j] + 0x24, 0)
+    H.w32(move[j] + 0x28, ({ 0, 3000, 6500, 10000 })[j]); H.w32(move[j] + 0x2C, j <= 2 and 1 or 0)
+    local name = "Special " .. j                      -- the game's own row name
+    local at = H.r32(TEXTS + (1530 + j) * 4)
+    for c = 1, #name do H.w8(at + c - 1, name:byte(c)) end
+    H.w8(at + #name, 0)
 end
 child(root, 0, basic); child(root, 1, combos); child(root, 2, skill); child(root, 3, team); child(root, 4, fatal)
 child(root, 5, specials)
@@ -178,18 +183,18 @@ assert(H.r32(group[3] + 0x18) == 617 and text(617) == "Weapons", "weapons group"
 assert(text(H.r32(group[3] + 0x1C)) == "Summon this area's weapons.", "weapons group desc")
 assert(H.r32(group[3] + 0x0C) == 1, "weapon rows with none in the area: " .. H.r32(group[3] + 0x0C))
 assert(text(H.r32(rows[3][1] + 0x18)) == "None here       " and H.r32(rows[3][1] + 0x28) == 0, "none-here row")
--- Skill became the EX store: four rows, none owned (no flags yet)
-assert(H.r32(skill + 0x18) == 614 and text(614) == "EX Moves", "ex store")
-assert(text(H.r32(skill + 0x1C)) == "L2 for EX versions of your specials.", "ex store desc")
--- (rows carry the tier: Liu Kang's * ~ | ^ top out at 4 4 3 5; tier 1 costs 5000)
-for k, label in ipairs({ "EX * 0/4  ", "EX ~ 0/4  ", "EX | 0/3  ", "EX ^ 0/5  " }) do
-    assert(text(H.r32(ex[k] + 0x18)) == label and H.r32(ex[k] + 0x28) == 5000
-        and H.r32(ex[k] + 0x2C) == 0, "ex row " .. k .. ": " .. text(H.r32(ex[k] + 0x18)))
+-- Skill stays vanilla
+assert(H.r32(skill + 0x18) == 464, "skill touched")
+for k = 1, 4 do
+    assert(H.r32(ex[k] + 0x18) == 1409 + k and H.r32(ex[k] + 0x2C) == 1, "skill row " .. k .. " touched")
 end
--- the X row shows its next move (Special 1): that row's description and video
-assert(H.r32(ex[1] + 0x1C) == 1501 and H.r32(ex[1] + 0x20) == 0x1001, "ex row not showing Special 1")
--- (no Specials group for ~: our own description)
-assert(text(H.r32(ex[2] + 0x1C)) == "L2 + ~: EX at your tier.\nCosts extra stamina.", "ex row fallback desc")
+-- Specials: X's moves 1 and 2 are owned on R2, none is EX yet: move 1 is on
+-- sale again as its EX; the others stay as the game has them
+assert(H.r32(move[1] + 0x18) == 713 and text(713) == "Special 1 EX", "move 1's EX name: " .. text(713))
+assert(H.r32(move[1] + 0x2C) == 0 and H.r32(move[1] + 0x28) == 5000, "move 1's EX not on sale")
+assert(H.r32(move[2] + 0x18) == 1532 and H.r32(move[2] + 0x2C) == 1, "move 2 changed before its turn")
+assert(H.r32(move[3] + 0x18) == 1533 and H.r32(move[3] + 0x2C) == 0 and H.r32(move[3] + 0x28) == 6500,
+    "move 3 (not owned on R2) changed")
 assert(H.r32(team + 0x18) == 465 and H.r32(gear[1] + 0x18) == 1022 and H.r32(gear[1] + 0x2C) == 1,
     "team touched")
 assert(H.r32(combo_leaf[0] + 0x18) == 920, "combos touched")
@@ -204,14 +209,14 @@ xp(5000)
 assert(ask(CAN, health[1], 0) == 1, "not buyable at 5000")
 assert(ask(CAN, health[2], 0) == 0, "row 2 before row 1")
 assert(ask(CAN, stamina[1], 0) == 1 and ask(CAN, stamina[2], 0) == 0, "stamina order")
-assert(ask(CAN, ex[1], 0) == 1, "ex tier 1 not for sale at 5000")
-xp(4999)
-assert(ask(CAN, ex[1], 0) == 0 and ask(CAN, ex[1], 1) == 0, "ex tier 1 affordable at 4999")
-xp(5000)
+assert(ask(CAN, ex[1], 0) == 0 and ask(CAN, ex[1], 1) == 1, "skill answers changed")
+assert(ask(CAN, move[1], 0) == 1 and ask(0x12B71, move[1], 1) == 0, "move 1's EX not for sale as a combo")
+assert(ask(COMBO, move[1], 0) == 1, "move 1's EX not routed as a combo")
+assert(ask(CAN, move[3], 1) == 1 and ask(0x12B71, move[3], 1) == 1, "move 3's own purchase changed")
 assert(ask(CAN, gear[1], 0) == 0 and ask(COMBO, gear[1], 0) == 0, "team answers changed")
 assert(ask(CAN, combo_leaf[0], 1) == 1 and ask(CAN, combo_leaf[1], 0) == 0, "combo answer changed")
 assert(ask(COMBO, health[3], 0) == 1 and ask(COMBO, stamina[2], 0) == 1, "shop rows not routed as combos")
-assert(ask(COMBO, ex[1], 0) == 1, "ex rows not routed as combos")
+assert(ask(COMBO, ex[1], 0) == 0, "skill rows routed as combos")
 assert(ask(COMBO, combo_leaf[0], 1) == 1 and ask(COMBO, rows[3][1], 0) == 0, "IsCombo changed elsewhere")
 
 -- 3. a confirmed purchase: the game deducts XP and bumps a combo slot; we
@@ -560,8 +565,7 @@ assert(m[0x8DF60] == nil, "HUD bar still hooked")
 assert(#H.failed == 0, H.failed[1])
 
 -- 10. re-sync: owned follows the shop levels, cheaply; the game's own count
--- plays no part. (Player 2 opened the menu last: one sync puts player 1's
--- EX tier labels back first.)
+-- plays no part. (Player 2 opened the menu last: one sync for player 1 first.)
 H.invoke(m, SYNC, {}, nil); for _ = 1, 3 do ask(CAN, combo_leaf[0], 1) end
 H.w8(SHOP0, 0x93)
 H.w32(MGR + 0xE0, 4)
@@ -595,27 +599,23 @@ H.w32(MGR + 0x88, 0)
 -- question (and only it) gets the exact top tier, if the stamina covers the
 -- cost, which comes off once, when the move spends its own
 H.w32(STAM_N, 2)
-xp(7500)
-assert(ask(CAN, ex[1], 0) == 1 and ask(CAN, ex[2], 0) == 1, "ex rows not for sale")
-buy(ex[2], 2, true)
+H.w8(MGR + 0x1C4 + 19, 0)                      -- (X is Specials group 1 -> game slot 0 -> EX byte 19)
+xp(5000)
+assert(ask(CAN, move[1], 0) == 1, "move 1's EX not for sale")
+buy(move[1], 1, true)
 assert(#H.failed == 0, H.failed[1])
-assert(H.r8(MGR + 0x1C4 + 21) == 1 and H.r8(MGR + 0x1C4 + 20) == 0, "ex tier for ~ not in slot 21")
-assert(H.r32(MGR + 0x4940) == 2500, "ex XP: " .. H.r32(MGR + 0x4940))
-assert(ask(CAN, ex[2], 0) == 0, "tier 2 for sale before the menu reopens (row still prices tier 1)")
+assert(H.r8(MGR + 0x1C4 + 19) == 1 and H.r8(MGR + 0x1C4) == 4, "EX tier not 1, or the R2 tier touched")
+assert(H.r32(MGR + 0x4940) == 0, "EX XP")
+assert(ask(CAN, move[1], 0) == 0, "move 1's EX for sale twice")
+-- the next menu: move 1 shows as its EX, owned; move 2 is on sale as its EX
+H.w32(move[1] + 0x2C, 1)                       -- (SyncOwned: owned on R2)
 H.invoke(m, SYNC, {}, nil); for _ = 1, 3 do ask(CAN, combo_leaf[0], 1) end
-assert(text(H.r32(ex[2] + 0x18)) == "EX ~ 1/4  " and H.r32(ex[2] + 0x28) == 10000, "tier 2 row")
-xp(10000)
-assert(ask(CAN, ex[2], 0) == 1, "tier 2 not for sale")
-H.w8(MGR + 0x1C4 + 2, 1)                       -- ~ owned only up to move 1 on R2:
-assert(ask(CAN, ex[2], 0) == 0, "EX of a move not owned on R2 for sale")   -- move 2's EX waits
-H.w8(MGR + 0x1C4 + 2, 4)
-H.w8(MGR + 0x1C4 + 19, 1)                      -- X: Special 1 is EX, the row shows Special 2
-H.invoke(m, SYNC, {}, nil); for _ = 1, 3 do ask(CAN, combo_leaf[0], 1) end
-assert(H.r32(ex[1] + 0x1C) == 1502 and H.r32(ex[1] + 0x20) == 0x1002, "X row not showing Special 2")
-H.w8(MGR + 0x1C4 + 19, 0)
-H.w8(MGR + 0x1C4 + 21, 4)                      -- ~ at its top: owned, not for sale
-H.invoke(m, SYNC, {}, nil); for _ = 1, 3 do ask(CAN, combo_leaf[0], 1) end
-assert(H.r32(ex[2] + 0x2C) == 1 and ask(CAN, ex[2], 0) == 0, "maxed ex row for sale")
+assert(H.r32(move[1] + 0x2C) == 1 and text(H.r32(move[1] + 0x18)) == "Special 1 EX", "move 1 not shown as EX")
+assert(text(H.r32(move[2] + 0x18)) == "Special 2 EX" and H.r32(move[2] + 0x2C) == 0
+    and H.r32(move[2] + 0x28) == 10000, "move 2's EX not on sale next")
+assert(H.r32(move[3] + 0x18) == 1533, "move 3 renamed before it is owned on R2")
+xp(9999)
+assert(ask(CAN, move[2], 0) == 0, "move 2's EX affordable at 9999")
 H.w8(MGR + 0x1C4 + 19, 4)                      -- * at tier 4 too (game slot 0)
 local NOW0 = STAM + 0x10
 local PAD = 0x63AC20                           -- joypad object of port p at + p * 0xE4
@@ -762,7 +762,7 @@ assert(text(598) == "Mejoras" and text(574) == "Salud" and text(599) == "Energ\2
 assert(text(597) == "Vida m\225xima +800,\nadem\225s de la del juego.", "spanish desc: " .. text(597))
 assert(text(784) == "Energ\237a 300%.\nBloquear y especiales\ncuestan menos.", "spanish stamina desc")
 assert(text(718) == "Energ\237a +3", "spanish stamina row 3")
-assert(H.r32(skill + 0x18) == 614 and text(614) == "Movimientos EX" and H.r32(team + 0x18) == 465, "spanish tree")
+assert(H.r32(skill + 0x18) == 464 and H.r32(team + 0x18) == 465, "spanish tree")
 assert(text(616) == "Compra la secuencia de\nun ??? con EXP.", "spanish fatalities hint")
 assert(text(617) == "Armas" and text(684) == "Kamas           ", "spanish weapons")
 assert(text(698) == "Armas a la venta aqu\237:\nMejoras > Armas.", "spanish popup")
@@ -807,7 +807,7 @@ assert(H.r32(basic + 0x18) == 598 and H.r32(group[2] + 0x18) == 599, "resume did
 assert(H.r32(health[1] + 0x2C) == 1 and H.r32(health[2] + 0x2C) == 0 and H.r32(health[4] + 0x28) == 20000,
     "resumed rows wrong")
 assert(H.r32(stamina[4] + 0x28) == 20000 and H.r32(stamina[1] + 0x2C) == 0, "resumed stamina rows")
-assert(H.r32(skill + 0x18) == 614, "resume did not finish the ex store")
+assert(H.r32(skill + 0x18) == 464, "resume touched skill")
 assert(text(604) == "Energ\237a 150%.\nBloquear y especiales\ncuestan menos.", "resumed text")    -- still Spanish
 -- 18. Stamina +4 plays as 300%: every cost a third on average. The
 -- per-frame 3 becomes 1; the others alternate floor and ceiling (10 / 3 =

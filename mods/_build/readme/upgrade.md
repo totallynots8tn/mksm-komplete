@@ -1,4 +1,4 @@
-# Extended Upgrades: XP Shop 0.8.5 (preview, experimental)
+# Extended Upgrades: XP Shop 0.9.0 (preview, experimental)
 
 The XP shop spends XP in the game's own upgrade menu, on the game's own menu
 entries. Nothing new is added to the menu, and everything it sells comes **on
@@ -6,16 +6,17 @@ top of** what the game gives you.
 
 ## What it does
 
-Pause > Moves > **Basic Moves** becomes **Upgrades**, **Skill** becomes **EX
-Moves**, and the **Fatalities** you haven't discovered can be bought. Every
-other category, Team included, is unchanged.
+Pause > Moves > **Basic Moves** becomes **Upgrades**, every **Specials** row
+can be bought a second time as its **EX** move, and the **Fatalities** you
+haven't discovered can be bought. Every other category, Skill and Team
+included, is unchanged.
 
 | Category | Row | Cost | Effect |
 | --- | --- | --- | --- |
 | Upgrades > Health | Health +1 to +4 | 5,000 / 10,000 / 15,000 / 20,000 XP | 1 / 2 / 4 / 8 health-upgrade steps (+100 / +200 / +400 / +800 max health in solo), above the game's own 4 |
 | Upgrades > Stamina | Stamina +1 to +4 | 5,000 / 10,000 / 15,000 / 20,000 XP | everything that spends the blue bar costs less: it plays as 125 / 150 / 200 / 300% |
 | Upgrades > Weapons | one row per weapon lying in the current area | 2,000 XP per summon | the weapon appears beside you at full durability |
-| EX Moves | EX * / ~ / \| / ^, one move at a time (Special 1, 2, ...) | 5,000 / 10,000 / 15,000 / 20,000 / 25,000 XP per move | L2 + that move's input (no R2): the move as an EX, for extra stamina |
+| Specials > a button | each move you own, again as "<move> EX", in order | 5,000 / 10,000 / 15,000 / 20,000 / 25,000 XP (the button's 1st / 2nd / ... move) | L2 + that move's input (no R2): the move as an EX, for extra stamina |
 | Fatalities | any row still showing ??? | 5,000 XP each | reveals that fatality's input and video |
 
 - **Buying:** pick the next row and confirm in the usual Upgrade dialog. Health
@@ -32,11 +33,11 @@ other category, Team included, is unchanged.
   tells you they are for sale. An area without weapons shows "None
   here". The game's own respawn does the moving, so a weapon the area never
   had can't be summoned (yet).
-- **EX Moves** (experimental): with a button's EX bought, **L2 + that attack
-  button** (X, Y or B; no R2) does the special as an EX. Each of a button's
-  moves (Special 1, 2, ...) gets its EX separately, in order, once you own
-  that move on R2; the row shows how many are EX ("EX * 2/4") and the next
-  move's own input, name and video. L2 only does moves you own both ways.
+- **EX moves** (experimental): every row in Specials is bought twice. The
+  first purchase is the game's own (the move, on R2); once you own it, the
+  row is for sale again as "<move> EX", with the move's own input and video.
+  A button's moves get their EX in order (Special 1 EX before Special 2 EX).
+  With it bought, **L2 + the move's input** (no R2) does the move as an EX.
   Keep L2 held for the whole input: L2 + X, X, X does what R2 + X, X, X does
   (while L2 stays held after an EX press it counts as R2, not block). It costs extra stamina (a
   quarter of the blue bar, less with Stamina upgrades), once per move;
@@ -79,6 +80,10 @@ Combo extenders, in a menu entry that already exists. The reverse-engineering is
 
 ## Changelog
 
+- **0.9.0:** EX moves are bought in the game's own Specials menu: each move
+  row can be bought a second time as its EX, in order, instead of in a
+  Skill -> EX Moves store. Skill is vanilla again. EX bought in 0.8.x carry
+  over (the same counters).
 - **0.8.5:** fixes one EX move unlocking all of that button's moves on L2: the
   follow-up presses of a chain (X, X) now stay limited to the moves made EX.
 - **0.8.4:** EX is bought per move: each purchase makes the next of that
