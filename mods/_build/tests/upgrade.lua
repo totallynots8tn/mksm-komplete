@@ -168,11 +168,14 @@ assert(H.r32(group[3] + 0x18) == 617 and text(617) == "Weapons", "weapons group"
 assert(text(H.r32(group[3] + 0x1C)) == "Summon this area's weapons.", "weapons group desc")
 assert(H.r32(group[3] + 0x0C) == 1, "weapon rows with none in the area: " .. H.r32(group[3] + 0x0C))
 assert(text(H.r32(rows[3][1] + 0x18)) == "None here       " and H.r32(rows[3][1] + 0x28) == 0, "none-here row")
-assert(H.r32(skill + 0x18) == 464, "skill touched")
-for k = 1, 4 do
-    assert(H.r32(ex[k] + 0x18) == 1409 + k and H.r32(ex[k] + 0x28) == 0 and H.r32(ex[k] + 0x2C) == 1,
-        "skill row " .. k .. " touched")
+-- Skill became the EX store: four rows, none owned (no flags yet)
+assert(H.r32(skill + 0x18) == 614 and text(614) == "EX Moves", "ex store")
+assert(text(H.r32(skill + 0x1C)) == "Hold L2 with a special for its EX version.", "ex store desc")
+for k, sym in ipairs({ "*", "~", "|", "^" }) do
+    assert(text(H.r32(ex[k] + 0x18)) == "EX " .. sym and H.r32(ex[k] + 0x28) == 7500
+        and H.r32(ex[k] + 0x2C) == 0, "ex row " .. k)
 end
+assert(text(H.r32(ex[1] + 0x1C)) == "L2 + *: top-tier move.\nCosts extra stamina.", "ex row desc")
 assert(H.r32(team + 0x18) == 465 and H.r32(gear[1] + 0x18) == 1022 and H.r32(gear[1] + 0x2C) == 1,
     "team touched")
 assert(H.r32(combo_leaf[0] + 0x18) == 920, "combos touched")
@@ -187,11 +190,11 @@ xp(5000)
 assert(ask(CAN, health[1], 0) == 1, "not buyable at 5000")
 assert(ask(CAN, health[2], 0) == 0, "row 2 before row 1")
 assert(ask(CAN, stamina[1], 0) == 1 and ask(CAN, stamina[2], 0) == 0, "stamina order")
-assert(ask(CAN, ex[1], 0) == 0 and ask(CAN, ex[1], 1) == 1, "skill answers changed")
+assert(ask(CAN, ex[1], 0) == 0 and ask(CAN, ex[1], 1) == 0, "ex row affordable at 5000")
 assert(ask(CAN, gear[1], 0) == 0 and ask(COMBO, gear[1], 0) == 0, "team answers changed")
 assert(ask(CAN, combo_leaf[0], 1) == 1 and ask(CAN, combo_leaf[1], 0) == 0, "combo answer changed")
 assert(ask(COMBO, health[3], 0) == 1 and ask(COMBO, stamina[2], 0) == 1, "shop rows not routed as combos")
-assert(ask(COMBO, ex[1], 0) == 0, "skill rows routed as combos")
+assert(ask(COMBO, ex[1], 0) == 1, "ex rows not routed as combos")
 assert(ask(COMBO, combo_leaf[0], 1) == 1 and ask(COMBO, rows[3][1], 0) == 0, "IsCombo changed elsewhere")
 
 -- 3. a confirmed purchase: the game deducts XP and bumps a combo slot; we
@@ -568,8 +571,116 @@ H.w32(MGR + 0x88, 2)
 assert(ask(CAN, health[1], 0) == 0 and ask(CAN, ex[1], 0) == 0, "versus")
 H.w32(MGR + 0x88, 0)
 
--- 13. no GetLevel hook: specials keep the game's own levels
-assert(m[0x111C2] == nil, "GetLevel still hooked")
+-- 13. EX moves: buying a row sets its button's flag (leaf * ~ | ^ -> game
+-- slot 0 2 1 3 -> level slot 19 + it). While L2 is held, the move system's
+-- question (and only it) gets the exact top tier, if the stamina covers the
+-- cost, which comes off once, when the move spends its own
+H.w32(STAM_N, 2)
+xp(7500)
+assert(ask(CAN, ex[1], 0) == 1 and ask(CAN, ex[2], 0) == 1, "ex rows not for sale")
+buy(ex[2], 2, true)
+assert(#H.failed == 0, H.failed[1])
+assert(H.r8(MGR + 0x1C4 + 21) == 1 and H.r8(MGR + 0x1C4 + 20) == 0, "ex flag for ~ not slot 21")
+assert(H.r32(MGR + 0x4940) == 0, "ex XP")
+assert(ask(CAN, ex[2], 0) == 0, "owned ex row for sale")
+H.w8(MGR + 0x1C4 + 19, 1)                      -- * owned too (game slot 0)
+local NOW0 = STAM + 0x10
+local PAD = 0x63AC20                           -- joypad object of port p at + p * 0xE4
+local LT, RT, X, Y, B = 8, 9, 4, 5, 3          -- its analog bytes
+local EVAL = 0x1CDB21                          -- a return address inside the evaluator
+local function pad(player, held)               -- one frame of the pad translator
+    local obj = PAD + player * 0xE4
+    for k = 2, 9 do H.w8(obj + k, held[k] or 0) end
+    H.invoke(m, 0x129480, { eax = obj }, nil)
+    assert(#H.failed == 0, H.failed[1])
+    return H.r8(obj + LT), H.r8(obj + RT)
+end
+local function level(player, slot, real, from)
+    local ctx = { esp = 0xD0000300, eax = real }
+    H.w32(ctx.esp, from or EVAL); H.w32(ctx.esp + 4, player); H.w32(ctx.esp + 8, slot)
+    H.invoke(m, 0x111C2, ctx, nil)
+    assert(#H.failed == 0, H.failed[1])
+    return ctx.eax
+end
+local function spend(player)
+    local ctx = { esp = 0xD0000400 }
+    H.w32(ctx.esp + 4, player); H.w32(ctx.esp + 8, 2)
+    H.invoke(m, 0x1406B, ctx, nil)
+    assert(#H.failed == 0, H.failed[1])
+end
+local function stam(player) return H.rf32(NOW0 + (player or 0) * 0x24) end
+H.w32(0x5CE878, 1000); H.wf32(NOW0, 100)
+-- L2 + X (* owned): the game sees R2 + X, the special is EX
+local lt, rt = pad(0, { [LT] = 0xFF, [X] = 0xFF })
+assert(lt == 0 and rt == 0xFF, "L2 + X not turned into R2 + X")
+assert(level(0, 0, 2) == 4 and stam() == 100, "EX special not at its top tier, or charged at the pick")
+spend(0)
+assert(stam() == 75, "EX stamina not charged: " .. stam())
+spend(0)
+assert(stam() == 75, "charged twice for one move")
+-- still holding X: the press stays R2, but it isn't a new EX
+H.w32(0x5CE878, 1010)
+lt, rt = pad(0, { [LT] = 0xFF, [X] = 0xFF })
+assert(rt == 0xFF, "held EX press lost its R2")
+spend(0)
+assert(stam() == 75, "a held press charged again")
+pad(0, { [LT] = 0xFF })                        -- X released
+-- untouched: L2 + an unbought button (B is |, slot 1), L2 + R2, a brushed
+-- trigger, no stamina, the demo, versus
+lt, rt = pad(0, { [LT] = 0xFF, [B] = 0xFF })
+assert(lt == 0xFF and rt == 0, "L2 + an unbought button remapped")
+lt, rt = pad(0, { [LT] = 0xFF, [RT] = 0xFF, [X] = 0xFF })
+assert(lt == 0xFF and rt == 0xFF, "L2 + R2 + X touched")
+pad(0, {})
+lt, rt = pad(0, { [LT] = 0x80, [X] = 0xFF })
+assert(lt == 0x80 and rt == 0, "a brushed trigger remapped")
+pad(0, {})
+H.wf32(NOW0, 24)
+lt, rt = pad(0, { [LT] = 0xFF, [X] = 0xFF })
+assert(lt == 0xFF and rt == 0, "remapped without the stamina")
+pad(0, {}); H.wf32(NOW0, 100)
+H.w8(0x5143A5, 1)
+lt, rt = pad(0, { [LT] = 0xFF, [X] = 0xFF })
+assert(rt == 0, "remapped in the demo")
+H.w8(0x5143A5, 0); pad(0, {})
+H.w32(MGR + 0x88, 2)
+lt, rt = pad(0, { [LT] = 0xFF, [X] = 0xFF })
+assert(rt == 0, "remapped in versus")
+H.w32(MGR + 0x88, 0); pad(0, {})
+-- a plain R2 special is never boosted or charged extra, and nothing but the
+-- evaluator is answered
+H.w32(0x5CE878, 2000)
+assert(level(0, 0, 2) == 2, "a plain special boosted")
+pad(0, { [LT] = 0xFF, [Y] = 0xFF })            -- Y is ~ (slot 2), owned
+assert(level(0, 2, 1, 0x9D650) == 1, "boosted for the menu")
+assert(level(0, 2, 1) == 4, "~ not boosted to its top tier 4")
+assert(level(0, 2, 4) == 4, "a maxed special changed")
+spend(0)
+assert(stam() == 75, "EX on ~ not charged")
+-- a press whose move never spends: its extra expires
+pad(0, {}); H.wf32(NOW0, 100)
+pad(0, { [LT] = 0xFF, [Y] = 0xFF })
+H.w32(0x5CE878, 2100)
+spend(0)
+assert(stam() == 100, "an expired EX charged")
+assert(level(0, 2, 1) == 1, "an expired EX boosted")
+pad(0, {})
+-- Stamina +2 (150%): the extra is scaled too
+H.w8(SHOP0, 0x91)
+pad(0, { [LT] = 0xFF, [X] = 0xFF })
+spend(0)
+assert(math.abs(stam() - (100 - 25 / 1.5)) < 1e-3, "scaled EX cost: " .. stam())
+pad(0, {})
+H.w8(SHOP0, 0x81)
+-- player 2 (Kung Lao, port 1): his own flags, top tiers and stamina
+H.w32(MGR + 0xCC + 4, 1); H.w8(MGR + 0x1C4 + 0x1C + 21, 1); H.wf32(NOW0 + 0x24, 100)
+lt, rt = pad(1, { [LT] = 0xFF, [Y] = 0xFF })
+assert(rt == 0xFF and level(1, 2, 1) == 3, "KL ~ EX")
+spend(1)
+assert(stam(1) == 80, "player 2's charge (Stamina +1: 20): " .. stam(1))
+pad(1, {})
+H.w32(MGR + 0xCC + 4, 0); H.w8(MGR + 0x1C4 + 0x1C + 21, 0)
+H.w8(MGR + 0x1C4 + 19, 0); H.w8(MGR + 0x1C4 + 21, 0)
 
 -- 15. Spanish (the game's own placeholders: 54-62 bytes): strings in cp1252
 local es = H.load(arg[1])
@@ -581,7 +692,8 @@ end
 put(455, "Mejorar")
 for _, i in ipairs({ 574, 598 }) do placeholder(i, 62) end
 for _, i in ipairs({ 581, 582, 583, 584, 593, 594, 599, 601, 602, 603, 604, 611, 612, 613,
-                     616, 617, 683, 684, 693, 694, 696, 697, 698, 718, 719, 783, 784 }) do
+                     614, 616, 617, 618, 619, 683, 684, 693, 694, 696, 697, 698, 699,
+                     701, 702, 703, 704, 711, 712, 718, 719, 783, 784 }) do
     placeholder(i, 56)
 end
 for _, i in ipairs({ 596, 597 }) do placeholder(i, 54) end
@@ -592,7 +704,7 @@ assert(text(598) == "Mejoras" and text(574) == "Salud" and text(599) == "Energ\2
 assert(text(597) == "Vida m\225xima +800,\nadem\225s de la del juego.", "spanish desc: " .. text(597))
 assert(text(784) == "Energ\237a 300%.\nBloquear y especiales\ncuestan menos.", "spanish stamina desc")
 assert(text(718) == "Energ\237a +3", "spanish stamina row 3")
-assert(H.r32(skill + 0x18) == 464 and H.r32(team + 0x18) == 465, "spanish tree")
+assert(H.r32(skill + 0x18) == 614 and text(614) == "Movimientos EX" and H.r32(team + 0x18) == 465, "spanish tree")
 assert(text(616) == "Compra la secuencia de\nun ??? con EXP.", "spanish fatalities hint")
 assert(text(617) == "Armas" and text(684) == "Kamas           ", "spanish weapons")
 assert(text(698) == "Armas a la venta aqu\237:\nMejoras > Armas.", "spanish popup")
@@ -623,7 +735,8 @@ assert(io.open(tmp, "wb")):write(small):close()
 local tiny = H.load(tmp)
 os.remove(tmp)
 for _, i in ipairs({ 574, 598, 581, 582, 583, 584, 593, 594, 596, 597, 599, 601, 602, 603, 604,
-                     611, 612, 613, 616, 617, 683, 684, 693, 694, 696, 697, 698, 718, 719, 783, 784 }) do
+                     611, 612, 613, 614, 616, 617, 618, 619, 683, 684, 693, 694, 696, 697, 698, 699,
+                     701, 702, 703, 704, 711, 712, 718, 719, 783, 784 }) do
     placeholder(i, 56)
 end
 H.w8(SHOP0, 0x81)
@@ -636,7 +749,7 @@ assert(H.r32(basic + 0x18) == 598 and H.r32(group[2] + 0x18) == 599, "resume did
 assert(H.r32(health[1] + 0x2C) == 1 and H.r32(health[2] + 0x2C) == 0 and H.r32(health[4] + 0x28) == 20000,
     "resumed rows wrong")
 assert(H.r32(stamina[4] + 0x28) == 20000 and H.r32(stamina[1] + 0x2C) == 0, "resumed stamina rows")
-assert(H.r32(skill + 0x18) == 464, "resume touched skill")
+assert(H.r32(skill + 0x18) == 614, "resume did not finish the ex store")
 assert(text(604) == "Energ\237a 150%.\nBloquear y especiales\ncuestan menos.", "resumed text")    -- still Spanish
 -- 18. Stamina +4 plays as 300%: every cost a third on average. The
 -- per-frame 3 becomes 1; the others alternate floor and ceiling (10 / 3 =
@@ -673,4 +786,4 @@ assert(#H.failed == 0 and H.r32(MGR + 0x94) == 1400, "level 7: " .. H.r32(MGR + 
 
 assert(#H.failed == 0, H.failed[1])
 print("errors", #H.failed, "first sync writes", first_writes, "max_instr", H.max_instr)
-print("xp shop: health, stamina, weapons, fatalities, tick, languages, fallback all pass")
+print("xp shop: health, stamina, weapons, EX, fatalities, tick, languages, fallback all pass")

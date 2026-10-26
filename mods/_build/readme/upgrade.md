@@ -1,4 +1,4 @@
-# Extended Upgrades: XP Shop 0.7.2 (preview, experimental)
+# Extended Upgrades: XP Shop 0.8.1 (preview, experimental)
 
 The XP shop spends XP in the game's own upgrade menu, on the game's own menu
 entries. Nothing new is added to the menu, and everything it sells comes **on
@@ -6,15 +6,16 @@ top of** what the game gives you.
 
 ## What it does
 
-Pause > Moves > **Basic Moves** becomes **Upgrades**, and the **Fatalities**
-you haven't discovered can be bought. Every other category, Skill and Team
-included, is unchanged.
+Pause > Moves > **Basic Moves** becomes **Upgrades**, **Skill** becomes **EX
+Moves**, and the **Fatalities** you haven't discovered can be bought. Every
+other category, Team included, is unchanged.
 
 | Category | Row | Cost | Effect |
 | --- | --- | --- | --- |
 | Upgrades > Health | Health +1 to +4 | 5,000 / 10,000 / 15,000 / 20,000 XP | 1 / 2 / 4 / 8 health-upgrade steps (+100 / +200 / +400 / +800 max health in solo), above the game's own 4 |
 | Upgrades > Stamina | Stamina +1 to +4 | 5,000 / 10,000 / 15,000 / 20,000 XP | everything that spends the blue bar costs less: it plays as 125 / 150 / 200 / 300% |
 | Upgrades > Weapons | one row per weapon lying in the current area | 2,000 XP per summon | the weapon appears beside you at full durability |
+| EX Moves | EX *, EX ~, EX \|, EX ^ | 7,500 XP each | L2 + that attack button (no R2): the special as an EX, for extra stamina |
 | Fatalities | any row still showing ??? | 5,000 XP each | reveals that fatality's input and video |
 
 - **Buying:** pick the next row and confirm in the usual Upgrade dialog. Health
@@ -31,6 +32,13 @@ included, is unchanged.
   tells you they are for sale. An area without weapons shows "None
   here". The game's own respawn does the moving, so a weapon the area never
   had can't be summoned (yet).
+- **EX Moves** (experimental): with a button's EX bought, **L2 + that attack
+  button** (X, Y or B; no R2) does the special as an EX: its strongest
+  version, even before you have bought that tier. It costs extra stamina (a
+  quarter of the blue bar, less with Stamina upgrades), once per move;
+  without enough stamina L2 + the button stays a block. L2 + a button whose
+  EX you haven't bought is unchanged, and L2 + R2 + a button is left free.
+  The red orbs stay the fatality meter. Each co-op player buys their own.
 - **Fatalities** all work without being discovered; the game only hides
   their inputs until you perform one. A ??? row stays hidden while you browse
   (no input, no video); press A on it to buy. Buying reveals its input the same
@@ -62,12 +70,15 @@ shop turns itself off and the menu goes back to vanilla.
 
 ## Coming next
 
-EX moves (L2 + special),
-each in a menu entry that already exists and each released on its own. The reverse-engineering is in
+Combo extenders, in a menu entry that already exists. The reverse-engineering is in
 `analysis/xp_shop/REPORT.md` in the project repository.
 
 ## Changelog
 
+- **0.8.1:** EX is L2 + the attack button, without R2 (holding L2 blocks, so
+  L2 + R2 + a button did nothing).
+- **0.8.0:** Skill becomes **EX Moves**: hold L2 with a bought special for
+  its strongest version, for extra stamina once per move.
 - **0.7.2:** the "new abilities" popup announces an area's weapons, once per
   area per session, when you open Moves and can afford one; the purchase jingle plays
   for weapons too (the row stays bought until the menu opens again).

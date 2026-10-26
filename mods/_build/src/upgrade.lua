@@ -1,4 +1,4 @@
--- Extended Upgrades 0.7.2: XP shop, Health, Stamina, weapons and fatality inputs.
+-- Extended Upgrades 0.8.1: XP shop, Health, Stamina, weapons, EX moves and fatality inputs.
 --
 -- Turns pause-menu Moves categories into the XP shop. Nothing new is added
 -- to the menu; existing rows get new text, costs and behaviour, and
@@ -12,8 +12,12 @@
 --   * Fatalities: a row not discovered yet (its input shows as ???) can be
 --     bought, which reveals the input. Every fatality works without being
 --     discovered; this sells the knowledge, not the move.
--- Skill and Team keep their vanilla rows. EX moves come later, as their own
--- step (a failing callback switches the whole script off,
+--   * Skill -> EX Moves: four unlocks, one per special button (* ~ | ^).
+--     With one bought, L2 + that attack button (no R2) does the special as
+--     an EX: its strongest variant, for extra stamina (the blue bar; the red
+--     orbs stay the fatality meter). L2 + a button without EX stays vanilla
+--     (block), and L2 + R2 + a button stays free.
+-- Team keeps its vanilla rows (a failing callback switches the whole script off,
 -- so they ship apart). See analysis/xp_shop/REPORT.md section 9.
 -- Analysis: analysis/xp_shop/REPORT.md (sections 7, 9 and 11).
 --
@@ -96,6 +100,21 @@
 --     it and point the popup's text (407) at ours, once per area (map
 --     [0x505970]) per session, when one of its weapons can be afforded,
 --     then put both back.
+--   * EX (analysis/ex_specials/REPORT.md): a special's variant is picked by the
+--     move system's condition evaluator 0x1CD780, which asks GetLevel
+--     (thunk 0x111C2) for slots 0-3 and compares with >= for the lower tiers
+--     and == for the top one. While L2 (left trigger: the analog byte at pad
+--     state +0xC, 0x63ABD4 + p * 0x16; in the joypad object 0x63AC20 + p *
+--     0xE4 the analog bytes from +2 are A B X Y Black White LT RT) is held
+--     without R2 and an attack button whose EX the player owns is pressed
+--     (flag level slots 19-22, read by nothing else), the pad-to-action
+--     translator 0x129480 (eax = joypad object) gets R2 instead of L2 for
+--     that frame, so the game does the special itself. Pressing it marks an
+--     EX: for that special the evaluator, and only it (by return address),
+--     gets the exact top tier, and its stamina extra comes off when the
+--     special spends its own (script command 0x1F1 -> wrapper thunk
+--     0x1406B, once per move), scaled like every cost.
+--     Never above the top tier: slot 3 has a hidden ==6 variant.
 --   * Text: the strings are a pointer array at [0x5B04A4] (count [0x5AC508]).
 --     We write our strings over unused "(PH)" move-list placeholders, only where
 --     they fit, and point our rows at them. Every value we change is remembered,
@@ -187,6 +206,35 @@ local MOVES_OPEN    = 0x0001425F    -- the Moves list opens (0x9C590), the popup
 local POPUP_FLAG    = 0x004EE890    -- byte: show the "new abilities" popup (purchases clear it)
 local POPUP_TEXT    = 407           -- that popup's text
 local MAP           = 0x00505970    -- the current map (area) number
+local SKILL_TEXT    = 464           -- "Skill" category: becomes EX Moves
+local EX_FLAG       = 19            -- EX unlock flags: level slots 19-22, one per game slot
+local EX_LEAF_SLOT  = { 0, 2, 1, 3 } -- leaf * ~ | ^ -> game slot (the grant's mapping)
+local EX_COST       = 25            -- extra stamina per EX special, before Stamina upgrades
+local GET_LEVEL     = 0x000111C2    -- GetLevel(player, slot), cdecl -> eax
+local EVAL_FROM     = 0x001CD780    -- the move system's condition evaluator: GetLevel
+local EVAL_TO       = 0x001CE400    -- calls returning in here pick a special's variant
+local SPEND         = 0x0001406B    -- a scripted move spends stamina: (player, cost level), cdecl
+local PAD_MAP       = 0x00129480    -- one port's pad -> action bits; eax = its joypad object
+local PADS          = 0x0063AC20    -- joypad object of port p at + p * 0xE4
+local PAD_OBJ       = 0xE4
+local J_LT, J_RT    = 8, 9          -- analog bytes in it: A B X Y Black White LT RT from +2
+local LT_MIN        = 0xC0          -- trigger byte that counts as held
+-- Attack button (its analog byte) -> the special's game slot. ^ (throw) has
+-- no button here until it is confirmed which one it is.
+local EX_BUTTONS    = { { 4, 0 }, { 5, 2 }, { 3, 1 } }   -- X -> *, Y -> ~, B -> |
+local DEMO          = 0x005143A5    -- 1 in the attract demo: GetLevel reports 1 there
+local FRAME         = 0x005CE878    -- frame counter
+local EX_WINDOW     = 60            -- frames between the variant pick and its stamina spend
+
+-- Exact top tier per character id and game slot (the Specials groups'
+-- sizes, verified against the menu data). The variant pickers compare the
+-- top tier with equality, so the boost must report exactly these.
+local TOP_TIER = {
+    [0]    = { 4, 3, 4, 5 },        -- Liu Kang
+    [1]    = { 3, 5, 3, 5 },        -- Kung Lao
+    [0x58] = { 1, 3, 3, 5 },        -- Sub-Zero
+    [0x52] = { 3, 3, 3, 5 },        -- Scorpion
+}
 local WEAPON_POPUP  = 698           -- (PH) text that takes our popup message
 local POSITION      = 0x80          -- entity position: x, y, z floats
 local WEAPON_SIDE   = 150.0         -- the weapon lands this far beside the buyer,
@@ -198,8 +246,9 @@ local UPGRADE_TEXT  = 455           -- "Upgrade" in the loaded language tells us
 -- health[3] takes the bonus health and stamina[3] the bar size in percent;
 -- fatality is the Fatalities category's description, weapon the Weapons
 -- group (name, description, row description, the row when the area has
--- none, the popup message) and weapons the names by weapon object (45 bytes
--- at most, names 16).
+-- none, the popup message), weapons the names by weapon object and ex the EX
+-- store (name, description, row description with the button as %s) (45
+-- bytes at most, names 16).
 local LANGUAGES = {
     { tag = "Upgr", category = { "Upgrades", "Spend EXP on health and stamina." },
       health = { "Health", "Health +%d", "Max health +%d,\non top of the game's.",
@@ -210,7 +259,8 @@ local LANGUAGES = {
       weapon = { "Weapons", "Summon this area's weapons.", "Appears where you buy it.\nThrown, it returns.", "None here",
                  "Weapons for sale here:\nUpgrades > Weapons." },
       weapons = { kama01 = "Kamas", sword = "Sword", broadsword = "Broadsword", axe = "Axe",
-                  hooksword01 = "Hook swords", shard = "Shard", shard1h = "Shard" } },
+                  hooksword01 = "Hook swords", shard = "Shard", shard1h = "Shard" },
+      ex = { "EX Moves", "Hold L2 with a special for its EX version.", "L2 + %s: top-tier move.\nCosts extra stamina." } },
     { tag = "Mejo", category = { "Mejoras", "Gasta EXP en salud y energ\237a." },
       health = { "Salud", "Salud +%d", "Vida m\225xima +%d,\nadem\225s de la del juego.",
                  "Salud extra, adem\225s de la del juego." },
@@ -220,7 +270,8 @@ local LANGUAGES = {
       weapon = { "Armas", "Invoca las armas de esta zona.", "Aparece donde la compras;\nlanzada, vuelve.", "Ninguna aqu\237",
                  "Armas a la venta aqu\237:\nMejoras > Armas." },
       weapons = { kama01 = "Kamas", sword = "Espada", broadsword = "Mandoble", axe = "Hacha",
-                  hooksword01 = "Espadas gancho", shard = "Fragmento", shard1h = "Fragmento" } },
+                  hooksword01 = "Espadas gancho", shard = "Fragmento", shard1h = "Fragmento" },
+      ex = { "Movimientos EX", "Mant\233n L2 + especial para la versi\243n EX.", "L2 + %s: golpe m\225ximo.\nGasta m\225s energ\237a." } },
     { tag = "Verb", category = { "Verbesserungen", "EXP f\252r Leben und Ausdauer ausgeben." },
       health = { "Leben", "Leben +%d", "Max. Leben +%d,\nzus\228tzlich zum Spiel.",
                  "Mehr Leben, zus\228tzlich zum Spiel." },
@@ -230,7 +281,8 @@ local LANGUAGES = {
       weapon = { "Waffen", "Waffen dieses Gebiets rufen.", "Erscheint am Kaufort,\nkehrt geworfen zur\252ck.", "Keine hier",
                  "Hier gibt es Waffen:\nVerbesserungen > Waffen." },
       weapons = { kama01 = "Kamas", sword = "Schwert", broadsword = "Breitschwert", axe = "Axt",
-                  hooksword01 = "Hakenschwerter", shard = "Splitter", shard1h = "Splitter" } },
+                  hooksword01 = "Hakenschwerter", shard = "Splitter", shard1h = "Splitter" },
+      ex = { "EX-Angriffe", "Halte L2 + Spezial f\252r die EX-Version.", "L2 + %s: st\228rkster Zug.\nKostet mehr Ausdauer." } },
     { tag = "Pote", category = { "Potenziamenti", "Spendi EXP per salute ed energia." },
       health = { "Salute", "Salute +%d", "Salute max +%d,\noltre a quella del gioco.",
                  "Salute extra oltre a quella del gioco." },
@@ -240,7 +292,8 @@ local LANGUAGES = {
       weapon = { "Armi", "Evoca le armi di questa zona.", "Appare dove la compri;\nlanciata, torna l\236.", "Nessuna qui",
                  "Armi in vendita qui:\nPotenziamenti > Armi." },
       weapons = { kama01 = "Kama", sword = "Spada", broadsword = "Spadone", axe = "Ascia",
-                  hooksword01 = "Spade uncinate", shard = "Frammento", shard1h = "Frammento" } },
+                  hooksword01 = "Spade uncinate", shard = "Frammento", shard1h = "Frammento" },
+      ex = { "Mosse EX", "Tieni L2 + speciale per la versione EX.", "L2 + %s: mossa massima.\nCosta pi\249 energia." } },
     { tag = "Am\233l", category = { "Am\233liorations", "D\233pensez l'EXP en sant\233 et endurance." },
       health = { "Sant\233", "Sant\233 +%d", "Sant\233 max +%d,\nen plus de celle du jeu.",
                  "Sant\233 en plus de celle du jeu." },
@@ -250,7 +303,8 @@ local LANGUAGES = {
       weapon = { "Armes", "Invoque les armes de la zone.", "Appara\238t o\249 tu l'ach\232tes;\nlanc\233e, revient.", "Aucune ici",
                  "Armes \224 vendre ici :\nAm\233liorations > Armes." },
       weapons = { kama01 = "Kamas", sword = "\201p\233e", broadsword = "Claymore", axe = "Hache",
-                  hooksword01 = "\201p\233es crochets", shard = "\201clat", shard1h = "\201clat" } },
+                  hooksword01 = "\201p\233es crochets", shard = "\201clat", shard1h = "\201clat" },
+      ex = { "Coups EX", "Maintenez L2 + sp\233cial pour la version EX.", "L2 + %s : coup max.\nCo\251te plus d'endurance." } },
 }
 
 -- Each shop group takes over one Basic Moves group (source = its vanilla
@@ -266,6 +320,17 @@ local SHOP = {
           rows = { { cost = 5000,  name = 601, desc = 602 }, { cost = 10000, name = 603, desc = 604 },
                    { cost = 15000, name = 718, desc = 719 }, { cost = 20000, name = 783, desc = 784 } } },
     },
+}
+
+-- The EX store: Skill, a category whose four leaves hang directly off it.
+-- Each row tracks its own flag byte (owned at 1).
+local EX_STORE = {
+    source = SKILL_TEXT, text = 614, desc = 618, leaves = 4,
+    vanilla = { 1410, 1411, 1412, 1413 },
+    rows = { { cost = 7500, name = 619, desc = 699, sym = "*" },
+             { cost = 7500, name = 701, desc = 702, sym = "~" },
+             { cost = 7500, name = 703, desc = 704, sym = "|" },
+             { cost = 7500, name = 711, desc = 712, sym = "^" } },
 }
 
 local function plausible(p)
@@ -450,6 +515,12 @@ local function place_text()
         end
     end
     all[#all + 1] = { FATALITY_HINT, lang.fatality }
+    for _, row in ipairs(EX_STORE.rows) do
+        all[#all + 1] = { row.name, "EX " .. row.sym }
+        all[#all + 1] = { row.desc, string.format(lang.ex[3], row.sym) }
+    end
+    all[#all + 1] = { EX_STORE.text, lang.ex[1] }
+    all[#all + 1] = { EX_STORE.desc, lang.ex[2] }
     local w = lang.weapon
     all[#all + 1] = { WEAPON_TEXT, w[1] }
     all[#all + 1] = { WEAPON_DESC, w[2] }
@@ -676,6 +747,11 @@ local function shop_row(node)
             end
         end
     end
+    if gname == EX_STORE.text then
+        for k = 1, #EX_STORE.rows do
+            if game.read_u32(kids + (k - 1) * 4) == node then return "ex", EX_STORE, k end
+        end
+    end
     if gname == WEAPON_TEXT and game.read_u32(node + 0x28) == WEAPON_COST then
         for k = 1, #WEAPON_ROWS do
             if game.read_u32(kids + (k - 1) * 4) == node then return "weapon", nil, k end
@@ -711,6 +787,42 @@ local function fatality_node(root)
         end
     end
     return nil
+end
+
+-- The EX store's category under a character root (nil when absent, or not
+-- shaped as expected: four leaves, each with a vanilla or our own name).
+local function ex_nodes(root)
+    local n, kids = game.read_u32(root + 0x0C), game.read_u32(root + 0x14)
+    if n > 16 or not plausible(kids) then return nil end
+    for i = 0, n - 1 do
+        local c = game.read_u32(kids + i * 4)
+        if plausible(c) and game.read_u32(c + 4) == 1 then
+            local name = game.read_u32(c + 0x18)
+            local count, list = game.read_u32(c + 0x0C), game.read_u32(c + 0x14)
+            if (name == EX_STORE.source or name == EX_STORE.text) and count == EX_STORE.leaves
+                    and plausible(list) then
+                local ok = true
+                for k = 1, EX_STORE.leaves do
+                    local leaf = game.read_u32(list + (k - 1) * 4)
+                    local lname = plausible(leaf) and game.read_u32(leaf + 4) == 0
+                            and game.read_u32(leaf + 0x18) or nil
+                    local known = false
+                    for _, v in ipairs(EX_STORE.vanilla) do if lname == v then known = true end end
+                    for _, row in ipairs(EX_STORE.rows) do if lname == row.name then known = true end end
+                    if not known then ok = false break end
+                end
+                if ok then return c end
+            end
+        end
+    end
+    return nil
+end
+
+-- The flag byte an EX row tracks: the menu player's, for its button.
+local function flag_addr(m, k)
+    local player = menu_player()
+    if player == nil then return nil end
+    return m + LEVELS + player * 0x1C + EX_FLAG + EX_LEAF_SLOT[k]
 end
 
 local function char_of(m, player)
@@ -775,6 +887,19 @@ local function patch_root(m, root)
             end
         end
     end
+    -- EX Moves: owned follows each button's flag
+    local ec = ex_nodes(root)
+    if ec then
+        if not (patch(ec + 0x18, EX_STORE.text) and patch(ec + 0x1C, EX_STORE.desc)) then return false end
+        local kids = game.read_u32(ec + 0x14)
+        for k, row in ipairs(EX_STORE.rows) do
+            local node, addr = game.read_u32(kids + (k - 1) * 4), flag_addr(m, k)
+            if plausible(node) and addr and not (patch(node + 0x18, row.name) and patch(node + 0x1C, row.desc)
+                    and patch(node + 0x28, row.cost) and patch(node + 0x2C, game.read_u8(addr) >= 1 and 1 or 0)) then
+                return false
+            end
+        end
+    end
     -- Fatalities: SyncOwned has just marked the discovered ones owned; the
     -- rest get a price. Hovering a ??? row shows nothing (see CanPurchase), so
     -- the category's own description says they are for sale.
@@ -834,6 +959,9 @@ local function can_buy(node, kind, store, k)
         end
     elseif kind == "weapon" then
         if not weapon_free(k) then return false end
+    elseif kind == "ex" then
+        local addr = flag_addr(m, k)
+        if addr == nil or game.read_u8(addr) ~= 0 then return false end
     elseif shop_level(m, player, store.kind) ~= k - 1 then
         return false
     end
@@ -844,6 +972,11 @@ end
 -- max health straight away). A fatality goes into the discovered list, which
 -- the game saves, so its input stays revealed like one the player performed.
 local function apply_purchase(m, kind, store, k, node)
+    if kind == "ex" then
+        local addr = flag_addr(m, k)
+        if addr and game.read_u8(addr) == 0 then game.write_u8(addr, 1) end
+        return
+    end
     if kind == "weapon" then
         local player, w = menu_player(), area[k]
         if player == nil or w == nil or not in_area(w) then return end
@@ -948,6 +1081,80 @@ local function respawning(w)
     summoned[w] = nil
 end
 
+-- EX stamina, scaled like every cost by the player's Stamina level.
+local function ex_cost(m, player)
+    return scaled(EX_COST, shop_level(m, player, "stamina"))
+end
+
+local ex_player, ex_slot, ex_from = nil, nil, nil  -- GetLevel's arguments and caller
+local ex_due = {}               -- [player + 1] = frame an EX was pressed; stamina due
+local ex_held = {}              -- [player + 1] = the attack byte of the EX press still held
+local spender = nil             -- player passed to the stamina-spend wrapper
+
+-- After GetLevel: the move system asks which variant of a special to pick.
+-- With L2 held, that button's EX owned and the stamina to pay, report its
+-- exact top tier; the stamina comes off when the move spends its own.
+local function boost_level(ctx)
+    local player, slot, from = ex_player, ex_slot, ex_from
+    ex_player = nil
+    if player == nil or from < EVAL_FROM or from >= EVAL_TO or player > 1 or slot > 3 then return end
+    local due = ex_due[player + 1]
+    if due == nil or game.read_u32(FRAME) - due > EX_WINDOW then return end
+    local m = manager()
+    if m == nil or game.read_u8(DEMO) == 1 then return end
+    if game.read_u8(m + LEVELS + player * 0x1C + EX_FLAG + slot) ~= 1 then return end
+    local top = TOP_TIER[char_of(m, player)][slot + 1]
+    if (ctx.eax & 0xFF) < top then ctx.eax = (ctx.eax & 0xFFFFFF00) | top end
+end
+
+-- Before a port's pad becomes action bits: L2 (without R2) + an attack
+-- button whose EX the player owns becomes R2 + that button, so the game does
+-- the special; the press (not the hold) marks it EX, when the stamina covers
+-- the extra. Anything else passes untouched.
+local function ex_remap(obj)
+    local off = obj - PADS
+    if off < 0 or off % PAD_OBJ ~= 0 or off // PAD_OBJ > 1 then return end
+    local player = off // PAD_OBJ
+    local m = manager()
+    if m == nil or game.read_u8(DEMO) == 1 or player >= game.read_u32(STAMINA_COUNT) then return end
+    local held = ex_held[player + 1]
+    if held and game.read_u8(obj + held) == 0 then ex_held[player + 1] = nil; held = nil end
+    if game.read_u8(obj + J_LT) < LT_MIN or game.read_u8(obj + J_RT) ~= 0 then return end
+    for _, b in ipairs(EX_BUTTONS) do
+        if game.read_u8(obj + b[1]) ~= 0 and game.read_u8(m + LEVELS + player * 0x1C + EX_FLAG + b[2]) == 1 then
+            if held == nil then                     -- a new press: EX if the stamina covers it
+                local have = f32_to(game.read_u32(STAMINA + player * STAMINA_STRIDE + STAMINA_NOW))
+                if have == nil or have < ex_cost(m, player) then return end
+                ex_held[player + 1] = b[1]
+                ex_due[player + 1] = game.read_u32(FRAME)
+            end
+            game.write_u8(obj + J_LT, 0)
+            game.write_u8(obj + J_RT, 0xFF)
+            return
+        end
+    end
+end
+
+-- After a scripted move spent stamina: an EX variant picked moments ago
+-- pays its extra now, once. A pick whose move spent nothing expires.
+local function charge_ex()
+    local player = spender
+    spender = nil
+    if player == nil or player > 1 then return end
+    local due = ex_due[player + 1]
+    if due == nil then return end
+    ex_due[player + 1] = nil
+    local frame = game.read_u32(FRAME)
+    if frame < due or frame - due > EX_WINDOW then return end
+    local m = manager()
+    if m == nil then return end
+    local rec = STAMINA + player * STAMINA_STRIDE
+    local have = f32_to(game.read_u32(rec + STAMINA_NOW))
+    if have == nil then return end
+    local left = have - ex_cost(m, player)
+    game.write_u32(rec + STAMINA_NOW, f32_from(left > 0 and left or 0))
+end
+
 local function set_al(ctx, v)
     ctx.eax = (ctx.eax & 0xFFFFFF00) | v
 end
@@ -1038,6 +1245,20 @@ return {
         end,
     },
     { address = RESPAWN, before = function(ctx) respawning(ctx.ecx) end },
+    { address = PAD_MAP, before = function(ctx) ex_remap(ctx.eax) end },
+    {
+        address = GET_LEVEL,
+        before = function(ctx)
+            ex_player, ex_slot, ex_from = game.read_u32(ctx.esp + 4), game.read_u32(ctx.esp + 8),
+                game.read_u32(ctx.esp)
+        end,
+        after = function(ctx) boost_level(ctx) end,
+    },
+    {
+        address = SPEND,
+        before = function(ctx) spender = game.read_u32(ctx.esp + 4) end,
+        after = function(ctx) charge_ex() end,
+    },
     { address = MOVES_OPEN, before = function(ctx) arm_popup() end, after = function(ctx) disarm_popup() end },
     {
         -- Once per stamina record per frame: keep that player's costs scaled,
