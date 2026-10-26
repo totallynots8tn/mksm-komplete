@@ -1,4 +1,4 @@
--- Extended Upgrades 0.9.1: XP shop, Health, Stamina, weapons, EX moves and fatality inputs.
+-- Extended Upgrades 0.9.2: XP shop, Health, Stamina, weapons, EX moves and fatality inputs.
 --
 -- Turns pause-menu Moves categories into the XP shop. Nothing new is added
 -- to the menu; existing rows get new text, costs and behaviour, and
@@ -172,6 +172,7 @@ local CAN_PURCHASE  = 0x000116CC
 local ASKED_TO_BUY  = 0x0009E5D9    -- the purchase dispatcher (A on a row)
 local ASKED_FOR_ANY = 0x0009BC0E    -- "anything to buy under here?" (colours the category)
 local ASKED_FOR_VIDEO = 0x0009D3A0  -- the preview video: a weapon row has none of its own
+local ASKED_FOR_ROW = 0x0009CAA7    -- a row is drawn: a yes draws it buyable (green, with the lock)
 local IS_COMBO      = 0x00015EDE
 local BUY_COMBO     = 0x00013954
 local UPGRADE       = 0x0001647E
@@ -1203,9 +1204,12 @@ return {
             local kind, store, k
             if node then kind, store, k = shop_row(node) end
             -- A yes makes the description and the preview video show, and for a
-            -- fatality those are the input: only the purchase itself and the
-            -- category's "anything to buy" search hear it.
-            if kind == "fatality" and from ~= ASKED_TO_BUY and from ~= ASKED_FOR_ANY then return end
+            -- fatality those are the input: only the purchase itself, the
+            -- category's "anything to buy" search and the row's colour hear it.
+            if kind == "fatality" and from ~= ASKED_TO_BUY and from ~= ASKED_FOR_ANY
+                    and from ~= ASKED_FOR_ROW then
+                return
+            end
             if kind == "weapon" and from == ASKED_FOR_VIDEO then return end
             if kind then set_al(ctx, can_buy(node, kind, store, k) and 1 or 0) end
         end,

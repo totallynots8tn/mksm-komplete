@@ -270,6 +270,7 @@ assert(ask(CAN, fat[2], 0) == 1 and ask(COMBO, fat[2], 0) == 1, "fatality not fo
 -- game's own answer, while the category still reads as having something to buy
 assert(ask(CAN, fat[2], 0, DESCRIPTION) == 0, "hover shows the fatality input")
 assert(ask(CAN, fat[2], 0, PREVIEW) == 0, "hover plays the fatality video")
+assert(ask(CAN, fat[2], 0, 0x9CAA7) == 1, "a ??? row not drawn buyable")
 assert(ask(CAN, fat[2], 0, FOR_ANY) == 1, "fatalities category not marked buyable")
 assert(ask(CAN, health[2], 0, DESCRIPTION) == 1, "shop row description hidden")    -- +2 is next
 xp(4999)
