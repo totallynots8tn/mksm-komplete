@@ -1,4 +1,4 @@
--- Extended Upgrades 0.8.4: XP shop, Health, Stamina, weapons, EX moves and fatality inputs.
+-- Extended Upgrades 0.8.5: XP shop, Health, Stamina, weapons, EX moves and fatality inputs.
 --
 -- Turns pause-menu Moves categories into the XP shop. Nothing new is added
 -- to the menu; existing rows get new text, costs and behaviour, and
@@ -1159,8 +1159,7 @@ local function boost_level(ctx)
     local player, slot, from = ex_player, ex_slot, ex_from
     ex_player = nil
     if player == nil or from < EVAL_FROM or from >= EVAL_TO or player > 1 or slot > 3 then return end
-    local due = ex_due[player + 1]
-    if due == nil or game.read_u32(FRAME) - due > EX_WINDOW then return end
+    if not ex_chain[player + 1] then return end      -- the whole EX chain, follow-ups too
     local m = manager()
     if m == nil or game.read_u8(DEMO) == 1 then return end
     local t = game.read_u8(m + LEVELS + player * 0x1C + EX_FLAG + slot)

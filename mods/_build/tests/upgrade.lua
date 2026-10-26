@@ -652,6 +652,9 @@ spend(0)
 assert(stam() == 75, "EX stamina not charged: " .. stam())
 spend(0)
 assert(stam() == 75, "charged twice for one move")
+H.w8(MGR + 0x1C4 + 19, 1)                      -- EX * 1/4: a follow-up of the chain (picked
+assert(level(0, 0, 4) == 1, "a follow-up after the charge escaped the EX tier")   -- after the charge) stays at 1
+H.w8(MGR + 0x1C4 + 19, 4)
 -- still holding X: the press stays R2, but it isn't a new EX
 H.w32(0x5CE878, 1010)
 lt, rt = pad(0, { [LT] = 0xFF, [X] = 0xFF })

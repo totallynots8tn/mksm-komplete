@@ -1,4 +1,4 @@
-# Extended Upgrades: XP Shop 0.8.4 (preview, experimental)
+# Extended Upgrades: XP Shop 0.8.5 (preview, experimental)
 
 The XP shop spends XP in the game's own upgrade menu, on the game's own menu
 entries. Nothing new is added to the menu, and everything it sells comes **on
@@ -79,6 +79,8 @@ Combo extenders, in a menu entry that already exists. The reverse-engineering is
 
 ## Changelog
 
+- **0.8.5:** fixes one EX move unlocking all of that button's moves on L2: the
+  follow-up presses of a chain (X, X) now stay limited to the moves made EX.
 - **0.8.4:** EX is bought per move: each purchase makes the next of that
   button's moves EX, once you own it on R2, and the row shows that move.
   L2 never does a move you don't own on R2.
