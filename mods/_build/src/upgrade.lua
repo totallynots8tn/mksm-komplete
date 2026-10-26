@@ -1,4 +1,4 @@
--- Extended Upgrades 0.9.2: XP shop, Health, Stamina, weapons, EX moves and fatality inputs.
+-- Extended Upgrades 0.9.3: XP shop, Health, Stamina, weapons, EX moves and fatality inputs.
 --
 -- Turns pause-menu Moves categories into the XP shop. Nothing new is added
 -- to the menu; existing rows get new text, costs and behaviour, and
@@ -173,6 +173,10 @@ local ASKED_TO_BUY  = 0x0009E5D9    -- the purchase dispatcher (A on a row)
 local ASKED_FOR_ANY = 0x0009BC0E    -- "anything to buy under here?" (colours the category)
 local ASKED_FOR_VIDEO = 0x0009D3A0  -- the preview video: a weapon row has none of its own
 local ASKED_FOR_ROW = 0x0009CAA7    -- a row is drawn: a yes draws it buyable (green, with the lock)
+local UNDER         = 0x0001664A    -- Under(node, text): node or an ancestor has that name, stdcall
+local ROW_FATAL     = 0x0009CA7E    -- the row draw asks it "under Fatalities?" first (row in ebx):
+                                    -- a yes skips the buyable look
+local EX_TRACE      = 793           -- (dev) the evaluator's answers go into this unused text; nil ships
 local IS_COMBO      = 0x00015EDE
 local BUY_COMBO     = 0x00013954
 local UPGRADE       = 0x0001647E
@@ -1189,6 +1193,20 @@ local function set_al(ctx, v)
     ctx.eax = (ctx.eax & 0xFFFFFF00) | v
 end
 
+-- (dev) The last 10 evaluator answers for player 1, in text EX_TRACE: byte 0
+-- the last entry (1-10), 1 a call count, then 4 bytes each from byte 4: the
+-- condition id (low, high), the real level, the answer (+0x80 in an EX chain).
+local traced = 0
+local function trace(id, real, answer, chain)
+    local p = EX_TRACE and text_at(EX_TRACE)
+    if p == nil then return end
+    traced = traced % 10 + 1
+    local at = p + traced * 4
+    game.write_u8(at, id & 0xFF); game.write_u8(at + 1, (id >> 8) & 0xFF)
+    game.write_u8(at + 2, real & 0xFF); game.write_u8(at + 3, (answer & 0x7F) | (chain and 0x80 or 0))
+    game.write_u8(p, traced); game.write_u8(p + 1, (game.read_u8(p + 1) + 1) & 0xFF)
+end
+
 return {
     { address = SYNC_OWNED, after = function(ctx) sync() end },
     {
@@ -1295,7 +1313,24 @@ return {
         before = function(ctx)
             ex_player, ex_from = game.read_u32(ctx.esp + 4), game.read_u32(ctx.esp)
         end,
-        after = function(ctx) boost_level(ctx) end,
+        after = function(ctx)
+            local player, from, real = ex_player, ex_from, ctx.eax
+            boost_level(ctx)
+            if player == 0 and from >= EVAL_FROM and from < EVAL_TO then
+                trace(ctx.ebp, real, ctx.eax, ex_chain[1])
+            end
+        end,
+    },
+    {
+        -- The Moves list skips the buyable look for anything under
+        -- Fatalities; a ??? row we sell gets it like any other.
+        address = UNDER,
+        before = function(ctx) asked_from = game.read_u32(ctx.esp) end,
+        after = function(ctx)
+            local from = asked_from
+            asked_from = nil
+            if from == ROW_FATAL and shop_row(ctx.ebx) == "fatality" then set_al(ctx, 0) end
+        end,
     },
     {
         address = SPEND,

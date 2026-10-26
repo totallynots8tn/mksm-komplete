@@ -271,6 +271,15 @@ assert(ask(CAN, fat[2], 0) == 1 and ask(COMBO, fat[2], 0) == 1, "fatality not fo
 assert(ask(CAN, fat[2], 0, DESCRIPTION) == 0, "hover shows the fatality input")
 assert(ask(CAN, fat[2], 0, PREVIEW) == 0, "hover plays the fatality video")
 assert(ask(CAN, fat[2], 0, 0x9CAA7) == 1, "a ??? row not drawn buyable")
+local function under(row, from)                -- the row draw's "under Fatalities?"
+    local ctx = { esp = 0xD0000500, eax = 1, ebx = row }
+    H.w32(ctx.esp, from or 0x9CA7E)
+    H.invoke(m, 0x1664A, ctx, nil)
+    assert(#H.failed == 0, H.failed[1])
+    return ctx.eax & 0xFF
+end
+assert(under(fat[2]) == 0, "a ??? row skips the buyable look")
+assert(under(fat[1]) == 1 and under(fat[2], 0x9B000) == 1, "Under answered for others")
 assert(ask(CAN, fat[2], 0, FOR_ANY) == 1, "fatalities category not marked buyable")
 assert(ask(CAN, health[2], 0, DESCRIPTION) == 1, "shop row description hidden")    -- +2 is next
 xp(4999)
