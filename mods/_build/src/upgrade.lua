@@ -1,4 +1,4 @@
--- Extended Upgrades 0.8.2: XP shop, Health, Stamina, weapons, EX moves and fatality inputs.
+-- Extended Upgrades 0.8.3: XP shop, Health, Stamina, weapons, EX moves and fatality inputs.
 --
 -- Turns pause-menu Moves categories into the XP shop. Nothing new is added
 -- to the menu; existing rows get new text, costs and behaviour, and
@@ -109,8 +109,10 @@
 --     0xE4 the analog bytes from +2 are A B X Y Black White LT RT) is held
 --     without R2 and an attack button whose EX the player owns is pressed
 --     (flag level slots 19-22, read by nothing else), the pad-to-action
---     translator 0x129480 (eax = joypad object) gets R2 instead of L2 for
---     that frame, so the game does the special itself. Pressing it marks an
+--     translator 0x129480 (eax = joypad object) gets R2 instead of L2, and
+--     keeps getting it until L2 is let go, so the game does the special and
+--     its whole input chain (a tier-4 fireball is R2 + X, X, X; between the
+--     presses plain L2 would be block). Pressing it marks an
 --     EX: for that special the evaluator, and only it (by return address),
 --     gets the EX tier (never above the top tier), and its stamina extra comes off when the
 --     special spends its own (script command 0x1F1 -> wrapper thunk
@@ -263,7 +265,7 @@ local LANGUAGES = {
                  "Weapons for sale here:\nUpgrades > Weapons." },
       weapons = { kama01 = "Kamas", sword = "Sword", broadsword = "Broadsword", axe = "Axe",
                   hooksword01 = "Hook swords", shard = "Shard", shard1h = "Shard" },
-      ex = { "EX Moves", "Hold L2 with a special for its EX version.", "L2 + %s: top-tier move.\nCosts extra stamina." } },
+      ex = { "EX Moves", "Hold L2 with a special for its EX version.", "L2 + %s: EX at your tier.\nCosts extra stamina." } },
     { tag = "Mejo", category = { "Mejoras", "Gasta EXP en salud y energ\237a." },
       health = { "Salud", "Salud +%d", "Vida m\225xima +%d,\nadem\225s de la del juego.",
                  "Salud extra, adem\225s de la del juego." },
@@ -274,7 +276,7 @@ local LANGUAGES = {
                  "Armas a la venta aqu\237:\nMejoras > Armas." },
       weapons = { kama01 = "Kamas", sword = "Espada", broadsword = "Mandoble", axe = "Hacha",
                   hooksword01 = "Espadas gancho", shard = "Fragmento", shard1h = "Fragmento" },
-      ex = { "Movimientos EX", "Mant\233n L2 + especial para la versi\243n EX.", "L2 + %s: golpe m\225ximo.\nGasta m\225s energ\237a." } },
+      ex = { "Movimientos EX", "Mant\233n L2 + especial para la versi\243n EX.", "L2 + %s: EX de tu nivel.\nGasta m\225s energ\237a." } },
     { tag = "Verb", category = { "Verbesserungen", "EXP f\252r Leben und Ausdauer ausgeben." },
       health = { "Leben", "Leben +%d", "Max. Leben +%d,\nzus\228tzlich zum Spiel.",
                  "Mehr Leben, zus\228tzlich zum Spiel." },
@@ -285,7 +287,7 @@ local LANGUAGES = {
                  "Hier gibt es Waffen:\nVerbesserungen > Waffen." },
       weapons = { kama01 = "Kamas", sword = "Schwert", broadsword = "Breitschwert", axe = "Axt",
                   hooksword01 = "Hakenschwerter", shard = "Splitter", shard1h = "Splitter" },
-      ex = { "EX-Angriffe", "Halte L2 + Spezial f\252r die EX-Version.", "L2 + %s: st\228rkster Zug.\nKostet mehr Ausdauer." } },
+      ex = { "EX-Angriffe", "Halte L2 + Spezial f\252r die EX-Version.", "L2 + %s: EX, deine Stufe.\nMehr Ausdauer." } },
     { tag = "Pote", category = { "Potenziamenti", "Spendi EXP per salute ed energia." },
       health = { "Salute", "Salute +%d", "Salute max +%d,\noltre a quella del gioco.",
                  "Salute extra oltre a quella del gioco." },
@@ -296,7 +298,7 @@ local LANGUAGES = {
                  "Armi in vendita qui:\nPotenziamenti > Armi." },
       weapons = { kama01 = "Kama", sword = "Spada", broadsword = "Spadone", axe = "Ascia",
                   hooksword01 = "Spade uncinate", shard = "Frammento", shard1h = "Frammento" },
-      ex = { "Mosse EX", "Tieni L2 + speciale per la versione EX.", "L2 + %s: mossa massima.\nCosta pi\249 energia." } },
+      ex = { "Mosse EX", "Tieni L2 + speciale per la versione EX.", "L2 + %s: EX del tuo livello.\nPi\249 energia." } },
     { tag = "Am\233l", category = { "Am\233liorations", "D\233pensez l'EXP en sant\233 et endurance." },
       health = { "Sant\233", "Sant\233 +%d", "Sant\233 max +%d,\nen plus de celle du jeu.",
                  "Sant\233 en plus de celle du jeu." },
@@ -307,7 +309,7 @@ local LANGUAGES = {
                  "Armes \224 vendre ici :\nAm\233liorations > Armes." },
       weapons = { kama01 = "Kamas", sword = "\201p\233e", broadsword = "Claymore", axe = "Hache",
                   hooksword01 = "\201p\233es crochets", shard = "\201clat", shard1h = "\201clat" },
-      ex = { "Coups EX", "Maintenez L2 + sp\233cial pour la version EX.", "L2 + %s : coup max.\nCo\251te plus d'endurance." } },
+      ex = { "Coups EX", "Maintenez L2 + sp\233cial pour la version EX.", "L2 + %s : EX \224 ton niveau.\nPlus d'endurance." } },
 }
 
 -- Each shop group takes over one Basic Moves group (source = its vanilla
@@ -1115,6 +1117,7 @@ end
 local ex_player, ex_slot, ex_from = nil, nil, nil  -- GetLevel's arguments and caller
 local ex_due = {}               -- [player + 1] = frame an EX was pressed; stamina due
 local ex_held = {}              -- [player + 1] = the attack byte of the EX press still held
+local ex_chain = {}             -- [player + 1] = true while an EX chain keeps L2 as R2
 local spender = nil             -- player passed to the stamina-spend wrapper
 
 -- After GetLevel: the move system asks which variant of a special to pick.
@@ -1136,29 +1139,38 @@ end
 
 -- Before a port's pad becomes action bits: L2 (without R2) + an attack
 -- button whose EX the player owns becomes R2 + that button, so the game does
--- the special; the press (not the hold) marks it EX, when the stamina covers
--- the extra. Anything else passes untouched.
+-- the special, and L2 stays R2 until it is let go, so the special's input
+-- chain (X, X, X) goes through; each press marks an EX when the stamina
+-- covers the extra. Anything else passes untouched.
 local function ex_remap(obj)
     local off = obj - PADS
     if off < 0 or off % PAD_OBJ ~= 0 or off // PAD_OBJ > 1 then return end
     local player = off // PAD_OBJ
     local m = manager()
     if m == nil or game.read_u8(DEMO) == 1 or player >= game.read_u32(STAMINA_COUNT) then return end
+    if game.read_u8(obj + J_LT) < LT_MIN then              -- L2 let go: the chain is over
+        ex_chain[player + 1], ex_held[player + 1] = nil, nil
+        return
+    end
+    if game.read_u8(obj + J_RT) ~= 0 then return end        -- L2 + R2 stays the game's
     local held = ex_held[player + 1]
     if held and game.read_u8(obj + held) == 0 then ex_held[player + 1] = nil; held = nil end
-    if game.read_u8(obj + J_LT) < LT_MIN or game.read_u8(obj + J_RT) ~= 0 then return end
     for _, b in ipairs(EX_BUTTONS) do
         if game.read_u8(obj + b[1]) ~= 0 and game.read_u8(m + LEVELS + player * 0x1C + EX_FLAG + b[2]) ~= 0 then
             if held == nil then                     -- a new press: EX if the stamina covers it
                 local have = f32_to(game.read_u32(STAMINA + player * STAMINA_STRIDE + STAMINA_NOW))
-                if have == nil or have < ex_cost(m, player) then return end
+                local paid = have ~= nil and have >= ex_cost(m, player)
+                if not paid and not ex_chain[player + 1] then return end   -- not even a chain: block
                 ex_held[player + 1] = b[1]
-                ex_due[player + 1] = game.read_u32(FRAME)
+                if paid then ex_due[player + 1] = game.read_u32(FRAME) end
             end
-            game.write_u8(obj + J_LT, 0)
-            game.write_u8(obj + J_RT, 0xFF)
-            return
+            ex_chain[player + 1] = true
+            break
         end
+    end
+    if ex_chain[player + 1] then
+        game.write_u8(obj + J_LT, 0)
+        game.write_u8(obj + J_RT, 0xFF)
     end
 end
 

@@ -1,4 +1,4 @@
-# Extended Upgrades: XP Shop 0.8.2 (preview, experimental)
+# Extended Upgrades: XP Shop 0.8.3 (preview, experimental)
 
 The XP shop spends XP in the game's own upgrade menu, on the game's own menu
 entries. Nothing new is added to the menu, and everything it sells comes **on
@@ -35,7 +35,9 @@ other category, Team included, is unchanged.
 - **EX Moves** (experimental): with a button's EX bought, **L2 + that attack
   button** (X, Y or B; no R2) does the special as an EX, at the EX tier you
   bought for it. EX tiers are bought separately from the special's own
-  (R2) tiers, one at a time; the row shows your tier, e.g. "EX * 2/4". It costs extra stamina (a
+  (R2) tiers, one at a time; the row shows your tier, e.g. "EX * 2/4".
+  Keep L2 held for the whole input: L2 + X, X, X does what R2 + X, X, X does
+  (while L2 stays held after an EX press it counts as R2, not block). It costs extra stamina (a
   quarter of the blue bar, less with Stamina upgrades), once per move;
   without enough stamina L2 + the button stays a block. L2 + a button whose
   EX you haven't bought is unchanged, and L2 + R2 + a button is left free.
@@ -76,6 +78,8 @@ Combo extenders, in a menu entry that already exists. The reverse-engineering is
 
 ## Changelog
 
+- **0.8.3:** L2 keeps counting as R2 until you let go, so EX input chains
+  (X, X, X) go through instead of turning into a block between presses.
 - **0.8.2:** EX moves come in tiers like the specials themselves (EX * has
   4 for Liu Kang, mirroring his fireball's); earlier EX purchases count as
   tier 1.

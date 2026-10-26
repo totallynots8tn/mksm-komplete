@@ -176,7 +176,7 @@ for k, label in ipairs({ "EX * 0/4  ", "EX ~ 0/4  ", "EX | 0/3  ", "EX ^ 0/5  " 
     assert(text(H.r32(ex[k] + 0x18)) == label and H.r32(ex[k] + 0x28) == 5000
         and H.r32(ex[k] + 0x2C) == 0, "ex row " .. k .. ": " .. text(H.r32(ex[k] + 0x18)))
 end
-assert(text(H.r32(ex[1] + 0x1C)) == "L2 + *: top-tier move.\nCosts extra stamina.", "ex row desc")
+assert(text(H.r32(ex[1] + 0x1C)) == "L2 + *: EX at your tier.\nCosts extra stamina.", "ex row desc")
 assert(H.r32(team + 0x18) == 465 and H.r32(gear[1] + 0x18) == 1022 and H.r32(gear[1] + 0x2C) == 1,
     "team touched")
 assert(H.r32(combo_leaf[0] + 0x18) == 920, "combos touched")
@@ -637,7 +637,24 @@ lt, rt = pad(0, { [LT] = 0xFF, [X] = 0xFF })
 assert(rt == 0xFF, "held EX press lost its R2")
 spend(0)
 assert(stam() == 75, "a held press charged again")
-pad(0, { [LT] = 0xFF })                        -- X released
+-- X released, L2 still held: the chain keeps R2 (not block), so R2 + X, X, X
+-- goes through; the next X press is a new EX
+lt, rt = pad(0, { [LT] = 0xFF })
+assert(lt == 0 and rt == 0xFF, "EX chain dropped R2 between presses")
+H.wf32(NOW0, 100)
+H.w32(0x5CE878, 1020)
+lt, rt = pad(0, { [LT] = 0xFF, [X] = 0xFF })
+assert(rt == 0xFF, "second press of the chain lost R2")
+spend(0)
+assert(stam() == 75, "second EX press of the chain not charged: " .. stam())
+-- out of stamina mid-chain: the press still goes through as R2, uncharged
+pad(0, { [LT] = 0xFF }); H.wf32(NOW0, 10)
+lt, rt = pad(0, { [LT] = 0xFF, [X] = 0xFF })
+assert(rt == 0xFF, "chain broken by a press without the stamina")
+spend(0)
+assert(stam() == 10, "charged without the stamina")
+H.wf32(NOW0, 75)
+pad(0, {})                                     -- L2 let go: the chain is over
 -- untouched: L2 + an unbought button (B is |, slot 1), L2 + R2, a brushed
 -- trigger, no stamina, the demo, versus
 lt, rt = pad(0, { [LT] = 0xFF, [B] = 0xFF })
