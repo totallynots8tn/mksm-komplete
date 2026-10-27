@@ -50,6 +50,20 @@ Install from file...** and pick each `.tar.xz` from the zip's `packages`
 folder. Disabling a mod restores the original behavior; no mod edits your
 save file.
 
+### Test build v1.2 (2026-10-27, testers only)
+
+`release/v1.2/` in this repository is the current test build: v1 plus
+Legendary Dark Knight 3.11.0 (Goro's Lair waves filled), the XP Shop 0.11.0
+(Health, Stamina, weapons, fatalities and EX moves at 10x damage) and the
+experimental Time Rifts 0.2.0. To play it from a fresh copy of this repository:
+
+1. Set up Shaolin Monks Recomp as above, start it once, then close it.
+2. Double-click **`MKSMK.bat`** and pick **2** (Test set) to install
+   `release/v1.2` plus the probe, or **8** for the installer window.
+   Python 3.11+ is needed for `MKSMK.bat`.
+3. Report what breaks with the QA console (**7**), which records the probe's
+   reports at every save.
+
 **Testers and contributors:** `MKSM-Komplete-v1-contributor-tools.zip` on the
 same release has the MKSMK Probe (diagnostics, changes nothing), the QA
 recorder and the live-memory peek tool. See [CONTRIBUTING.md](CONTRIBUTING.md).

@@ -7,7 +7,7 @@ mods\\.mksmk-backup\\<time>\\, as with modtool. A mod that ships several
 variants (LDK in the dev builds) shows a level choice; one variant shows none.
 
 Packages come from a "packages" folder next to this file (or next to the
-.exe built by build_exe.py), otherwise from the project's release\\v1 folder.
+.exe built by build_exe.py), otherwise from the project's newest release\\v1.x folder (v1.2 while it is the test build).
 Play starts ShaolinMonksRecomp.exe from the folder the newest Recomp log
 names, so it works once the game has been started at least once.
 """
@@ -30,7 +30,7 @@ GROUPS = (
     ("Legendary Dark Knight", modtool.LDK_VARIANTS, ("x2", "x3", "x4")),
     ("Shaolin Shuffle", modtool.SHUFFLE_VARIANTS, ("normal", "wild", "chaos")),
 )
-OFF_BY_DEFAULT = {"mksmk_probe", "mk_upgrade"}
+OFF_BY_DEFAULT = {"mksmk_probe"}
 BLURBS = {      # one line per mod, in player words
     "Legendary Dark Knight": "3x the enemies in every fight",
     "Shaolin Shuffle": "enemy randomizer",
@@ -38,11 +38,13 @@ BLURBS = {      # one line per mod, in player words
     "coop_solo": "co-op routes and secrets in single player",
     "unlock_all": "unlock every character and extra",
     "mksmk_probe": "diagnostics for bug reports (changes nothing)",
+    "mk_upgrade": "XP shop: health, stamina, weapons, EX moves, fatalities",
+    "time_rifts": "co-op rift portals replay their area (experimental)",
 }
 
 
 def package_folder():
-    for folder in (HERE / "packages", ROOT / "release" / "v1"):
+    for folder in (HERE / "packages", ROOT / "release" / "v1.2", ROOT / "release" / "v1"):
         if folder.is_dir() and any(folder.glob("*.tar.xz")):
             return folder
     return None

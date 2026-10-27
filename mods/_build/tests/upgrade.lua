@@ -687,16 +687,16 @@ assert(slot_level(0, 0x40000000, 0x77B3A, 4) == 0, "B (no EX) let through during
 assert(slot_level(0, 0x80000000, 0x77B98, 4) == 4 and slot_level(0, X_MOVE, 0x7AB00, 4) == 4,
     "slot 3 or another caller touched")
 spend(0)
-assert(stam() == 75, "EX stamina not charged: " .. stam())
+assert(stam() == 50, "EX stamina not charged: " .. stam())
 spend(0)
-assert(stam() == 75, "charged twice for one move")
+assert(stam() == 50, "charged twice for one move")
 assert(level(0, 0, 3, 4) == 0, "a follow-up after the charge escaped the EX moves")
 -- still holding X: the press stays R2, but it isn't a new EX
 H.w32(0x5CE878, 1010)
 lt, rt = pad(0, { [LT] = 0xFF, [X] = 0xFF })
 assert(rt == 0xFF, "held EX press lost its R2")
 spend(0)
-assert(stam() == 75, "a held press charged again")
+assert(stam() == 50, "a held press charged again")
 -- X released, L2 still held: the chain keeps R2 (not block), so R2 + X, X, X
 -- goes through; the next X press is a new EX
 lt, rt = pad(0, { [LT] = 0xFF })
@@ -706,7 +706,7 @@ H.w32(0x5CE878, 1020)
 lt, rt = pad(0, { [LT] = 0xFF, [X] = 0xFF })
 assert(rt == 0xFF, "second press of the chain lost R2")
 spend(0)
-assert(stam() == 75, "second EX press of the chain not charged: " .. stam())
+assert(stam() == 50, "second EX press of the chain not charged: " .. stam())
 -- out of stamina mid-chain: the press still goes through as R2, uncharged
 pad(0, { [LT] = 0xFF }); H.wf32(NOW0, 10)
 lt, rt = pad(0, { [LT] = 0xFF, [X] = 0xFF })
@@ -752,7 +752,7 @@ pad(0, {}); pad(0, { [LT] = 0xFF, [Y] = 0xFF })
 assert(level(0, 1, 2, 4) == 2 and level(0, 1, 1, 4) == 0, "EX ~ move 2 alone: not exactly it")
 H.w8(MGR + 0x1C4 + 20, 4)
 spend(0)
-assert(stam() == 75, "EX on ~ not charged")
+assert(stam() == 50, "EX on ~ not charged: " .. stam())
 -- a press whose move never spends: its extra expires
 pad(0, {}); H.wf32(NOW0, 100)
 pad(0, { [LT] = 0xFF, [Y] = 0xFF })
@@ -764,7 +764,7 @@ pad(0, {})
 H.w8(SHOP0, 0x91)
 pad(0, { [LT] = 0xFF, [X] = 0xFF })
 spend(0)
-assert(math.abs(stam() - (100 - 25 / 1.5)) < 1e-3, "scaled EX cost: " .. stam())
+assert(math.abs(stam() - (100 - 50 / 1.5)) < 1e-3, "scaled EX cost: " .. stam())
 pad(0, {})
 H.w8(SHOP0, 0x81)
 -- player 2 (Kung Lao, port 1): his own flags (a 0.9.0 count of 3: moves 1-3) and stamina
@@ -772,11 +772,11 @@ H.w32(MGR + 0xCC + 4, 1); H.w8(MGR + 0x1C4 + 0x1C + 20, 3); H.wf32(NOW0 + 0x24, 
 lt, rt = pad(1, { [LT] = 0xFF, [Y] = 0xFF })
 assert(rt == 0xFF and level(1, 1, 3, 3) == 3 and level(1, 1, 4, 3) == 0, "KL ~ EX not his moves 1-3")
 spend(1)
-assert(stam(1) == 80, "player 2's charge (Stamina +1: 20): " .. stam(1))
+assert(stam(1) == 60, "player 2's charge (Stamina +1: 40): " .. stam(1))
 pad(1, {})
 H.w32(MGR + 0xCC + 4, 0); H.w8(MGR + 0x1C4 + 0x1C + 20, 0)
--- 14. EX power: a paid press makes the move EX. Its hits on others do 4x
--- (no slow motion: benched), a fireball landing soon after too; once the
+-- 14. EX power: a paid press makes the move EX. Its hits on others do 10x
+-- with a short impact pause, a fireball landing soon after too; once the
 -- move's last event has played, it recovers at 3 frames a tick
 local E0 = 0x5D1AB8
 local BANK, LISTS, LENGTHS, DATA, EV = 0x6C03E0, 0x710000, 0x711000, 0x712000, 0x713000
@@ -788,13 +788,17 @@ H.w16(EV + 16, 12); H.w16(EV + 18, 9)
 H.w16(EV + 32, 0xFFFF); H.w16(EV + 34, 0)
 H.w32(0x6CA6C0 + ANIM * 4, 3); H.w32(LENGTHS + 3 * 16 + 8, 30)   -- 30 frames long
 local function anim_tick() H.invoke(m, 0x1C4A60, {}, nil); assert(#H.failed == 0, H.failed[1]) end
-local function hit(entity, damage)             -- msg 164 to entity: damage as -arg1
+local function hit(entity, damage)
     local ctx = { esp = 0xD0000700 }
     H.w32(ctx.esp + 4, entity); H.w32(ctx.esp + 8, 0xA4); H.w32(ctx.esp + 0xC, (-damage) & 0xFFFFFFFF)
-    H.invoke(m, 0x180D30, ctx, nil)
+    local actor = 0x80500000
+    local dealt = { ecx = actor, esp = ctx.esp + 0x100 }
+    H.w32(actor + 0xBC, entity); H.w32(dealt.esp + 4, damage)
+    H.invoke(m, 0x180D30, ctx, function()
+        H.invoke(m, 0x153E20, dealt, nil)
+    end)
     assert(#H.failed == 0, H.failed[1])
-    local v = H.r32(ctx.esp + 0xC)
-    return -(v >= 0x80000000 and v - 0x100000000 or v)
+    return H.r32(dealt.esp + 4)
 end
 local ENEMY = E0 + 5 * 0x3238
 H.w32(0x5CE878, 3000); H.wf32(NOW0, 100); pad(0, {})
@@ -803,7 +807,7 @@ pad(0, { [LT] = 0xFF, [X] = 0xFF })            -- a paid EX press at frame 3000
 H.w32(E0 + 0x1E04, 6); H.w32(E0 + 0x24, ANIM); H.w32(E0 + 0x1C, 4); H.w8(E0 + 0x263A, 0)
 anim_tick()
 assert(H.r8(E0 + 0x263A) == 0, "EX sped up before its hits")
-assert(hit(ENEMY, 40) == 160 and H.r32(0x6CD5C8) == 0, "EX hit not 4x, or slow motion")
+assert(hit(ENEMY, 40) == 400 and H.r32(0x6CD5C8) ~= 0, "EX hit not 10x, or no impact pause")
 assert(hit(E0, 40) == 40 and hit(E0 + 0x3238, 40) == 40, "a hit on a player boosted")
 H.w32(E0 + 0x1C, 12); anim_tick()
 assert(H.r8(E0 + 0x263A) == 0, "sped up on its last event's frame")
@@ -813,7 +817,7 @@ H.w32(0x5CE878, 3010); anim_tick()
 assert(H.r32(0x6CD5C8) == 0, "slow motion not over")
 H.w32(E0 + 0x1E04, 0); anim_tick()                  -- the move is over
 H.w32(0x5CE878, 3080)
-assert(hit(ENEMY, 40) == 160, "a late EX hit (a fireball) not boosted")
+assert(hit(ENEMY, 40) == 400, "a late EX hit (a fireball) not boosted")
 H.w32(0x5CE878, 3100); anim_tick()
 assert(H.r32(0x6CD5C8) == 0 and hit(ENEMY, 40) == 40, "a hit long after the EX boosted")
 pad(0, {})                                     -- a plain move is never sped up

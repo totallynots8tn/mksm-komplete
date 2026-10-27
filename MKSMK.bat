@@ -9,10 +9,10 @@ set "V1=%REPO%release\v1"
 rem The ladder: dev builds tested on top of the newest frozen set, one rung at
 rem a time. When a rung passes QA, freeze it into a new release\v1.x, point
 rem BASE there and drop the mod from LADDER.
-set "BASE=%REPO%release\v1.1"
-set "BASE_NAME=v1.1"
-set LADDER="%REPO%mods\mk_upgrade" "%REPO%mods\ldk_x3" "%REPO%mods\mksmk_probe"
-set "LADDER_NAMES=XP Shop, LDK x3"
+set "BASE=%REPO%release\v1.2"
+set "BASE_NAME=v1.2 test build"
+set LADDER="%REPO%mods\mksmk_probe"
+set "LADDER_NAMES=(nothing on the ladder yet)"
 where py >nul 2>nul && (set "PY=py -3") || (set "PY=python")
 where pyw >nul 2>nul && (set "PYW=pyw -3") || (set "PYW=pythonw")
 for /f %%e in ('echo prompt $E^| cmd') do set "E=%%e"
@@ -34,7 +34,7 @@ for /f "skip=1 tokens=*" %%l in ('%PY% "%TOOL%" list 2^>nul') do call :row "%%l"
 echo   %D%----------------------------------------------------------------%N%
 echo.
 echo   %K%1%N%  Playtest           test set, then the QA console
-echo   %K%2%N%  Test set           %BASE_NAME% + dev %LADDER_NAMES% + probe
+echo   %K%2%N%  Test set           %BASE_NAME% + probe; dev %LADDER_NAMES%
 echo   %K%3%N%  All dev builds     every mod's newest build + probe
 echo   %K%4%N%  v1 release         what players have now (published)
 echo   %K%5%N%  Pick levels        all dev builds, choose LDK and Shuffle

@@ -7,6 +7,24 @@ Status key: **Works** (playable, validated) - **Experimental** (functional but
 incomplete / under investigation) - **Prototype** (scaffold, effects not wired)
 - **Diagnostic** (changes nothing in-game; logging only).
 
+## v1.2 test build (2026-10-27, `release/v1.2/`, not published as a release)
+
+v1.1's frozen packages (Shuffle 0.6.6, Env Kill XP 2.0.0, Unlock All 1.1.0,
+Solo Co-op 0.6.2) plus:
+
+| Mod | Package | Version | Status | Note |
+| --- | --- | --- | --- | --- |
+| Legendary Dark Knight Mode (x3) | `ldk_x3` | 3.11.0 | Works (QA run 2026-10-26 through Goro's Lair) | Goro's Lair groups fill to 9-11 Onis; the fatality room stays vanilla. |
+| Extended Upgrades: XP Shop | `mk_upgrade` | 0.11.0 | Experimental | Health, Stamina, weapons, fatality reveal and EX moves (L2 + special: 10x damage, impact pause, fast recovery, half a bar). |
+| Time Rifts | `time_rifts` | 0.2.0 | Experimental (not yet seen live) | The co-op rift portals in Wu Shi and Goro's Lair reload their area for another fight. Needs Solo Co-op Paths. |
+| MKSMK Probe | `mksmk_probe` | 0.12.0 | Diagnostic | 42 of the 64 routine scripts; the whole set uses 49. |
+
+Offline checks 2026-10-27: XP shop, Time Rifts, env kill, co-op and probe suites
+pass; the LDK x3 spawn simulator is clean (0 crashes, 0 stuck groups, max 225
+writes per hook call) in every mode, alone and with Shuffle 0.6.6.
+
+## v1 (published)
+
 | Mod | Package | Version | Status | Known issue (one line) |
 | --- | --- | --- | --- | --- |
 | Legendary Dark Knight Mode (x3) | `ldk_x3` | 3.9.6 | Works (confirmed in a new-game run) | Crowded rooms can lag on slower PCs. v1 ships x3 only to keep QA to one variant; the x2/x4 packages are kept in `release/v1-retired`. |

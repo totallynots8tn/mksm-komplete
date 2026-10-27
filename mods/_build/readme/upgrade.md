@@ -1,4 +1,4 @@
-# Extended Upgrades: XP Shop 0.10.3 (preview, experimental)
+# Extended Upgrades: XP Shop 0.11.0 (preview, experimental)
 
 The XP shop spends XP in the game's own upgrade menu, on the game's own menu
 entries. Nothing new is added to the menu, and everything it sells comes **on
@@ -43,12 +43,12 @@ included, is unchanged.
   and 2) have their EX too. The ^ (throw) moves have no EX.
   Keep L2 held for the whole input: L2 + X, X, X does what R2 + X, X, X does
   (while L2 stays held after an EX press it counts as R2, not block). It costs extra stamina (a
-  quarter of the blue bar, less with Stamina upgrades), once per move;
+  half of the blue bar, less with Stamina upgrades), once per move;
   without enough stamina L2 + the button stays a block. L2 + a button whose
   EX you haven't bought is unchanged, and L2 + R2 + a button is left free.
   The red orbs stay the fatality meter.
-  An EX move is stronger: its hits on enemies do 4x damage, and once its
-  last hit or projectile is out it
+  An EX move is stronger: its hits on enemies do 10x damage with an eight-frame
+  impact pause, and once its last hit or projectile is out it
   recovers three times as fast. (A fireball that lands up to about a second and
   a half after the press still counts.) Each co-op player buys their own.
 - **Fatalities** all work without being discovered; the game only hides
@@ -87,6 +87,10 @@ Combo extenders, in a menu entry that already exists. The reverse-engineering is
 
 ## Changelog
 
+- **0.11.0:** EX hits do 10x damage with an eight-frame impact pause. The boost
+  now changes the final TakeDamage argument, not only the combat-message argument.
+- **0.10.4:** EX hits do 5x damage (was 4x); the extra stamina cost doubles
+  from 25 to 50 before Stamina upgrades.
 - **0.10.3:** EX moves recover three times as fast (was twice).
 - **0.10.2:** EX hits do 4x damage.
 - **0.10.1:** EX hits do 2.5x damage (was 1.5x); the slow motion is off.

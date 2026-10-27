@@ -1,4 +1,4 @@
--- Extended Upgrades 0.10.3: XP shop, Health, Stamina, weapons, EX moves and fatality inputs.
+-- Extended Upgrades 0.11.0: XP shop, Health, Stamina, weapons, EX moves and fatality inputs.
 --
 -- Turns pause-menu Moves categories into the XP shop. Nothing new is added
 -- to the menu; existing rows get new text, costs and behaviour, and
@@ -129,8 +129,8 @@
 --     victim as entity message 164 (dispatcher 0x180D30(entity, msg, arg1):
 --     TakeDamage(entity's actor, -arg1)), with no attacker; a hit on anyone
 --     but the players while a player's EX move plays, or shortly after its
---     press (a fireball lands late), gets EXP.DAMAGE / 2 times the damage,
---     and (when EXP.IMPACT is set; benched) the engine's slow motion
+--     press (a fireball lands late), gets EXP.DAMAGE / 2 times the final damage
+--     in TakeDamage (0x153E20), and the engine's slow motion
 --     (0x6CD5C8: every animation at half speed) for that many frames. Recovery: the anim tick 0x1C4A60 advances an entity
 --     by 2 frames a tick while its speed byte +0x263A is 32 (reset at every
 --     anim start), but the move's events (hits, spawns) fire only on their
@@ -238,7 +238,7 @@ local EX_NAMES      = { 713, 714, 716, 717, 793 }   -- (PH) texts: "<move j's na
 local EX_FLAG       = 19            -- EX moves: level slots 19-22, one per game slot, a bit per move
 local EX_PRICES     = { 5000, 10000, 15000, 20000, 25000 }  -- the EX of move 1-5 (placeholders)
 local EX_LEAF_SLOT  = { 0, 1, 2 }   -- Specials group X Y B -> game slot (live: Y's moves test slot 1)
-local EX_COST       = 25            -- extra stamina per EX special, before Stamina upgrades
+local EX_COST       = 50            -- extra stamina per EX special, before Stamina upgrades
 local GET_LEVEL     = 0x000111C2    -- GetLevel(player, slot), cdecl -> eax
 local EVAL_FROM     = 0x001CD780    -- the move system's condition evaluator: GetLevel
 local EVAL_TO       = 0x001CE400    -- calls returning in here pick a special's variant
@@ -267,6 +267,7 @@ local FRAME         = 0x005CE878    -- frame counter
 local EX_WINDOW     = 60            -- frames between the variant pick and its stamina spend
 local EXP = {                       -- EX power (one table: the game's Lua allows 200 locals)
     MSG = 0x00180D30,               -- an entity's message dispatcher (entity, msg, arg1, arg2), cdecl
+    TAKE_DAMAGE = 0x00153E20,       -- thiscall: actor in ecx, final positive damage at esp+4
     HIT = 0xA4,                     -- msg 164: the entity takes -arg1 damage
     TICK = 0x001C4A60,              -- advances every entity's animation, once a frame
     FRAME = 0x1C, ANIM = 0x24,      -- entity: animation frame, anim id, state (6: in a move,
@@ -274,11 +275,10 @@ local EXP = {                       -- EX power (one table: the game's Lua allow
     BANK = 0x006C03E0,              -- anims: count; +4 lengths (16 bytes per [LENGTH_IX + anim * 4],
     LENGTH_IX = 0x006CA6C0,         -- length at +8); +8 anim data, +0xC event lists, by anim
     SLOW = 0x006CD5C8,              -- nonzero: every animation at half speed
-    DAMAGE = 8,                     -- an EX hit does DAMAGE / 2 times the damage
+    DAMAGE = 20,                    -- an EX hit does DAMAGE / 2 times the damage
     HIT_FRAMES = 90,                -- a press's hits count as EX this long (a fireball lands late)
     RECOVERY = 48,                  -- an EX move's recovery: 3 frames a tick
-    IMPACT = 0,                     -- frames of slow motion on an EX hit (0: none; benched,
-                                    -- not noticeable in play)
+    IMPACT = 8,                     -- frames of slow motion on an EX hit
 }
 
 local WEAPON_POPUP  = 698           -- (PH) text that takes our popup message
@@ -1311,8 +1311,8 @@ local function ex_tick()
     end
 end
 
--- Before an entity's message: a hit (msg 164) on anyone but the players
--- while a player's EX move plays, or shortly after its press, is an EX hit.
+-- Msg 164 identifies a combat hit; its nested TakeDamage applies the boost to
+-- the final positive damage rather than only changing the event argument.
 local function ex_hit(ctx)
     if game.read_u32(ctx.esp + 8) ~= EXP.HIT then return end
     local victim = game.read_u32(ctx.esp + 4)
@@ -1323,15 +1323,15 @@ local function ex_hit(ctx)
         local press = exs.press[p]
         if exs.move[p] or (press and frame >= press and frame - press <= EXP.HIT_FRAMES) then live = true end
     end
-    if not live then return end
-    local v = game.read_u32(ctx.esp + 0xC)
-    if v < 0x80000000 then return end               -- (-arg1 is the damage: not a hit)
-    v = v - 0x100000000
-    game.write_u32(ctx.esp + 0xC, (v * EXP.DAMAGE // 2) & 0xFFFFFFFF)
-    if EXP.IMPACT > 0 then
-        game.write_u32(EXP.SLOW, 1)
-        exs.slow_until = frame + EXP.IMPACT
-    end
+    if live and game.read_u32(ctx.esp + 0xC) >= 0x80000000 then exs.hit = victim end
+end
+
+local function ex_take_damage(ctx)
+    if not exs.hit or game.read_u32(ctx.ecx + 0xBC) ~= exs.hit then return end
+    local damage = game.read_u32(ctx.esp + 4)
+    game.write_u32(ctx.esp + 4, damage * EXP.DAMAGE // 2)
+    game.write_u32(EXP.SLOW, 1)
+    exs.slow_until = game.read_u32(FRAME) + EXP.IMPACT
 end
 
 local function set_al(ctx, v)
@@ -1439,7 +1439,8 @@ return {
     { address = RESPAWN, before = function(ctx) respawning(ctx.ecx) end },
     { address = PAD_MAP, before = function(ctx) ex_remap(ctx.eax) end },
     { address = EXP.TICK, before = function(ctx) ex_tick() end },
-    { address = EXP.MSG, before = function(ctx) ex_hit(ctx) end },
+    { address = EXP.MSG, before = function(ctx) ex_hit(ctx) end, after = function(ctx) exs.hit = nil end },
+    { address = EXP.TAKE_DAMAGE, before = function(ctx) ex_take_damage(ctx) end },
     {
         address = GET_LEVEL,
         before = function(ctx)
