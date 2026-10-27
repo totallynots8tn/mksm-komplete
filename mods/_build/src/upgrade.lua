@@ -1,4 +1,4 @@
--- Extended Upgrades 0.10.0: XP shop, Health, Stamina, weapons, EX moves and fatality inputs.
+-- Extended Upgrades 0.10.1: XP shop, Health, Stamina, weapons, EX moves and fatality inputs.
 --
 -- Turns pause-menu Moves categories into the XP shop. Nothing new is added
 -- to the menu; existing rows get new text, costs and behaviour, and
@@ -129,9 +129,9 @@
 --     victim as entity message 164 (dispatcher 0x180D30(entity, msg, arg1):
 --     TakeDamage(entity's actor, -arg1)), with no attacker; a hit on anyone
 --     but the players while a player's EX move plays, or shortly after its
---     press (a fireball lands late), gets EXP.DAMAGE / 2 times the damage, and
---     the engine's slow motion (0x6CD5C8: every animation at half speed) for
---     EXP.IMPACT frames. Recovery: the anim tick 0x1C4A60 advances an entity
+--     press (a fireball lands late), gets EXP.DAMAGE / 2 times the damage,
+--     and (when EXP.IMPACT is set; benched) the engine's slow motion
+--     (0x6CD5C8: every animation at half speed) for that many frames. Recovery: the anim tick 0x1C4A60 advances an entity
 --     by 2 frames a tick while its speed byte +0x263A is 32 (reset at every
 --     anim start), but the move's events (hits, spawns) fire only on their
 --     exact frame (0x1CEBE0), so the EX move speeds up only after its last
@@ -274,10 +274,11 @@ local EXP = {                       -- EX power (one table: the game's Lua allow
     BANK = 0x006C03E0,              -- anims: count; +4 lengths (16 bytes per [LENGTH_IX + anim * 4],
     LENGTH_IX = 0x006CA6C0,         -- length at +8); +8 anim data, +0xC event lists, by anim
     SLOW = 0x006CD5C8,              -- nonzero: every animation at half speed
-    DAMAGE = 3,                     -- an EX hit does DAMAGE / 2 times the damage
+    DAMAGE = 5,                     -- an EX hit does DAMAGE / 2 times the damage
     HIT_FRAMES = 90,                -- a press's hits count as EX this long (a fireball lands late)
     RECOVERY = 32,                  -- an EX move's recovery: 2 frames a tick
-    IMPACT = 10,                    -- frames of slow motion on an EX hit (0: none)
+    IMPACT = 0,                     -- frames of slow motion on an EX hit (0: none; benched,
+                                    -- not noticeable in play)
 }
 
 local WEAPON_POPUP  = 698           -- (PH) text that takes our popup message
