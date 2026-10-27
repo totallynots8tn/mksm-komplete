@@ -775,7 +775,7 @@ spend(1)
 assert(stam(1) == 80, "player 2's charge (Stamina +1: 20): " .. stam(1))
 pad(1, {})
 H.w32(MGR + 0xCC + 4, 0); H.w8(MGR + 0x1C4 + 0x1C + 20, 0)
--- 14. EX power: a paid press makes the move EX. Its hits on others do 2.5x
+-- 14. EX power: a paid press makes the move EX. Its hits on others do 4x
 -- (no slow motion: benched), a fireball landing soon after too; once the
 -- move's last event has played, it recovers at 2 frames a tick
 local E0 = 0x5D1AB8
@@ -803,7 +803,7 @@ pad(0, { [LT] = 0xFF, [X] = 0xFF })            -- a paid EX press at frame 3000
 H.w32(E0 + 0x1E04, 6); H.w32(E0 + 0x24, ANIM); H.w32(E0 + 0x1C, 4); H.w8(E0 + 0x263A, 0)
 anim_tick()
 assert(H.r8(E0 + 0x263A) == 0, "EX sped up before its hits")
-assert(hit(ENEMY, 40) == 100 and H.r32(0x6CD5C8) == 0, "EX hit not 2.5x, or slow motion")
+assert(hit(ENEMY, 40) == 160 and H.r32(0x6CD5C8) == 0, "EX hit not 4x, or slow motion")
 assert(hit(E0, 40) == 40 and hit(E0 + 0x3238, 40) == 40, "a hit on a player boosted")
 H.w32(E0 + 0x1C, 12); anim_tick()
 assert(H.r8(E0 + 0x263A) == 0, "sped up on its last event's frame")
@@ -813,7 +813,7 @@ H.w32(0x5CE878, 3010); anim_tick()
 assert(H.r32(0x6CD5C8) == 0, "slow motion not over")
 H.w32(E0 + 0x1E04, 0); anim_tick()                  -- the move is over
 H.w32(0x5CE878, 3080)
-assert(hit(ENEMY, 40) == 100, "a late EX hit (a fireball) not boosted")
+assert(hit(ENEMY, 40) == 160, "a late EX hit (a fireball) not boosted")
 H.w32(0x5CE878, 3100); anim_tick()
 assert(H.r32(0x6CD5C8) == 0 and hit(ENEMY, 40) == 40, "a hit long after the EX boosted")
 pad(0, {})                                     -- a plain move is never sped up

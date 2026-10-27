@@ -1,4 +1,4 @@
--- Extended Upgrades 0.10.1: XP shop, Health, Stamina, weapons, EX moves and fatality inputs.
+-- Extended Upgrades 0.10.2: XP shop, Health, Stamina, weapons, EX moves and fatality inputs.
 --
 -- Turns pause-menu Moves categories into the XP shop. Nothing new is added
 -- to the menu; existing rows get new text, costs and behaviour, and
@@ -274,7 +274,7 @@ local EXP = {                       -- EX power (one table: the game's Lua allow
     BANK = 0x006C03E0,              -- anims: count; +4 lengths (16 bytes per [LENGTH_IX + anim * 4],
     LENGTH_IX = 0x006CA6C0,         -- length at +8); +8 anim data, +0xC event lists, by anim
     SLOW = 0x006CD5C8,              -- nonzero: every animation at half speed
-    DAMAGE = 5,                     -- an EX hit does DAMAGE / 2 times the damage
+    DAMAGE = 8,                     -- an EX hit does DAMAGE / 2 times the damage
     HIT_FRAMES = 90,                -- a press's hits count as EX this long (a fireball lands late)
     RECOVERY = 32,                  -- an EX move's recovery: 2 frames a tick
     IMPACT = 0,                     -- frames of slow motion on an EX hit (0: none; benched,
