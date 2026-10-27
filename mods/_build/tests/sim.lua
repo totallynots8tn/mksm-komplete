@@ -30,6 +30,8 @@ end
 -- before the third group (modelstream into its slot).
 local OUTSIDER = os.getenv("OUTSIDER") == "1"
 local EVICT = os.getenv("OUTSIDER_EVICT") == "1"
+-- LAIR=1: the map number is Goro's Lair's (98), where LDK 3.11 fills groups
+if os.getenv("LAIR") == "1" then H.w32(0x505970, 98) end
 if OUTSIDER then
   COST = { [15]=0x24D00 }
   CONC = { [15]=7+3 }

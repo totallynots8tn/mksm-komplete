@@ -1,5 +1,10 @@
 
--- ===== Legendary Dark Knight 3.10.0 (with Boss Invasion) =====
+-- ===== Legendary Dark Knight 3.11.0 (with Boss Invasion) =====
+-- 3.11: Goro's Lair (maps 96-100, not the fatality room 99) authors only 1-3 Onis per group, all
+-- spawning within a second or two, so even x3 felt empty. There every
+-- eligible group gets as many clones as one callback can write (MAX_CLONES);
+-- the memory rule cancels the clones that don't fit and the pool gate holds
+-- the rest back until room.
 -- 3.6: a single-enemy group of a regular type is multiplied too when its
 -- entry has a plain entrance (early levels such as Goro's Lair are mostly
 -- single-enemy waves). Entries with a scripted entrance stay as authored.
@@ -27,6 +32,9 @@ local ACTOR_CAPACITY   = 0x005142B8
 local RUNTIME_FIELDS   = { [0x04] = true, [0x08] = true, [0x10] = true, [0x14] = true, [0x2C] = true }
 local UNTOUCHED_FIELD  = 0x3C
 local DELAY_DWORD      = 0x58
+local MAP_ID           = 0x00505970   -- the current map (area) number
+local FILL_MAPS        = { [96] = true, [97] = true, [98] = true, [100] = true }  -- Goro's Lair (99: fatality room)
+local MAX_CLONES       = 8        -- per group: a clone is 28 writes, a callback may make 256
 
 local LOAD_GROUPS      = 0x00014D2C
 local INIT_GROUP       = 0x001D1B80
@@ -156,7 +164,7 @@ local function plan_expansion(group)
     local target = count
     for _, slot in ipairs(bosses) do
         for _ = 1, BOSS_MULTIPLIER - 1 do
-            if target < cap then
+            if target < cap and target - count < MAX_CLONES then
                 copy_entry(group, target, slot, target - count + 1)
                 target = target + 1
             end
@@ -167,8 +175,12 @@ local function plan_expansion(group)
     -- groups whose entry has a plain entrance
     if #eligible > 0 and (count >= 2 or signature(entry_address(group, eligible[1])) == GENERIC) then
         local extra = count * (MULTIPLIER - 1)
+        if FILL_MAPS[game.read_u32(MAP_ID)] then extra = cap - target end   -- as many as fit
         if target + extra > cap then
             extra = cap - target
+        end
+        if target - count + extra > MAX_CLONES then
+            extra = MAX_CLONES - (target - count)
         end
         for wave = 1, extra do
             copy_entry(group, target, eligible[((wave - 1) % #eligible) + 1], target - count + 1)

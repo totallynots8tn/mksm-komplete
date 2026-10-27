@@ -92,11 +92,11 @@ def numbered(name, index):
 
 # folder, id, name, readme, version, summary, {script: source}, extra manifest fields
 MODLIST = [
-    ('ldk', 'ldk', 'Legendary Dark Knight Mode', 'ldk.md', '3.10.0', LDK_SUMMARY.format(x='x2'),
+    ('ldk', 'ldk', 'Legendary Dark Knight Mode', 'ldk.md', '3.11.0', LDK_SUMMARY.format(x='x2'),
      {'ldk.lua': lambda: ldk_variant(2)}, {'conflicts': ['ldk_x3', 'ldk_x4']}),
-    ('ldk_x3', 'ldk_x3', 'Legendary Dark Knight Mode (x3 Hard)', 'ldk.md', '3.10.0', LDK_SUMMARY.format(x='x3'),
+    ('ldk_x3', 'ldk_x3', 'Legendary Dark Knight Mode (x3 Hard)', 'ldk.md', '3.11.0', LDK_SUMMARY.format(x='x3'),
      {'ldk.lua': lambda: ldk_variant(3)}, {'conflicts': ['ldk', 'ldk_x4']}),
-    ('ldk_x4', 'ldk_x4', 'Legendary Dark Knight Mode (x4 Legendary)', 'ldk.md', '3.10.0', LDK_SUMMARY.format(x='x4'),
+    ('ldk_x4', 'ldk_x4', 'Legendary Dark Knight Mode (x4 Legendary)', 'ldk.md', '3.11.0', LDK_SUMMARY.format(x='x4'),
      {'ldk.lua': lambda: ldk_variant(4)}, {'conflicts': ['ldk', 'ldk_x3']}),
     ('randomizer', 'randomizer', 'Shaolin Shuffle (Enemy Randomizer)', 'randomizer.md', '0.10.0',
      SHUFFLE_SUMMARY.format(level='Normal', detail='a modest swap: slots keep their room, single-type areas get an outsider'),

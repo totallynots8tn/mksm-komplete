@@ -1,4 +1,16 @@
-# Legendary Dark Knight Mode 3.10.0 (x2 / x3 / x4, with Boss Invasion)
+# Legendary Dark Knight Mode 3.11.0 (x2 / x3 / x4, with Boss Invasion)
+
+## 3.11: Goro's Lair fills its groups
+
+Goro's Lair authors only one to three Onis per group, and they all come in
+within a second or two, so even x3 felt empty. In Goro's Lair (maps 96, 97,
+98 and 100; the fatality room stays vanilla) every group that LDK can extend
+now gets up to 8 extra Onis instead of two per authored one: a lone Oni comes
+with 8 more, a pair with 8 more. The memory rule still decides each extra as
+it spawns, so only as many as the Oni's memory holds come in (the rest are
+skipped), and while the character pool is full the next one waits for room.
+8 is the most one hook call can write (each extra is 28 writes of the 256
+allowed).
 
 Doubles every multi-enemy spawn group (up to 12 per group). The extra enemies
 arrive as reinforcements. Sometimes the last one is one of the level's bosses
