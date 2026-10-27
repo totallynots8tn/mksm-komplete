@@ -776,7 +776,7 @@ assert(stam(1) == 60, "player 2's charge (Stamina +1: 40): " .. stam(1))
 pad(1, {})
 H.w32(MGR + 0xCC + 4, 0); H.w8(MGR + 0x1C4 + 0x1C + 20, 0)
 -- 14. EX power: a paid press makes the move EX. Its hits on others do 10x
--- with a short impact pause, a fireball landing soon after too; once the
+-- (no impact pause since 0.11.1), a fireball landing soon after too; once the
 -- move's last event has played, it recovers at 3 frames a tick
 local E0 = 0x5D1AB8
 local BANK, LISTS, LENGTHS, DATA, EV = 0x6C03E0, 0x710000, 0x711000, 0x712000, 0x713000
@@ -807,7 +807,7 @@ pad(0, { [LT] = 0xFF, [X] = 0xFF })            -- a paid EX press at frame 3000
 H.w32(E0 + 0x1E04, 6); H.w32(E0 + 0x24, ANIM); H.w32(E0 + 0x1C, 4); H.w8(E0 + 0x263A, 0)
 anim_tick()
 assert(H.r8(E0 + 0x263A) == 0, "EX sped up before its hits")
-assert(hit(ENEMY, 40) == 400 and H.r32(0x6CD5C8) ~= 0, "EX hit not 10x, or no impact pause")
+assert(hit(ENEMY, 40) == 400 and H.r32(0x6CD5C8) == 0, "EX hit not 10x, or an impact pause (benched)")
 assert(hit(E0, 40) == 40 and hit(E0 + 0x3238, 40) == 40, "a hit on a player boosted")
 H.w32(E0 + 0x1C, 12); anim_tick()
 assert(H.r8(E0 + 0x263A) == 0, "sped up on its last event's frame")

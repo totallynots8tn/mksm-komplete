@@ -1,4 +1,4 @@
--- Extended Upgrades 0.11.0: XP shop, Health, Stamina, weapons, EX moves and fatality inputs.
+-- Extended Upgrades 0.11.1: XP shop, Health, Stamina, weapons, EX moves and fatality inputs.
 --
 -- Turns pause-menu Moves categories into the XP shop. Nothing new is added
 -- to the menu; existing rows get new text, costs and behaviour, and
@@ -278,7 +278,8 @@ local EXP = {                       -- EX power (one table: the game's Lua allow
     DAMAGE = 20,                    -- an EX hit does DAMAGE / 2 times the damage
     HIT_FRAMES = 90,                -- a press's hits count as EX this long (a fireball lands late)
     RECOVERY = 48,                  -- an EX move's recovery: 3 frames a tick
-    IMPACT = 8,                     -- frames of slow motion on an EX hit
+    IMPACT = 0,                     -- frames of slow motion on an EX hit (0: none; 0.11.1 benched it:
+                                    -- the user wants EX to feel like a cancel, not a pause)
 }
 
 local WEAPON_POPUP  = 698           -- (PH) text that takes our popup message
@@ -1330,8 +1331,10 @@ local function ex_take_damage(ctx)
     if not exs.hit or game.read_u32(ctx.ecx + 0xBC) ~= exs.hit then return end
     local damage = game.read_u32(ctx.esp + 4)
     game.write_u32(ctx.esp + 4, damage * EXP.DAMAGE // 2)
-    game.write_u32(EXP.SLOW, 1)
-    exs.slow_until = game.read_u32(FRAME) + EXP.IMPACT
+    if EXP.IMPACT > 0 then
+        game.write_u32(EXP.SLOW, 1)
+        exs.slow_until = game.read_u32(FRAME) + EXP.IMPACT
+    end
 end
 
 local function set_al(ctx, v)

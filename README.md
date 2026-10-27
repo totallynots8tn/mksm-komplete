@@ -53,7 +53,7 @@ save file.
 ### Test build v1.2 (2026-10-27, testers only)
 
 `release/v1.2/` in this repository is the current test build: v1 plus
-Legendary Dark Knight 3.11.0 (Goro's Lair waves filled), the XP Shop 0.11.0
+Legendary Dark Knight 3.11.0 (Goro's Lair waves filled), the XP Shop 0.11.1
 (Health, Stamina, weapons, fatalities and EX moves at 10x damage) and the
 experimental Time Rifts 0.2.0. To play it from a fresh copy of this repository:
 

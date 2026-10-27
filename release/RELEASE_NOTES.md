@@ -15,7 +15,7 @@ Solo Co-op 0.6.2) plus:
 | Mod | Package | Version | Status | Note |
 | --- | --- | --- | --- | --- |
 | Legendary Dark Knight Mode (x3) | `ldk_x3` | 3.11.0 | Works (QA run 2026-10-26 through Goro's Lair) | Goro's Lair groups fill to 9-11 Onis; the fatality room stays vanilla. |
-| Extended Upgrades: XP Shop | `mk_upgrade` | 0.11.0 | Experimental | Health, Stamina, weapons, fatality reveal and EX moves (L2 + special: 10x damage, impact pause, fast recovery, half a bar). |
+| Extended Upgrades: XP Shop | `mk_upgrade` | 0.11.1 | Experimental | Health, Stamina, weapons, fatality reveal and EX moves (L2 + special: 10x damage, fast recovery, half a bar; no hitstop). |
 | Time Rifts | `time_rifts` | 0.2.0 | Experimental (not yet seen live) | The co-op rift portals in Wu Shi and Goro's Lair reload their area for another fight. Needs Solo Co-op Paths. |
 | MKSMK Probe | `mksmk_probe` | 0.12.0 | Diagnostic | 42 of the 64 routine scripts; the whole set uses 49. |
 
