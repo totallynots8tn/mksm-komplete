@@ -1,4 +1,4 @@
-# Extended Upgrades: XP Shop 0.9.5 (preview, experimental)
+# Extended Upgrades: XP Shop 0.10.0 (preview, experimental)
 
 The XP shop spends XP in the game's own upgrade menu, on the game's own menu
 entries. Nothing new is added to the menu, and everything it sells comes **on
@@ -46,7 +46,11 @@ included, is unchanged.
   quarter of the blue bar, less with Stamina upgrades), once per move;
   without enough stamina L2 + the button stays a block. L2 + a button whose
   EX you haven't bought is unchanged, and L2 + R2 + a button is left free.
-  The red orbs stay the fatality meter. Each co-op player buys their own.
+  The red orbs stay the fatality meter.
+  An EX move is stronger: its hits on enemies do 1.5x damage, each with a
+  moment of slow motion, and once its last hit or projectile is out it
+  recovers twice as fast. (A fireball that lands up to about a second and
+  a half after the press still counts.) Each co-op player buys their own.
 - **Fatalities** all work without being discovered; the game only hides
   their inputs until you perform one. A ??? row stays hidden while you browse
   (no input, no video); press A on it to buy. Buying reveals its input the same
@@ -83,6 +87,8 @@ Combo extenders, in a menu entry that already exists. The reverse-engineering is
 
 ## Changelog
 
+- **0.10.0:** EX power: EX hits do 1.5x damage with a moment of slow
+  motion, and EX moves recover twice as fast after their last hit.
 - **0.9.5:** Y and B EX work: the shop had their game slots swapped, so
   an EX bought for Y was checked against B's moves and the other way round.
 - **0.9.4:** L2 really does only the moves whose EX you bought: the game

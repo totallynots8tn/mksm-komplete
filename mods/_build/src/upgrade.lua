@@ -1,4 +1,4 @@
--- Extended Upgrades 0.9.5: XP shop, Health, Stamina, weapons, EX moves and fatality inputs.
+-- Extended Upgrades 0.10.0: XP shop, Health, Stamina, weapons, EX moves and fatality inputs.
 --
 -- Turns pause-menu Moves categories into the XP shop. Nothing new is added
 -- to the menu; existing rows get new text, costs and behaviour, and
@@ -125,6 +125,19 @@
 --     stamina extra comes off when the special spends its own (script
 --     command 0x1F1 -> wrapper thunk 0x1406B, once per move), scaled like
 --     every cost. Slot 3 (^, with its hidden ==6 variant) is left alone.
+--   * EX power (analysis/ex_power/REPORT.md). Damage: every hit reaches its
+--     victim as entity message 164 (dispatcher 0x180D30(entity, msg, arg1):
+--     TakeDamage(entity's actor, -arg1)), with no attacker; a hit on anyone
+--     but the players while a player's EX move plays, or shortly after its
+--     press (a fireball lands late), gets EXP.DAMAGE / 2 times the damage, and
+--     the engine's slow motion (0x6CD5C8: every animation at half speed) for
+--     EXP.IMPACT frames. Recovery: the anim tick 0x1C4A60 advances an entity
+--     by 2 frames a tick while its speed byte +0x263A is 32 (reset at every
+--     anim start), but the move's events (hits, spawns) fire only on their
+--     exact frame (0x1CEBE0), so the EX move speeds up only after its last
+--     event: the recovery. Events: anim bank 0x6C03E0, list by anim at
+--     [[+0xC] + anim * 4], 16 bytes each (frame s16, type s16; type 0 ends;
+--     frame -2: at the end).
 --   * An EX row is bought through the combo purchase like the shop's other
 --     rows: the game's own special purchase would raise the R2 tier, so for
 --     a row on sale as its EX we answer IsSpecial (thunk 0x12B71) no.
@@ -252,6 +265,20 @@ local EX_BUTTONS    = { { 4, 0 }, { 5, 1 }, { 3, 2 } }   -- X -> slot 0, Y -> 1,
 local DEMO          = 0x005143A5    -- 1 in the attract demo: GetLevel reports 1 there
 local FRAME         = 0x005CE878    -- frame counter
 local EX_WINDOW     = 60            -- frames between the variant pick and its stamina spend
+local EXP = {                       -- EX power (one table: the game's Lua allows 200 locals)
+    MSG = 0x00180D30,               -- an entity's message dispatcher (entity, msg, arg1, arg2), cdecl
+    HIT = 0xA4,                     -- msg 164: the entity takes -arg1 damage
+    TICK = 0x001C4A60,              -- advances every entity's animation, once a frame
+    FRAME = 0x1C, ANIM = 0x24,      -- entity: animation frame, anim id, state (6: in a move,
+    STATE = 0x1E04, SPEED = 0x263A, -- recovery included), speed byte (0 normal, > 15: frames a tick * 16)
+    BANK = 0x006C03E0,              -- anims: count; +4 lengths (16 bytes per [LENGTH_IX + anim * 4],
+    LENGTH_IX = 0x006CA6C0,         -- length at +8); +8 anim data, +0xC event lists, by anim
+    SLOW = 0x006CD5C8,              -- nonzero: every animation at half speed
+    DAMAGE = 3,                     -- an EX hit does DAMAGE / 2 times the damage
+    HIT_FRAMES = 90,                -- a press's hits count as EX this long (a fireball lands late)
+    RECOVERY = 32,                  -- an EX move's recovery: 2 frames a tick
+    IMPACT = 10,                    -- frames of slow motion on an EX hit (0: none)
+}
 
 local WEAPON_POPUP  = 698           -- (PH) text that takes our popup message
 local POSITION      = 0x80          -- entity position: x, y, z floats
@@ -1120,6 +1147,12 @@ local ex_due = {}               -- [player + 1] = frame an EX was pressed; stami
 local ex_held = {}              -- [player + 1] = the attack byte of the EX press still held
 local ex_chain = {}             -- [player + 1] = true while an EX chain keeps L2 as R2
 local spender = nil             -- player passed to the stamina-spend wrapper
+local exs = {                       -- EX power state
+    press = {},                     -- [player + 1] = frame of their last paid EX press
+    move = {},                      -- [player + 1] = anim id of the EX move they are in
+    events = {}, map = nil,         -- [anim] = its last event frame (false: unknown), per map
+    slow_until = nil,               -- frame the EX impact's slow motion ends
+}
 
 -- During player's EX chain, the level to report for move `level` of game
 -- slot `slot` (0: the special at all), given the real one: exactly its level
@@ -1185,7 +1218,7 @@ local function ex_remap(obj)
                 local paid = have ~= nil and have >= ex_cost(m, player)
                 if not paid and not ex_chain[player + 1] then return end   -- not even a chain: block
                 ex_held[player + 1] = b[1]
-                if paid then ex_due[player + 1] = game.read_u32(FRAME) end
+                if paid then ex_due[player + 1] = game.read_u32(FRAME); exs.press[player + 1] = ex_due[player + 1] end
             end
             ex_chain[player + 1] = true
             break
@@ -1215,6 +1248,89 @@ local function charge_ex()
     if have == nil then return end
     local left = have - ex_cost(m, player)
     game.write_u32(rec + STAMINA_NOW, f32_from(left > 0 and left or 0))
+end
+
+-- The last frame of anim `anim` with an event on it, or nil when it can't be
+-- told. Cached per map (the banks are the level's).
+local function last_event(anim)
+    local map = game.read_u32(MAP)
+    if map ~= exs.map then exs.events, exs.map = {}, map end
+    local known = exs.events[anim]
+    if known ~= nil then return known or nil end
+    local last = false
+    local count, lists, data = game.read_u32(EXP.BANK), game.read_u32(EXP.BANK + 0xC), game.read_u32(EXP.BANK + 8)
+    local i = anim < count and anim or 0
+    local list = plausible(lists) and game.read_u32(lists + i * 4) or 0
+    local lengths = game.read_u32(EXP.BANK + 4)
+    if plausible(list) and plausible(data) and plausible(lengths) then
+        local length = game.read_u32(lengths + game.read_u32(EXP.LENGTH_IX + anim * 4) * 16 + 8)
+        local info = game.read_u32(data + i * 4)
+        last = -1
+        for k = 0, 63 do
+            local e = list + k * 16
+            local frame, kind = game.read_u16(e), game.read_u16(e + 2)
+            if frame >= 0x8000 then frame = frame - 0x10000 end
+            if frame == -2 then                      -- at the end: the anim's own end frame
+                local at = plausible(info) and game.read_u16(info + 0x16) or 0
+                frame = (at ~= 0 and at - 1 <= length - 1) and at - 1 or length - 1
+            end
+            if frame < -2 or k == 63 or length > 0x4000 then last = false break end
+            if frame > last then last = frame end
+            if kind == 0 then break end
+        end
+    end
+    exs.events[anim] = last
+    return last or nil
+end
+
+-- Once a frame, before the animations advance: the impact's slow motion
+-- ends, and a player in an EX move (latched from a paid press) speeds up
+-- once its last event has played.
+local function ex_tick()
+    local frame = game.read_u32(FRAME)
+    if exs.slow_until and (frame >= exs.slow_until or exs.slow_until - frame > EXP.IMPACT) then
+        game.write_u32(EXP.SLOW, 0)
+        exs.slow_until = nil
+    end
+    for p = 0, 1 do
+        local e = ENTITY + p * ENTITY_STRIDE
+        local anim, press = game.read_u32(e + EXP.ANIM), exs.press[p + 1]
+        if game.read_u32(e + EXP.STATE) ~= 6 or anim >= 0x10000 then
+            exs.move[p + 1] = nil
+        elseif anim ~= exs.move[p + 1] then           -- a new move: EX if just pressed
+            exs.move[p + 1] = (press and frame - press <= EX_WINDOW) and anim or nil
+        end
+        if exs.move[p + 1] then
+            local last = last_event(anim)
+            local at = game.read_u32(e + EXP.FRAME)
+            if last and at < 0x10000 and at > last and game.read_u8(e + EXP.SPEED) == 0 then
+                game.write_u8(e + EXP.SPEED, EXP.RECOVERY)
+            end
+        end
+    end
+end
+
+-- Before an entity's message: a hit (msg 164) on anyone but the players
+-- while a player's EX move plays, or shortly after its press, is an EX hit.
+local function ex_hit(ctx)
+    if game.read_u32(ctx.esp + 8) ~= EXP.HIT then return end
+    local victim = game.read_u32(ctx.esp + 4)
+    if victim == ENTITY or victim == ENTITY + ENTITY_STRIDE then return end
+    local frame = game.read_u32(FRAME)
+    local live = false
+    for p = 1, 2 do
+        local press = exs.press[p]
+        if exs.move[p] or (press and frame >= press and frame - press <= EXP.HIT_FRAMES) then live = true end
+    end
+    if not live then return end
+    local v = game.read_u32(ctx.esp + 0xC)
+    if v < 0x80000000 then return end               -- (-arg1 is the damage: not a hit)
+    v = v - 0x100000000
+    game.write_u32(ctx.esp + 0xC, (v * EXP.DAMAGE // 2) & 0xFFFFFFFF)
+    if EXP.IMPACT > 0 then
+        game.write_u32(EXP.SLOW, 1)
+        exs.slow_until = frame + EXP.IMPACT
+    end
 end
 
 local function set_al(ctx, v)
@@ -1321,6 +1437,8 @@ return {
     },
     { address = RESPAWN, before = function(ctx) respawning(ctx.ecx) end },
     { address = PAD_MAP, before = function(ctx) ex_remap(ctx.eax) end },
+    { address = EXP.TICK, before = function(ctx) ex_tick() end },
+    { address = EXP.MSG, before = function(ctx) ex_hit(ctx) end },
     {
         address = GET_LEVEL,
         before = function(ctx)

@@ -775,6 +775,52 @@ spend(1)
 assert(stam(1) == 80, "player 2's charge (Stamina +1: 20): " .. stam(1))
 pad(1, {})
 H.w32(MGR + 0xCC + 4, 0); H.w8(MGR + 0x1C4 + 0x1C + 20, 0)
+-- 14. EX power: a paid press makes the move EX. Its hits on others do 1.5x
+-- with a moment of slow motion, a fireball landing soon after too; once the
+-- move's last event has played, it recovers at 2 frames a tick
+local E0 = 0x5D1AB8
+local BANK, LISTS, LENGTHS, DATA, EV = 0x6C03E0, 0x710000, 0x711000, 0x712000, 0x713000
+local ANIM = 0x21
+H.w32(BANK, 0x40); H.w32(BANK + 4, LENGTHS); H.w32(BANK + 8, DATA); H.w32(BANK + 0xC, LISTS)
+H.w32(LISTS + ANIM * 4, EV); H.w32(DATA + ANIM * 4, 0x714000)
+H.w16(EV, 5); H.w16(EV + 2, 7)                 -- events on frames 5 and 12, then the end
+H.w16(EV + 16, 12); H.w16(EV + 18, 9)
+H.w16(EV + 32, 0xFFFF); H.w16(EV + 34, 0)
+H.w32(0x6CA6C0 + ANIM * 4, 3); H.w32(LENGTHS + 3 * 16 + 8, 30)   -- 30 frames long
+local function anim_tick() H.invoke(m, 0x1C4A60, {}, nil); assert(#H.failed == 0, H.failed[1]) end
+local function hit(entity, damage)             -- msg 164 to entity: damage as -arg1
+    local ctx = { esp = 0xD0000700 }
+    H.w32(ctx.esp + 4, entity); H.w32(ctx.esp + 8, 0xA4); H.w32(ctx.esp + 0xC, (-damage) & 0xFFFFFFFF)
+    H.invoke(m, 0x180D30, ctx, nil)
+    assert(#H.failed == 0, H.failed[1])
+    local v = H.r32(ctx.esp + 0xC)
+    return -(v >= 0x80000000 and v - 0x100000000 or v)
+end
+local ENEMY = E0 + 5 * 0x3238
+H.w32(0x5CE878, 3000); H.wf32(NOW0, 100); pad(0, {})
+assert(hit(ENEMY, 40) == 40 and H.r32(0x6CD5C8) == 0, "a plain hit boosted")
+pad(0, { [LT] = 0xFF, [X] = 0xFF })            -- a paid EX press at frame 3000
+H.w32(E0 + 0x1E04, 6); H.w32(E0 + 0x24, ANIM); H.w32(E0 + 0x1C, 4); H.w8(E0 + 0x263A, 0)
+anim_tick()
+assert(H.r8(E0 + 0x263A) == 0, "EX sped up before its hits")
+assert(hit(ENEMY, 40) == 60 and H.r32(0x6CD5C8) == 1, "EX hit not 1.5x, or no slow motion")
+assert(hit(E0, 40) == 40 and hit(E0 + 0x3238, 40) == 40, "a hit on a player boosted")
+H.w32(E0 + 0x1C, 12); anim_tick()
+assert(H.r8(E0 + 0x263A) == 0, "sped up on its last event's frame")
+H.w32(E0 + 0x1C, 13); anim_tick()
+assert(H.r8(E0 + 0x263A) == 32, "EX recovery not sped up")
+H.w32(0x5CE878, 3010); anim_tick()
+assert(H.r32(0x6CD5C8) == 0, "slow motion not over")
+H.w32(E0 + 0x1E04, 0); anim_tick()                  -- the move is over
+H.w32(0x5CE878, 3080)
+assert(hit(ENEMY, 40) == 60, "a late EX hit (a fireball) not boosted")
+H.w32(0x5CE878, 3100); anim_tick()
+assert(H.r32(0x6CD5C8) == 0 and hit(ENEMY, 40) == 40, "a hit long after the EX boosted")
+pad(0, {})                                     -- a plain move is never sped up
+H.w32(E0 + 0x1E04, 6); H.w32(E0 + 0x24, ANIM + 1); H.w32(E0 + 0x1C, 20); H.w8(E0 + 0x263A, 0)
+anim_tick()
+assert(H.r8(E0 + 0x263A) == 0, "a plain move sped up")
+H.w32(E0 + 0x1E04, 0); anim_tick()
 H.w8(MGR + 0x1C4 + 19, 0); H.w8(MGR + 0x1C4 + 20, 0)
 
 -- 15. Spanish (the game's own placeholders: 54-62 bytes): strings in cp1252
