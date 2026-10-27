@@ -777,7 +777,7 @@ pad(1, {})
 H.w32(MGR + 0xCC + 4, 0); H.w8(MGR + 0x1C4 + 0x1C + 20, 0)
 -- 14. EX power: a paid press makes the move EX. Its hits on others do 4x
 -- (no slow motion: benched), a fireball landing soon after too; once the
--- move's last event has played, it recovers at 2 frames a tick
+-- move's last event has played, it recovers at 3 frames a tick
 local E0 = 0x5D1AB8
 local BANK, LISTS, LENGTHS, DATA, EV = 0x6C03E0, 0x710000, 0x711000, 0x712000, 0x713000
 local ANIM = 0x21
@@ -808,7 +808,7 @@ assert(hit(E0, 40) == 40 and hit(E0 + 0x3238, 40) == 40, "a hit on a player boos
 H.w32(E0 + 0x1C, 12); anim_tick()
 assert(H.r8(E0 + 0x263A) == 0, "sped up on its last event's frame")
 H.w32(E0 + 0x1C, 13); anim_tick()
-assert(H.r8(E0 + 0x263A) == 32, "EX recovery not sped up")
+assert(H.r8(E0 + 0x263A) == 48, "EX recovery not 3x")
 H.w32(0x5CE878, 3010); anim_tick()
 assert(H.r32(0x6CD5C8) == 0, "slow motion not over")
 H.w32(E0 + 0x1E04, 0); anim_tick()                  -- the move is over

@@ -1,4 +1,4 @@
-# Extended Upgrades: XP Shop 0.10.2 (preview, experimental)
+# Extended Upgrades: XP Shop 0.10.3 (preview, experimental)
 
 The XP shop spends XP in the game's own upgrade menu, on the game's own menu
 entries. Nothing new is added to the menu, and everything it sells comes **on
@@ -49,7 +49,7 @@ included, is unchanged.
   The red orbs stay the fatality meter.
   An EX move is stronger: its hits on enemies do 4x damage, and once its
   last hit or projectile is out it
-  recovers twice as fast. (A fireball that lands up to about a second and
+  recovers three times as fast. (A fireball that lands up to about a second and
   a half after the press still counts.) Each co-op player buys their own.
 - **Fatalities** all work without being discovered; the game only hides
   their inputs until you perform one. A ??? row stays hidden while you browse
@@ -87,6 +87,7 @@ Combo extenders, in a menu entry that already exists. The reverse-engineering is
 
 ## Changelog
 
+- **0.10.3:** EX moves recover three times as fast (was twice).
 - **0.10.2:** EX hits do 4x damage.
 - **0.10.1:** EX hits do 2.5x damage (was 1.5x); the slow motion is off.
 - **0.10.0:** EX power: EX hits do 1.5x damage with a moment of slow
