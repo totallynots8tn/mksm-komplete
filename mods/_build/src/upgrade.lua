@@ -1,4 +1,4 @@
--- Extended Upgrades 0.9.4: XP shop, Health, Stamina, weapons, EX moves and fatality inputs.
+-- Extended Upgrades 0.9.5: XP shop, Health, Stamina, weapons, EX moves and fatality inputs.
 --
 -- Turns pause-menu Moves categories into the XP shop. Nothing new is added
 -- to the menu; existing rows get new text, costs and behaviour, and
@@ -176,7 +176,6 @@ local CAN_PURCHASE  = 0x000116CC
 local ASKED_TO_BUY  = 0x0009E5D9    -- the purchase dispatcher (A on a row)
 local ASKED_FOR_ANY = 0x0009BC0E    -- "anything to buy under here?" (colours the category)
 local ASKED_FOR_VIDEO = 0x0009D3A0  -- the preview video: a weapon row has none of its own
-local EX_TRACE      = 793           -- (dev) the evaluator's answers go into this unused text; nil ships
 local IS_COMBO      = 0x00015EDE
 local BUY_COMBO     = 0x00013954
 local UPGRADE       = 0x0001647E
@@ -225,7 +224,7 @@ local IS_SPECIAL    = 0x00012B71    -- IsSpecial(node): the dispatcher's "buy as
 local EX_NAMES      = { 713, 714, 716, 717, 793 }   -- (PH) texts: "<move j's name> EX"
 local EX_FLAG       = 19            -- EX moves: level slots 19-22, one per game slot, a bit per move
 local EX_PRICES     = { 5000, 10000, 15000, 20000, 25000 }  -- the EX of move 1-5 (placeholders)
-local EX_LEAF_SLOT  = { 0, 2, 1 }   -- Specials group * ~ | -> game slot (^, slot 3, waits for its button)
+local EX_LEAF_SLOT  = { 0, 1, 2 }   -- Specials group X Y B -> game slot (live: Y's moves test slot 1)
 local EX_COST       = 25            -- extra stamina per EX special, before Stamina upgrades
 local GET_LEVEL     = 0x000111C2    -- GetLevel(player, slot), cdecl -> eax
 local EVAL_FROM     = 0x001CD780    -- the move system's condition evaluator: GetLevel
@@ -247,9 +246,9 @@ local PADS          = 0x0063AC20    -- joypad object of port p at + p * 0xE4
 local PAD_OBJ       = 0xE4
 local J_LT, J_RT    = 8, 9          -- analog bytes in it: A B X Y Black White LT RT from +2
 local LT_MIN        = 0xC0          -- trigger byte that counts as held
--- Attack button (its analog byte) -> the special's game slot. ^ (throw) has
--- no button here until it is confirmed which one it is.
-local EX_BUTTONS    = { { 4, 0 }, { 5, 2 }, { 3, 1 } }   -- X -> *, Y -> ~, B -> |
+-- Attack button (its analog byte) -> the special's game slot. ^ (throw) is
+-- left out: nobody uses it.
+local EX_BUTTONS    = { { 4, 0 }, { 5, 1 }, { 3, 2 } }   -- X -> slot 0, Y -> 1, B -> 2
 local DEMO          = 0x005143A5    -- 1 in the attract demo: GetLevel reports 1 there
 local FRAME         = 0x005CE878    -- frame counter
 local EX_WINDOW     = 60            -- frames between the variant pick and its stamina spend
@@ -1222,20 +1221,6 @@ local function set_al(ctx, v)
     ctx.eax = (ctx.eax & 0xFFFFFF00) | v
 end
 
--- (dev) The last 10 evaluator answers for player 1, in text EX_TRACE: byte 0
--- the last entry (1-10), 1 a call count, then 4 bytes each from byte 4: the
--- condition id (low, high), the real level, the answer (+0x80 in an EX chain).
-local traced = 0
-local function trace(id, real, answer, chain)
-    local p = EX_TRACE and text_at(EX_TRACE)
-    if p == nil then return end
-    traced = traced % 10 + 1
-    local at = p + traced * 4
-    game.write_u8(at, id & 0xFF); game.write_u8(at + 1, (id >> 8) & 0xFF)
-    game.write_u8(at + 2, real & 0xFF); game.write_u8(at + 3, (answer & 0x7F) | (chain and 0x80 or 0))
-    game.write_u8(p, traced); game.write_u8(p + 1, (game.read_u8(p + 1) + 1) & 0xFF)
-end
-
 return {
     { address = SYNC_OWNED, after = function(ctx) sync() end },
     {
@@ -1341,13 +1326,7 @@ return {
         before = function(ctx)
             ex_player, ex_from = game.read_u32(ctx.esp + 4), game.read_u32(ctx.esp)
         end,
-        after = function(ctx)
-            local player, from, real = ex_player, ex_from, ctx.eax
-            boost_level(ctx)
-            if player == 0 and from >= EVAL_FROM and from < EVAL_TO then
-                trace(ctx.ebp, real, ctx.eax, ex_chain[1])
-            end
-        end,
+        after = function(ctx) boost_level(ctx) end,
     },
     {
         address = SLOT_LEVEL,
@@ -1355,13 +1334,7 @@ return {
             lv_player, lv_flags, lv_from = game.read_u32(ctx.esp + 4), game.read_u32(ctx.esp + 8),
                 game.read_u32(ctx.esp)
         end,
-        after = function(ctx)
-            local player, flags, from, real = lv_player, lv_flags, lv_from, ctx.eax
-            gate_move(ctx)
-            if player == 0 and MOVE_TIER[from] then          -- (dev) id 0xF0 + tier, slot flag's top byte
-                trace(0xF0 + MOVE_TIER[from] | (flags >> 20 & 0xF00), real, ctx.eax, ex_chain[1])
-            end
-        end,
+        after = function(ctx) gate_move(ctx) end,
     },
 
     {

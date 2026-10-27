@@ -598,7 +598,7 @@ assert(ask(CAN, health[1], 0) == 0 and ask(CAN, ex[1], 0) == 0, "versus")
 H.w32(MGR + 0x88, 0)
 
 -- 13. EX moves: every move owned on R2 is for sale as its EX, in any order
--- (Specials group * ~ | -> game slot 0 2 1 -> level slot 19 + it: a bit per
+-- (Specials group X Y B -> game slot 0 1 2 -> level slot 19 + it: a bit per
 -- move, bit 7 marks the form). While L2 is held, the move system's question
 -- (and only it) passes exactly the EX moves, if the stamina covers the cost,
 -- which comes off once, when the move spends its own
@@ -683,7 +683,7 @@ assert(slot_level(0, X_MOVE, 0x77B3A, 4) == 1 and slot_level(0, X_MOVE, 0x77BC7,
 assert(slot_level(0, X_MOVE, 0x77B98, 4) == 0, "move 3 (no EX) let through the move filter")
 assert(slot_level(0, X_MOVE, 0x77B69, 1) == 0, "the EX of a move not owned on R2 let through")
 assert(slot_level(0, X_MOVE, 0x77B0C, 4) == 4, "the special itself filtered out")
-assert(slot_level(0, 0x20000000, 0x77B3A, 4) == 0, "| (no EX) let through during an X chain")
+assert(slot_level(0, 0x40000000, 0x77B3A, 4) == 0, "B (no EX) let through during an X chain")
 assert(slot_level(0, 0x80000000, 0x77B98, 4) == 4 and slot_level(0, X_MOVE, 0x7AB00, 4) == 4,
     "slot 3 or another caller touched")
 spend(0)
@@ -715,7 +715,7 @@ spend(0)
 assert(stam() == 10, "charged without the stamina")
 H.wf32(NOW0, 75)
 pad(0, {})                                     -- L2 let go: the chain is over
--- untouched: L2 + an unbought button (B is |, slot 1), L2 + R2, a brushed
+-- untouched: L2 + an unbought button (B, slot 2), L2 + R2, a brushed
 -- trigger, no stamina, the demo, versus
 lt, rt = pad(0, { [LT] = 0xFF, [B] = 0xFF })
 assert(lt == 0xFF and rt == 0, "L2 + an unbought button remapped")
@@ -742,15 +742,15 @@ H.w32(MGR + 0x88, 0); pad(0, {})
 H.w32(0x5CE878, 2000)
 assert(level(0, 0, 3, 2) == 2, "a plain special changed")
 assert(slot_level(0, 0x10000000, 0x77B98, 4) == 4, "the move filter changed without L2")
-H.w8(MGR + 0x1C4 + 21, 4)                      -- Y is ~ (slot 2): a 0.9.0 count of 4, moves 1-4
+H.w8(MGR + 0x1C4 + 20, 4)                      -- Y is slot 1: a 0.9.0 count of 4, moves 1-4
 pad(0, { [LT] = 0xFF, [Y] = 0xFF })
-assert(level(0, 2, 3, 1, 0x9D650) == 1, "answered for the menu")
-assert(level(0, 2, 1, 1) == 1 and level(0, 2, 2, 1) == 0, "~ EX not limited to the moves owned on R2")
-assert(level(0, 2, 4, 4) == 4, "~ EX move 4 not picked")
-H.w8(MGR + 0x1C4 + 21, 0x82)                   -- EX ~ move 2 alone
+assert(level(0, 1, 3, 1, 0x9D650) == 1, "answered for the menu")
+assert(level(0, 1, 1, 1) == 1 and level(0, 1, 2, 1) == 0, "~ EX not limited to the moves owned on R2")
+assert(level(0, 1, 4, 4) == 4, "~ EX move 4 not picked")
+H.w8(MGR + 0x1C4 + 20, 0x82)                   -- EX ~ move 2 alone
 pad(0, {}); pad(0, { [LT] = 0xFF, [Y] = 0xFF })
-assert(level(0, 2, 2, 4) == 2 and level(0, 2, 1, 4) == 0, "EX ~ move 2 alone: not exactly it")
-H.w8(MGR + 0x1C4 + 21, 4)
+assert(level(0, 1, 2, 4) == 2 and level(0, 1, 1, 4) == 0, "EX ~ move 2 alone: not exactly it")
+H.w8(MGR + 0x1C4 + 20, 4)
 spend(0)
 assert(stam() == 75, "EX on ~ not charged")
 -- a press whose move never spends: its extra expires
@@ -768,14 +768,14 @@ assert(math.abs(stam() - (100 - 25 / 1.5)) < 1e-3, "scaled EX cost: " .. stam())
 pad(0, {})
 H.w8(SHOP0, 0x81)
 -- player 2 (Kung Lao, port 1): his own flags (a 0.9.0 count of 3: moves 1-3) and stamina
-H.w32(MGR + 0xCC + 4, 1); H.w8(MGR + 0x1C4 + 0x1C + 21, 3); H.wf32(NOW0 + 0x24, 100)
+H.w32(MGR + 0xCC + 4, 1); H.w8(MGR + 0x1C4 + 0x1C + 20, 3); H.wf32(NOW0 + 0x24, 100)
 lt, rt = pad(1, { [LT] = 0xFF, [Y] = 0xFF })
-assert(rt == 0xFF and level(1, 2, 3, 3) == 3 and level(1, 2, 4, 3) == 0, "KL ~ EX not his moves 1-3")
+assert(rt == 0xFF and level(1, 1, 3, 3) == 3 and level(1, 1, 4, 3) == 0, "KL ~ EX not his moves 1-3")
 spend(1)
 assert(stam(1) == 80, "player 2's charge (Stamina +1: 20): " .. stam(1))
 pad(1, {})
-H.w32(MGR + 0xCC + 4, 0); H.w8(MGR + 0x1C4 + 0x1C + 21, 0)
-H.w8(MGR + 0x1C4 + 19, 0); H.w8(MGR + 0x1C4 + 21, 0)
+H.w32(MGR + 0xCC + 4, 0); H.w8(MGR + 0x1C4 + 0x1C + 20, 0)
+H.w8(MGR + 0x1C4 + 19, 0); H.w8(MGR + 0x1C4 + 20, 0)
 
 -- 15. Spanish (the game's own placeholders: 54-62 bytes): strings in cp1252
 local es = H.load(arg[1])

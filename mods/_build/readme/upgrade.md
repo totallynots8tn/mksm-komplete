@@ -1,4 +1,4 @@
-# Extended Upgrades: XP Shop 0.9.4 (preview, experimental)
+# Extended Upgrades: XP Shop 0.9.5 (preview, experimental)
 
 The XP shop spends XP in the game's own upgrade menu, on the game's own menu
 entries. Nothing new is added to the menu, and everything it sells comes **on
@@ -40,7 +40,7 @@ included, is unchanged.
   it bought, **L2 + the move's input** (no R2) does the move as an EX, and
   L2 does only the moves whose EX you own: a chained move (Special 4 is
   X, X, X) comes out on L2 only if the moves it chains through (Special 1
-  and 2) have their EX too. The ^ moves aren't sold as EX yet.
+  and 2) have their EX too. The ^ (throw) moves have no EX.
   Keep L2 held for the whole input: L2 + X, X, X does what R2 + X, X, X does
   (while L2 stays held after an EX press it counts as R2, not block). It costs extra stamina (a
   quarter of the blue bar, less with Stamina upgrades), once per move;
@@ -83,6 +83,8 @@ Combo extenders, in a menu entry that already exists. The reverse-engineering is
 
 ## Changelog
 
+- **0.9.5:** Y and B EX work: the shop had their game slots swapped, so
+  an EX bought for Y was checked against B's moves and the other way round.
 - **0.9.4:** L2 really does only the moves whose EX you bought: the game
   also checks a move's tier in its move filter, which reads the levels
   directly, and that check now gets the EX answer too (before, L2 did the
