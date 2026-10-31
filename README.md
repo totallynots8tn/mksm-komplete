@@ -88,8 +88,8 @@ level, and a reason to keep playing after Shao Kahn.
   the game's own upgrade entries with new text and behavior, not a new menu.
 - **EX specials.** Hold L2 with a special-move input for an unlockable
   enhanced version, built from the brutality-mode move set.
-- **Shuffle+.** Outsider enemies from other levels in rooms that normally
-  have one enemy type, with Normal / Wild / Chaos intensity.
+- **Shuffle+.** Outsider enemies from other levels in most areas (any area
+  that loads one or two enemy types), as one mod with no intensity variants.
 - Fatality-room safety and the reuse-aware memory guard from the v1.1 dev line.
 
 **v2: the + (planned)**

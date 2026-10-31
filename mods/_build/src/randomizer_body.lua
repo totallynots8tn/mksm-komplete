@@ -1,5 +1,5 @@
 
--- ===== Shaolin Shuffle 0.8.1 =====
+-- ===== Shaolin Shuffle 0.11.3 =====
 -- Shuffles enemy types across every spawn slot of the current area. Model
 -- memory is never freed when an enemy dies, and each type's heap is sized
 -- for how many of it the area authors in total. A shuffle keeps those totals
@@ -24,7 +24,7 @@ local MAX_SLOTS   = 150          -- entries shuffled per area (write and instruc
 -- entries into it: OUTSIDER_MIN in every group that has a plain entry (0.8:
 -- every room gets one, the area's first group included), and OUTSIDER_CHANCE
 -- percent of the rest, up to OUTSIDER_PER_GROUP per group and OUTSIDER_TOTAL
--- per area. build.py makes the Wild and Chaos variants by raising these.
+-- per area (0.11: the old Wild variant's values, now the only setting).
 --
 -- There are 4 enemy memory slots. Over 164 logged group starts, vanilla never
 -- had more than 3 enemy types loaded at once, so the outsider takes the slot
@@ -33,32 +33,65 @@ local MAX_SLOTS   = 150          -- entries shuffled per area (write and instruc
 -- first, so a cutscene can still evict the outsider. If that happens, the
 -- converted entries go back to their own type and the area keeps its authored
 -- roster from then on. The outsider pool is the regular types the probe saw
--- spawning as common enemies; all of them need one memory slot. 0.9: build.py
--- widens it per variant (Wild: types seen as commons in 7+ areas; Chaos:
--- every type seen as a common anywhere, from the QA logs' area census).
+-- spawning as common enemies; all of them need one memory slot. 0.9 widened it
+-- with the types the QA logs' area census saw as commons in 7+ areas.
+--
+-- 0.11: cross-area everywhere. Any map whose roster has a regular type gets an
+-- outsider, as long as the roster plus the outsider fit in SLOT_BUDGET of the
+-- 4 enemy memory slots. Each listed type costs its character-table slots
+-- (+0x04: 1, or 2 for IDs 47 and 57), bosses and MK characters included. A
+-- budget of 3 is vanilla's own observed maximum and keeps one slot spare for
+-- scripted loads and types a level streams in on the spot. Every slot heap is
+-- the same fixed size (0x232000), so the outsider's memory doesn't depend on
+-- what the area authors. The list is a -1 padded array of 8 words, so one
+-- more entry always fits; the words it overwrites are cached and restored.
+--
+-- 0.11.1: most of the main path preloads 3 types (QA run 2026-10-31: maps
+-- 101, 104, 107, 192 all did), so 0.11.0 left it untouched. The budget rises
+-- to all 4 slots (vanilla's own preload fills 4 on six maps) when the area's
+-- spawn groups, which load before the preload, author no type the roster
+-- doesn't list: then nothing in the level streams in on the spot, and a
+-- cutscene's modelstream still evicts the outsider cleanly (release_outsider).
+-- The scan only counts when this area's groups loaded since the last preload.
+--
+-- 0.11.3: 0.11.2 had the outsider replace one of the roster's common types
+-- on maps that load three. It crashed loading the Wu Shi entrance (map 104,
+-- roster 14/71/77; QA 2026-10-31 14:06 and 14:12, a null+0x68 read in the
+-- loader's frame): the map's scene places characters of its listed types
+-- outside the spawn groups, so every listed type must stay loaded. Removed;
+-- the roster is only ever added to.
 local PRELOAD            = 0x00015DEE
 local DESC_CAP           = 0x20
 local DESC_LIST          = 0x24
+local LIST_WORDS         = 8
+local CHAR_TABLE         = 0x004FA9F0   -- 91 rows of 0x30, by character ID
+local CHAR_ROW           = 0x30
+local CHAR_SLOTS         = 0x04
+local SLOT_BUDGET        = 3            -- when the level may stream a type in on the spot
+local SLOT_BUDGET_FULL   = 4            -- when every authored type is in the roster
 local GAME_MANAGER       = 0x005ACEBC
 local GAME_MODE          = 0x88         -- 2 = versus
-local OUTSIDERS          = { 10, 11, 12, 13, 14, 15, 26, 27 }
+-- 0.11: one mod with what was the Wild variant: the v1 pool plus the regular
+-- types the QA logs saw as commons in 7+ areas.
+local OUTSIDERS          = { 10, 11, 12, 13, 14, 15, 26, 27, 18, 42, 43 }
 local OUTSIDER_MIN       = 1            -- outsiders guaranteed per group with a plain entry
-local OUTSIDER_CHANCE    = 25           -- percent of the other plain entries that also become one
-local OUTSIDER_PER_GROUP = 3
-local OUTSIDER_TOTAL     = 30
+local OUTSIDER_CHANCE    = 50           -- percent of the other plain entries that also become one
+local OUTSIDER_PER_GROUP = 5
+local OUTSIDER_TOTAL     = 45
 -- 0.10: room mixing. An area whose rooms each author one enemy type shows no
--- variety from the signature-class swap alone, and the outsider path needs a
--- single-type roster. So Wild/Chaos also swap plain entries between two types
+-- variety from the signature-class swap alone, and (before 0.11) the outsider
+-- path needed a single-type roster. So it also swaps plain entries between two types
 -- in different rooms: each swap keeps both per-type totals exact (the heap
 -- invariant), and the room that gave an entry gains one of the other type.
-local MIX_PER_ROOM       = 0            -- pairs swapped into each single-type room
-local MIX_TOTAL          = 0            -- pairs per area (a pair is two writes)
+local MIX_PER_ROOM       = 1            -- pairs swapped into each single-type room
+local MIX_TOTAL          = 24            -- pairs per area (a pair is two writes)
 
 local planned = false
 local witnesses = {}             -- a few shuffled entries; a revert means a reload
 local area_serial = 0            -- bumped when an area's spawn groups load
-local rosters = {}               -- desc -> authored {cap, first, second, third}
-local outsider = nil             -- { kind, desc } chosen for the loading area
+local preload_serial = 0         -- area_serial at the last preload (0: no groups loaded yet)
+local rosters = {}               -- desc -> authored { cap, list = {types}, after = {next two words} }
+local outsider = nil             -- { kind, desc, area } chosen for the loading area
 local released = nil             -- { desc, area } whose outsider was evicted
 local converted = {}             -- { entry, from } turned into the outsider
 
@@ -67,58 +100,147 @@ local function versus()
     return plausible(manager) and game.read_u32(manager + GAME_MODE) == 2
 end
 
+-- Memory slots a character needs (character table +0x04: 1, or 2).
+local function slots_needed(kind)
+    if kind > 90 then
+        return 1
+    end
+    local slots = game.read_u32(CHAR_TABLE + kind * CHAR_ROW + CHAR_SLOTS)
+    if slots < 1 or slots > 2 then
+        return 1
+    end
+    return slots
+end
+
+-- The map's authored roster, read on the first visit (the list is static, and
+-- later visits find our outsider in it).
+local function authored_roster(desc)
+    local roster = rosters[desc]
+    if roster ~= nil then
+        return roster
+    end
+    roster = { cap = game.read_u32(desc + DESC_CAP), list = {}, after = {} }
+    for i = 0, LIST_WORDS - 1 do
+        local kind = game.read_u32(desc + DESC_LIST + i * 4)
+        if kind == NO_TYPE then
+            break
+        end
+        roster.list[#roster.list + 1] = kind
+    end
+    local n = #roster.list
+    if n + 2 <= LIST_WORDS then
+        roster.after = { game.read_u32(desc + DESC_LIST + n * 4), game.read_u32(desc + DESC_LIST + (n + 1) * 4) }
+    end
+    rosters[desc] = roster
+    return roster
+end
+
+-- Whether a roster can take an outsider: it has a regular type for the
+-- outsider to stand in for, room in the list, and the slot budget left.
+local function takes_outsider(roster, budget)
+    local n = #roster.list
+    if n == 0 or n + 2 > LIST_WORDS then
+        return false
+    end
+    local regular, slots = false, 1
+    for _, kind in ipairs(roster.list) do
+        if kind >= 2 and kind <= 49 and not is_boss(kind) then
+            regular = true
+        end
+        slots = slots + slots_needed(kind)
+    end
+    return regular and slots <= budget
+end
+
+-- Whether the area's spawn groups author a character the roster doesn't list
+-- (disabled groups included: a trigger may enable them later). The game
+-- streams such a type in on the spot when its group starts, into a free slot.
+local function streams_on_the_spot(roster)
+    local listed = {}
+    for _, kind in ipairs(roster.list) do
+        listed[kind] = true
+    end
+    -- worst case 50 x 22 reads, so the address math is inlined (instruction budget)
+    local read = game.read_u32
+    for base = MANAGER, MANAGER_END - 1, GROUP_STRIDE do
+        local count = game.read_u16(base + COUNT_OFFSET)
+        if count > ENTRY_SLOTS then
+            count = 0
+        end
+        local entry = base + ENTRY_BASE
+        for _ = 1, count do
+            local kind = read(entry)
+            if kind <= 90 and not listed[kind] then
+                return true
+            end
+            entry = entry + ENTRY_STRIDE
+        end
+    end
+    return false
+end
+
 -- Runs before 0xCFAB0 reads the preload list. Restores the map's authored
--- roster (an earlier visit may have appended to this static list) and, for a
--- single regular type, appends an outsider. A re-preload while the area still
--- has converted entries (0xD1910, after a cutscene) keeps the same outsider;
--- none of this depends on whether the spawn groups load before the preload.
+-- roster (an earlier visit may have changed this static list) and, when the
+-- roster fits the slot budget, appends an outsider. A re-preload in the same
+-- area (0xD1910, after a cutscene) keeps the same outsider.
 local function plan_preload(desc)
     if not plausible(desc) or desc >= 0x01000000 then
         return
     end
-    local roster = rosters[desc]
-    if roster == nil then
-        roster = { cap = game.read_u32(desc + DESC_CAP),
-                   first = game.read_u32(desc + DESC_LIST),
-                   second = game.read_u32(desc + DESC_LIST + 4),
-                   third = game.read_u32(desc + DESC_LIST + 8) }
-        rosters[desc] = roster
-    end
+    local roster = authored_roster(desc)
+    local n = #roster.list
     local kind = nil
-    local single = roster.first >= 2 and roster.first <= 49 and not is_boss(roster.first)
-        and roster.second == NO_TYPE and not fatality_area()
     local evicted = released and released.desc == desc and released.area == area_serial
-    if single and not evicted and not versus() then
-        if outsider and outsider.desc == desc and #converted > 0 then
-            kind = outsider.kind
-        else
+    local fresh = preload_serial ~= area_serial          -- this area's groups loaded since the last preload
+    preload_serial = area_serial
+    local eligible = not fatality_area() and not evicted and not versus()
+    if eligible and outsider and outsider.desc == desc and outsider.area == area_serial then
+        kind = outsider.kind                             -- a re-preload (0xD1910) keeps it
+    elseif eligible then
+        local budget = SLOT_BUDGET
+        if fresh and not streams_on_the_spot(roster) then
+            budget = SLOT_BUDGET_FULL
+        end
+        if takes_outsider(roster, budget) then
             reseed(desc ~ area_serial)
-            local pool = {}
+            local own, pool = {}, {}
+            for _, k in ipairs(roster.list) do
+                own[k] = true
+            end
             for _, candidate in ipairs(OUTSIDERS) do
-                if candidate ~= roster.first then
+                if not own[candidate] then
                     pool[#pool + 1] = candidate
                 end
             end
-            kind = pool[rnd() % #pool + 1]
+            if #pool > 0 then
+                kind = pool[rnd() % #pool + 1]
+            end
         end
     end
+    for i, k in ipairs(roster.list) do
+        local at = desc + DESC_LIST + (i - 1) * 4
+        if game.read_u32(at) ~= k then
+            game.write_u32(at, k)
+        end
+    end
+    local slot = desc + DESC_LIST + n * 4
     if kind then
-        game.write_u32(desc + DESC_LIST + 4, kind)
-        game.write_u32(desc + DESC_LIST + 8, NO_TYPE)
-        if roster.cap < 2 then
-            game.write_u32(desc + DESC_CAP, 2)
+        game.write_u32(slot, kind)
+        game.write_u32(slot + 4, NO_TYPE)
+        if roster.cap < n + 1 then
+            game.write_u32(desc + DESC_CAP, n + 1)
         end
-        outsider = { kind = kind, desc = desc }
-    else
-        if game.read_u32(desc + DESC_LIST + 4) ~= roster.second then
-            game.write_u32(desc + DESC_LIST + 4, roster.second)
-            game.write_u32(desc + DESC_LIST + 8, roster.third)
-        end
-        if game.read_u32(desc + DESC_CAP) ~= roster.cap then
-            game.write_u32(desc + DESC_CAP, roster.cap)
-        end
-        outsider = nil           -- every map load preloads its own roster
+        outsider = { kind = kind, desc = desc, area = area_serial }
+        return
     end
+    if #roster.after == 2 and game.read_u32(slot) ~= roster.after[1] then
+        game.write_u32(slot, roster.after[1])
+        game.write_u32(slot + 4, roster.after[2])
+    end
+    if game.read_u32(desc + DESC_CAP) ~= roster.cap then
+        game.write_u32(desc + DESC_CAP, roster.cap)
+    end
+    outsider = nil               -- every map load preloads its own roster
 end
 
 -- The outsider type when it is loaded for this area, else nil.

@@ -17,13 +17,14 @@ for a menu, or:
   python modtool.py list               show installed mods
 
 Options: --skip id1,id2   leave these mod ids out (always skips the retired
-                          ldk_bosses; skips mksmk_probe unless --with-probe)
+                          ldk_bosses and the old Shuffle variants randomizer_wild and
+                          randomizer_chaos; skips mksmk_probe unless --with-probe)
          --ldk x2|x3|x4  which Legendary Dark Knight variant is enabled (default
                           x3, the only one in release/v1); other variants found are
                           installed but disabled. If the chosen variant isn't in the
                           folder, the one that is gets enabled.
-         --shuffle normal|wild|chaos  which Shaolin Shuffle variant is enabled
-                          (default normal); the others are installed but disabled
+         --shuffle ...    ignored: Shaolin Shuffle is one mod since 0.11 (Wild's
+                          settings); accepted so older MKSMK.bat copies still run
          --with-probe     include the MKSMK Probe diagnostics mod
          --data <folder>  the launcher's data folder, if you moved it
 
@@ -50,8 +51,9 @@ DEFAULT_SOURCE = HERE.parent          # ...\MKSMK\mods
 PROCESS = "ShaolinMonksRecomp.exe"
 # Legendary Dark Knight ships as three conflicting variants; one is enabled.
 LDK_VARIANTS = {"ldk": "x2", "ldk_x3": "x3", "ldk_x4": "x4"}
-# So does Shaolin Shuffle (how many outsider enemies each room gets).
-SHUFFLE_VARIANTS = {"randomizer": "normal", "randomizer_wild": "wild", "randomizer_chaos": "chaos"}
+# Retired mod ids, never installed: Boss Invasion lives in LDK 3.x, and Shaolin
+# Shuffle 0.11 is one mod (id randomizer, Wild's settings) instead of three.
+RETIRED = {"ldk_bosses", "randomizer_wild", "randomizer_chaos"}
 
 
 class ToolError(Exception):
@@ -361,14 +363,12 @@ def main(argv):
     ldk_choice = (take("--ldk") or "x3").lower()
     if ldk_choice not in LDK_VARIANTS.values():
         raise ToolError("--ldk must be x2, x3 or x4")
-    shuffle_choice = (take("--shuffle") or "normal").lower()
-    if shuffle_choice not in SHUFFLE_VARIANTS.values():
-        raise ToolError("--shuffle must be normal, wild or chaos")
+    take("--shuffle")                  # one Shuffle since 0.11; older .bat copies pass it
     with_probe = "--with-probe" in args
     if with_probe:
         args.remove("--with-probe")
     skip = set(filter(None, (skip_text or "").split(",")))
-    skip.add("ldk_bosses")            # retired: Boss Invasion is part of LDK 3.x
+    skip |= RETIRED
     if not with_probe:
         skip.add("mksmk_probe")
     if not args:                      # no command: help, never an implicit refresh/uninstall
@@ -411,12 +411,10 @@ def main(argv):
             notes.append(f"{choice} is not in this folder; enabling {pick}")
             return pick
         ldk_level = available(ldk_choice, LDK_VARIANTS, "x3")
-        shuffle_level = available(shuffle_choice, SHUFFLE_VARIANTS, "normal")
         for mid, package in sorted(packages.items()):
             if mid in skip:
                 continue
-            enabled = ((mid not in LDK_VARIANTS or LDK_VARIANTS[mid] == ldk_level)
-                       and (mid not in SHUFFLE_VARIANTS or SHUFFLE_VARIANTS[mid] == shuffle_level))
+            enabled = mid not in LDK_VARIANTS or LDK_VARIANTS[mid] == ldk_level
             row = session.install(package, enabled=enabled)
             newcomers.add(mid)
             print(f"Installed {package['manifest'].get('name', mid)} {row['version']} ({package['archive'].name})")

@@ -37,7 +37,7 @@ echo   %K%1%N%  Playtest           test set, then the QA console
 echo   %K%2%N%  Test set           %BASE_NAME% + probe; dev %LADDER_NAMES%
 echo   %K%3%N%  All dev builds     every mod's newest build + probe
 echo   %K%4%N%  v1 release         what players have now (published)
-echo   %K%5%N%  Pick levels        all dev builds, choose LDK and Shuffle
+echo   %K%5%N%  Pick levels        all dev builds, choose LDK
 echo   %K%6%N%  Uninstall all      language packs stay; backups kept
 echo.
 echo   %K%7%N%  QA console         record, live state, notes, summary
@@ -70,11 +70,9 @@ goto done
 :opt5
 choice /c 234 /n /m "  Legendary Dark Knight: x2, x3 or x4? [2/3/4] "
 if errorlevel 3 (set LDK=x4) else if errorlevel 2 (set LDK=x3) else (set LDK=x2)
-choice /c nwc /n /m "  Shaolin Shuffle: Normal, Wild or Chaos? [N/W/C] "
-if errorlevel 3 (set SHUFFLE=chaos) else if errorlevel 2 (set SHUFFLE=wild) else (set SHUFFLE=normal)
 choice /c yn /n /m "  Include the MKSMK Probe? [Y/N] "
 if errorlevel 2 (set PROBE=) else (set PROBE=--with-probe)
-call :mods refresh "%REPO%mods" %PROBE% --ldk %LDK% --shuffle %SHUFFLE%
+call :mods refresh "%REPO%mods" %PROBE% --ldk %LDK%
 goto done
 
 :opt6

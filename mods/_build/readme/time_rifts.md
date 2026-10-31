@@ -1,12 +1,36 @@
-# Time Rifts 0.2.0 (preview)
+# Time Rifts 0.6.0 (QA)
 
-Existing co-op portals reload their current area instead of taking you to their original destination. Jump into a rift portal as usual.
+Tests the rift loop without the portal model or its pull-in animation yet.
 
-- **Wu Shi (map 1):** reloads the area and its authored enemies.
-- **Goro's Lair (map 100):** reloads the authored Goro encounter and enemy groups. With the test set's campaign-tested LDK x3 enabled, those enemies provide the rush; Time Rifts itself does not clone enemies or bosses.
+1. Go to Wu Shi's co-op arena (map 110).
+2. Walk away from the big hollow tree, then step into its hollow, where the
+   portal will be.
+3. The arena reloads. About a second after you are back in control, one Orochi
+   drops in mid-arena, in front of the tree, and waits there.
+4. Beat it, save at a statue, quit.
 
-The reload uses each portal's own `loadmap` event and the game's full area loader. No boss AI is moved between arenas, no Living Forest gates are touched, and no rewards or progression are changed.
+The mod writes one `TIMERIFT 0.6.0` line to the log (as a script error, which
+also switches it off for the session): `OK` when the Orochi appeared and was
+beaten, `CHECK` with the step that failed otherwise. One rift per session.
 
-**Experimental:** portal trigger 27 is identified from the Wu Shi trace; Goro's portal resources and arena are confirmed, but its trigger and same-area reload still need live verification. Test the Goro fight, enemy waves, repeated activation, player position, camera, and the route out. Disable the mod and reload a save if the area does not return cleanly.
+Time Rifts is extra content and Shaolin Shuffle is the randomizer: the rift
+never edits a map's preload list or any authored enemy. The arena has no
+spawn groups of its own, so the rift builds one for the boss, and it loads the
+boss the way cutscenes swap characters, replacing a leftover enemy type that
+has nobody alive in the arena.
 
-Requires Shaolin Monks Recomp 0.2.0 and Solo Co-op Paths to reach co-op portals in single player.
+## History
+
+- 0.5.0 and 0.5.1 crashes were Shaolin Shuffle 0.11.2 loading the Wu Shi
+  entrance; the rift never ran.
+- 0.5.2 to 0.5.4: the Oni's spawn entry and group start were fixed, but the
+  Oni never loaded (no free memory slot).
+- 0.5.5: the Oni loaded and spawned, inside the tree, and the mod didn't see
+  it alive.
+- 0.5.6: the reload never happened: the game's loadmap command only requests
+  a load from inside an exit or portal trigger. 0.5.7 makes the request
+  itself.
+- 0.5.7: the whole loop worked (QA 2026-10-31 16:25), but the Oni came in
+  outside the bamboo fence; 0.5.8 moves it mid-arena the moment it appears.
+- 0.5.8: the Oni Warlord leapt out over the fence right after spawning, and
+  moving it back didn't stick; 0.6.0 drops an Orochi instead.

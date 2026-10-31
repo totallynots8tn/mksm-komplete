@@ -30,12 +30,34 @@ end
 -- before the third group (modelstream into its slot).
 local OUTSIDER = os.getenv("OUTSIDER") == "1"
 local EVICT = os.getenv("OUTSIDER_EVICT") == "1"
+-- OUTSIDER_TWO=1 (with OUTSIDER=1): a map whose roster has two regular types
+-- (14 and 26), one per room like most real areas. Shuffle 0.11 appends the
+-- outsider as the third type, into the third memory slot.
+local TWO = os.getenv("OUTSIDER_TWO") == "1"
+-- OUTSIDER_THREE=1 (with OUTSIDER=1): three regular types (14, 26, 22) whose
+-- groups author nothing else, so Shuffle 0.11.1 puts the outsider in the
+-- fourth memory slot.
+local THREE = os.getenv("OUTSIDER_THREE") == "1"
+-- OUTSIDER_SWAP=1 (with OUTSIDER_THREE=1): like maps 107 and 192, a disabled
+-- group also authors a one-off type the roster lacks (Kitana, 63) and one entry
+-- of each roster type, so the fourth slot stays spare. 0.11.2 had the outsider
+-- replace a roster type here; 0.11.3 leaves the roster alone (expect none).
+local SWAP = os.getenv("OUTSIDER_SWAP") == "1"
+local outsider_slot = nil
+local swap_stats = {}
+local OWN = THREE and {14, 26, 22} or TWO and {14, 26} or {15}
+local OWN_SET = {} for _, t in ipairs(OWN) do OWN_SET[t] = true end
 -- LAIR=1: the map number is Goro's Lair's (98), where LDK 3.11 fills groups
 if os.getenv("LAIR") == "1" then H.w32(0x505970, 98) end
 if OUTSIDER then
   COST = { [15]=0x24D00 }
   CONC = { [15]=7+3 }
   slots = {15}
+  if TWO or THREE then
+    COST = { [14]=0x25D00, [26]=0x24900, [22]=0x23000 }
+    CONC = { [14]=7+3, [26]=7+3, [22]=7+3 }
+    slots = { table.unpack(OWN) }
+  end
 end
 -- RESPAWN=1: the Goro's Lair fatality tutorial. One wave of three type-0xF
 -- enemies is restarted every time it is cleared until the player performs a
@@ -99,7 +121,7 @@ if os.getenv("BIG") == "1" then
   end
 end
 -- MIX=1: rooms that each author a single regular type, like most real areas.
--- The signature-class swap alone changes nothing here; Wild/Chaos must trade
+-- The signature-class swap alone changes nothing here; the shuffle must trade
 -- plain slots between rooms (0.10) while keeping per-type totals exact.
 local MIX = os.getenv("MIX") == "1"
 if MIX then
@@ -122,6 +144,13 @@ if OUTSIDER then
     {types={15,15,15}, delay=20},
   }
   loaded = {15,0xFFFFFFFF,0xFFFFFFFF,0xFFFFFFFF,0xFFFFFFFF,0xFFFFFFFF}
+  if TWO or THREE then
+    for g, room in ipairs(level) do
+      for e in ipairs(room.types) do room.types[e] = OWN[(g - 1) % #OWN + 1] end
+    end
+    loaded = {0xFFFFFFFF,0xFFFFFFFF,0xFFFFFFFF,0xFFFFFFFF,0xFFFFFFFF,0xFFFFFFFF}
+    for i, t in ipairs(OWN) do loaded[i] = t end
+  end
 end
 if RESPAWN then
   level = { {types={15,15,15}, delay=0} }
@@ -185,16 +214,34 @@ local function load_level(seedhdr)
   if os.getenv("NOLOADHOOK") ~= "1" then for _, m in ipairs(mods) do H.invoke(m, 0x14D2C, {esp=STACK}) end end
   if OUTSIDER then
     -- the map's preload (0xCFAB0 via 0x15DEE) runs after the spawn groups load
-    H.w32(DESC+0x20, 1); H.w32(DESC+0x24, 15); H.w32(DESC+0x28, 0xFFFFFFFF)
+    H.w32(DESC+0x20, #OWN)
+    for i = 0, 7 do H.w32(DESC+0x24+i*4, OWN[i+1] or 0xFFFFFFFF) end
+    local dormant = M + #level*GS
+    if SWAP then
+      H.w8(dormant+0xA6A, 0)
+      local types = { 63, table.unpack(OWN) }
+      H.w16(dormant+0xA68, #types)
+      for e, t in ipairs(types) do H.w32(dormant+0x18+(e-1)*0x74, t) end
+    end
     H.w32(STACK+4, DESC)
     for _, m in ipairs(mods) do H.invoke(m, 0x15DEE, {esp=STACK}) end
-    local o = H.r32(DESC+0x28)
-    outsider_kind = nil
-    if o ~= 0xFFFFFFFF and H.r32(DESC+0x20) >= 2 then
-      outsider_kind = o
-      COST[o] = 0x20000; CONC[o] = 8
-      add_heap(2, o); H.w32(0x6322F8+0x10, 2)
-      H.w32(LOADED+4, o)
+    outsider_kind, outsider_slot = nil, nil
+    for i = 0, #OWN do
+      local o = H.r32(DESC+0x24+i*4)
+      if o ~= 0xFFFFFFFF and not OWN_SET[o] and (i < #OWN or H.r32(DESC+0x20) >= #OWN + 1) then
+        outsider_kind, outsider_slot = o, i
+        COST[o] = 0x20000; CONC[o] = 8
+        add_heap(i + 1, o)
+        if i == #OWN then H.w32(0x6322F8+0x10, #OWN + 1) end
+        H.w32(LOADED+i*4, o)
+        if i < #OWN then
+          swap_stats.swapped = (swap_stats.swapped or 0) + 1
+          for e = 0, H.r16(dormant+0xA68)-1 do
+            if H.r32(dormant+0x18+e*0x74) == OWN[i+1] then swap_stats.dormant_left = (swap_stats.dormant_left or 0) + 1 end
+          end
+        end
+        break
+      end
     end
   end
 end
@@ -219,6 +266,17 @@ local function spawn_entry(entry, g)
   local ctx = {ecx=M, esp=STACK, eax=0}
   invoke_all(0x1D1D40, ctx, function()
     local t = H.r32(entry)
+    if not is_loaded(t) and SWAP then
+      -- the game streams an unloaded type in on the spot when an enemy slot is free
+      for i = 0, 3 do
+        if H.r32(LOADED+i*4) == 0xFFFFFFFF then
+          COST[t] = COST[t] or 0x20000; CONC[t] = CONC[t] or 8
+          add_heap(i + 1, t); H.w32(LOADED+i*4, t)
+          swap_stats.streamed = (swap_stats.streamed or 0) + 1
+          break
+        end
+      end
+    end
     if not is_loaded(t) then return end
     local slot = free_slot(); if not slot then return end
     if RECYCLE and (pool[t] or 0) > 0 then
@@ -316,7 +374,7 @@ local function run_level(hdr)
   if RESPAWN then for _ = 1, 19 do order[#order+1] = 0 end end
   for _, g in ipairs(order) do
     if OUTSIDER and EVICT and g == 2 and outsider_kind then
-      H.w32(LOADED+4, 0x4C)                -- a cutscene streams Johnny Cage into the slot
+      H.w32(LOADED+outsider_slot*4, 0x4C)  -- a cutscene streams Johnny Cage into the slot
       stats.evicted = (stats.evicted or 0) + 1
       local o = outsider_kind; outsider_kind = nil
       -- the unload (0x17B280 -> 0x17B220) destroys every live actor of the type
@@ -363,10 +421,11 @@ print("max writes:", H.max_writes, "max instr:", H.max_instr)
 print("script errors:", #H.failed) for _, e in ipairs(H.failed) do print("  ", e) end
 if OUTSIDER then
   local o = 0
-  for t, n in pairs(stats.types) do if t ~= 15 then o = o + n end end
+  for t, n in pairs(stats.types) do if not OWN_SET[t] then o = o + n end end
   print("outsider spawns:", o, "evicted:", stats.evicted or 0, "outsider entries left after eviction:", stats.left_after_evict or 0)
   local rooms = 0 for _ in pairs(stats.o_rooms or {}) do rooms = rooms + 1 end
   print("rooms with an outsider spawn:", rooms, "of", stats.loads * #level)
+  if SWAP then print("swapped loads:", swap_stats.swapped or 0, "replaced-type entries left in the dormant group:", swap_stats.dormant_left or 0, "streamed on the spot:", swap_stats.streamed or 0) end
 end
 if MIX then
   local mixed, totals = 0, {}
@@ -382,7 +441,10 @@ if MIX then
     for _ in pairs(set) do n = n + 1 end
     if n >= 2 then mixed = mixed + 1 end
   end
-  -- the last of 3 loads of the area authors 8 entries per type
-  assert(totals[3] == 8 and totals[4] == 8, "per-type totals changed: " .. fmt(totals))
+  -- the last of 3 loads of the area authors 8 entries per type; LDK's clones
+  -- add entries by design, so the totals only hold without it
+  local with_ldk = false
+  for i = 1, #arg do if arg[i]:find("ldk") then with_ldk = true end end
+  assert(with_ldk or (totals[3] == 8 and totals[4] == 8), "per-type totals changed: " .. fmt(totals))
   print("mixed rooms:", mixed, "of", stats.loads * #level, "| totals:", fmt(totals))
 end

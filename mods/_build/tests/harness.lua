@@ -68,6 +68,13 @@ end
 function H.load(path)
   local env = setmetatable({game=H.game, math=STRICT_MATH}, {__index=_G})
   env.print=nil env.pcall=nil env.xpcall=nil env.load=nil env.dofile=nil env.loadfile=nil env.setmetatable=nil env.getmetatable=nil
+  env.collectgarbage=nil
+  -- the runtime also drops the string pattern functions (its removed-name list
+  -- in ShaolinMonksRecomp.exe: ... print, find, match, gmatch, gsub)
+  local str = {}
+  for k, v in pairs(string) do str[k] = v end
+  str.find, str.match, str.gmatch, str.gsub = nil, nil, nil, nil
+  env.string = str
   local f = assert(loadfile(path, "t", env))
   local hooks = f()
   local by = {}
