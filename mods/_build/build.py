@@ -68,7 +68,7 @@ MODLIST = [
      "calls (no arguments, stack arguments with nested pointers, a return value) and writes one "
      "CALLGATE line to the log. Changes co-op stone power; nothing else.",
      {'callgate.lua': lambda: text('callgate_lib.lua') + text('callgate_test.lua')}, {}),
-    ('portal_trace', 'portal_trace', 'Portal Trace (diagnostics)', 'portal_trace.md', '0.3.1',
+    ('portal_trace', 'portal_trace', 'Portal Trace (diagnostics)', 'portal_trace.md', '0.4.0',
      "Diagnostics only, changes nothing: records every map load the game asks for, with the game code that "
      "asked, and every distinct trigger event the game runs (which command, with its arguments), so a portal's "
      "prompt and pull-in can be replayed; writes one PORTALTRACE line to the log at the next save.",
@@ -88,11 +88,12 @@ MODLIST = [
     ('coop_solo', 'coop_solo', 'Solo Co-op Paths', 'coop_solo.md', '0.6.2',
      "Experimental: in single player, level layout scripts are told it's co-op (istwoplayer yes, isoneplayer no) so they choose co-op layouts and secret routes, but map-trigger conditions still see the real player count so solo-progression plates can fire. 0.5 also rewrites a co-op plate's player-2 trigger conditions into copies of the player-1 condition. Co-op plates work in single player: colored plates of either player's color activate, and a plate stays pressed for about 15 seconds after you step off, so one player can stand on each plate in turn. Engine-side co-op logic stays single player.",
      {'coop_solo.lua': lambda: text('coop_solo.lua')}, {}),
-    ('time_rifts', 'time_rifts', 'Time Rifts (QA)', 'time_rifts.md', '0.6.0',
-     "QA build: step into the big hollow tree in Wu Shi's co-op arena (map 110), where the portal will be, and the "
-     "arena reloads; when it is back, one Orochi drops in mid-arena in front of the tree and waits. No portal model or pull-in animation yet. "
-     "Uses the callgate library; never touches map rosters or authored enemies, so it is independent of Shaolin Shuffle. "
-     "One rift per session; it writes one TIMERIFT line to the log when the Orochi is beaten.",
+    ('time_rifts', 'time_rifts', 'Time Rifts (QA)', 'time_rifts.md', '0.7.4',
+     "QA build: rifts without a portal model. Step into the big hollow tree in Wu Shi's co-op arena (map 110) or the purple "
+     "wall portal in Mileena's secret arena (map 132): Wu Shi's arena reloads and an Orochi drops in mid-arena; in Mileena's "
+     "arena Mileena drops in right away (else Johnny Cage, else the Orochi). Uses the callgate library; never "
+     "touches map rosters or authored enemies, so it is independent of Shaolin Shuffle. One rift per session; it writes one "
+     "TIMERIFT line to the log when the boss is beaten.",
      {'time_rifts.lua': lambda: text('callgate_lib.lua') + text('time_rifts_body.lua')}, {}),
     ('mk_upgrade', 'mk_upgrade', 'Extended Upgrades: XP Shop (preview)', 'upgrade.md', '0.11.1',
      "Experimental XP shop; everything it sells comes on top of what the game gives. Pause > Moves > Basic Moves becomes Upgrades: Health +1 to +4 (5,000 / 10,000 / 15,000 / 20,000 XP; +100 / +200 / +400 / +800 max health in solo, above the game's own four, applied at once) and Stamina +1 to +4 (same costs; blocks, specials and the long jump cost less, as if the blue bar held 125 / 150 / 200 / 300%; each co-op player buys their own). Running Attacks becomes Weapons: summon a weapon lying in the current area to where you stand (2,000 XP, again and again). Fatalities you haven't discovered can be bought (5,000 XP each), which reveals their input. Every Specials row (X, Y, B) can be bought a second time as its EX move, in any order, once you own the move (5,000 XP and up); L2 + that move's input (no R2) does it as an EX, for extra stamina once per move: 10x damage and three times as fast a recovery (experimental). Skill and Team stay vanilla. Bought through the game's own Upgrade dialog. Labels in the game's language (EN/ES/DE/IT/FR). Uses no content files, so it works alongside language packs (if a pack has no room for the labels, the menu stays vanilla).",

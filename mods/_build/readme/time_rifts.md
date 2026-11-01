@@ -1,23 +1,24 @@
-# Time Rifts 0.6.0 (QA)
+# Time Rifts 0.7.4 (QA)
 
-Tests the rift loop without the portal model or its pull-in animation yet.
+Rifts without a portal model. Step into a rift and its arena reloads; when
+you are back in control, a boss drops in mid-arena and waits for you.
 
-1. Go to Wu Shi's co-op arena (map 110).
-2. Walk away from the big hollow tree, then step into its hollow, where the
-   portal will be.
-3. The arena reloads. About a second after you are back in control, one Orochi
-   drops in mid-arena, in front of the tree, and waits there.
-4. Beat it, save at a statue, quit.
+- **Wu Shi's co-op arena (map 110):** step into the big hollow tree. An
+  Orochi drops in front of it.
+- **Mileena's secret arena (map 132):** step up to the purple wall portal.
+  No reload here (the map's only entry is far from the arena): Mileena
+  drops in mid-arena right away; if she leaves, Johnny Cage, then the
+  Orochi.
 
-The mod writes one `TIMERIFT 0.6.0` line to the log (as a script error, which
-also switches it off for the session): `OK` when the Orochi appeared and was
-beaten, `CHECK` with the step that failed otherwise. One rift per session.
+Walk away from the rift first, then step in. Beat the boss, save at a statue,
+quit. The mod writes one `TIMERIFT 0.7.4` line to the log (as a script error,
+which also switches it off for the session): `OK`, or `CHECK` with the step
+that failed. One rift per session.
 
 Time Rifts is extra content and Shaolin Shuffle is the randomizer: the rift
-never edits a map's preload list or any authored enemy. The arena has no
-spawn groups of its own, so the rift builds one for the boss, and it loads the
-boss the way cutscenes swap characters, replacing a leftover enemy type that
-has nobody alive in the arena.
+never edits a map's preload list or any authored enemy. The boss gets its own
+empty spawn group, and it is loaded the way cutscenes swap characters, in
+place of a leftover enemy type that has nobody alive in the arena.
 
 ## History
 
@@ -34,3 +35,14 @@ has nobody alive in the arena.
   outside the bamboo fence; 0.5.8 moves it mid-arena the moment it appears.
 - 0.5.8: the Oni Warlord leapt out over the fence right after spawning, and
   moving it back didn't stick; 0.6.0 drops an Orochi instead.
+- 0.6.0: the Orochi rift in Wu Shi's arena worked (QA 2026-10-31). 0.7.0
+  adds Mileena's arena and a fallback boss.
+- 0.7.0: Mileena spawned and removed herself a quarter second later; 0.7.1
+  moves on to the next boss when that happens.
+- 0.7.1: Mileena and Johnny Cage spawned just under the floor of map 132 and
+  fell out of the map; 0.7.2 spawns bosses a little above the floor and
+  treats a fall as the boss not staying.
+- 0.7.2: Mileena and Johnny Cage landed but removed themselves within
+  seconds; 0.7.3 drops the Orochi in Mileena's arena too.
+- 0.7.3: the reload put the player at map 132's start, far from the arena,
+  and the game removed the far-away boss; 0.7.4 drops it without a reload.

@@ -1,4 +1,4 @@
--- Portal Trace 0.3: two loadmap requests (one repeated, as a walking exit),
+-- Portal Trace 0.4: two loadmap requests (one repeated, as a walking exit),
 -- two trigger events, then a save; expect one PORTALTRACE line naming them.
 --   lua tests/portal_trace.lua ../portal_trace/pack/scripts/portal_trace.lua
 package.path = "tests/?.lua;" .. package.path
@@ -25,6 +25,6 @@ for _ = 1, 2 do H.invoke(m, 0x001F2E90, { esp = STACK, ecx = OBJ }, nil) end
 H.invoke(m, 0x001272A0, { esp = STACK }, nil)
 local report = H.failed[1]
 print(report)
-assert(report:find("^PORTALTRACE 0.3") and report:find("EVENTS %[f3 x2 C0 loadmap@D0E00 C81500200 E81400000 n2:C1,1 a81400000,16EE10,0%]$") and report:find("6B>69:2:81400000 x3") and report:find("6B>C1:1:81400000 x1")
+assert(report:find("^PORTALTRACE 0.4") and report:find("EVENTS %[f3 x2 C0 loadmap@D0E00 C81500200 E81400000 n2:C1,1 a81400000,16EE10,0%]$") and report:find("6B>69:2:81400000 x3") and report:find("6B>C1:1:81400000 x1")
   and report:find("ret=16EE10@8/C753A@30"), "both loads with counts and callers")
 print("PASS portal trace")

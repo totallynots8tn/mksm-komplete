@@ -1,4 +1,4 @@
--- Portal Trace 0.3.1 (diagnostics): finds the game code behind a portal jump.
+-- Portal Trace 0.4 (diagnostics): finds the game code behind a portal jump.
 -- Every map load the game asks for goes through the loadmap command (thunk
 -- 0x12883); this records each request's map, target, entry, how many times it
 -- repeated, and the code addresses on the stack above it (the callers), and
@@ -27,7 +27,11 @@ local CHAIN       = 10             -- code addresses kept per request
 local MAX_LOADS   = 8
 local RUN_EVENT   = 0x001F2E90
 local MAX_EVENTS  = 120
-local EVENT_MAPS  = { [192] = true, [196] = true }   -- the Portals and the Evil Monastery
+local EVENT_MAPS  = { [192] = true, [196] = true, [132] = true }   -- the Portals, the Evil Monastery, Mileena's arena
+-- 0.4: only the commands a portal's prompt, pull-in and load use (0.3's line
+-- filled with every trigger's particle and sound events and was cut off)
+local KEEP = { mess = true, reac = true, rota = true, move = true, load = true, star = true,
+               mapa = true, game = true, anim = true, came = true, play = true }
 local ARG_WORDS   = 8
 
 local loads = {}                    -- { key, text, count, first, last }
@@ -91,6 +95,9 @@ return {
                     end
                     text[#text + 1] = string.char(c)
                 end
+            end
+            if not KEEP[table.concat(text):sub(1, 4)] then
+                return
             end
             local exec, object = 0, 0
             local command = game.read_u32(event + 0x10)
@@ -157,7 +164,7 @@ return {
             for _, e in ipairs(events) do
                 ev[#ev + 1] = string.format("[f%d x%d %s]", e.first, e.count, e.key)
             end
-            error("PORTALTRACE 0.3 | " .. table.concat(out, " ") .. " | EVENTS " .. table.concat(ev, " "), 0)
+            error("PORTALTRACE 0.4 | " .. table.concat(out, " ") .. " | EVENTS " .. table.concat(ev, " "), 0)
         end,
     },
 }
