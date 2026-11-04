@@ -7,6 +7,22 @@ Status key: **Works** (playable, validated) - **Experimental** (functional but
 incomplete / under investigation) - **Prototype** (scaffold, effects not wired)
 - **Diagnostic** (changes nothing in-game; logging only).
 
+## v1.3 test build (2026-11-03, `release/v1.3/`, not published as a release)
+
+v1.2 plus everything played since. Solo Co-op 0.6.3, Env Kill XP 2.0.1 and
+Unlock All 1.1.1 carry review fixes only.
+
+| Mod | Package | Version | Status | Note |
+| --- | --- | --- | --- | --- |
+| Time Rifts | `time_rifts` | 0.12.0 | Experimental (rifts played 2026-10-31 to 11-03, a full gauntlet run 11-03) | Rift fights in Wu Shi's arena (Orochi), Mileena's secret arena (Mileena), Goro's Lair (Raiden, a rush, Goro) and map 199 (Kintaro). The Survival gauntlet: after Smoke's quests and the Pit II, his portal leads through nine cut Survival stages and back for XP. Three stages have no way out of their own, so the run moves on 30 s after their last enemy. |
+| Extended Upgrades: XP Shop | `mk_upgrade` | 0.15.0 | Experimental (played 2026-11-03) | Health, Stamina, fatality meter refills and upgrades, weapons of all 7 types in any area, fatality reveal, EX moves (L2 + special, 5x damage). |
+| Legendary Dark Knight Mode (x3) | `ldk_x3` | 3.11.3 | Works | Review fixes; Goro's Lair groups fill as in 3.11.0. |
+| Shaolin Shuffle (Enemy Randomizer) | `randomizer` | 0.12.1 | Experimental | Outsider enemy types from other levels (9 types) and Mortal Kombat warriors (made killable); tree mouths are never outsiders. |
+| MKSMK Probe | `mksmk_probe` | 0.12.8 | Diagnostic | 42 of the 64 routine scripts; the whole set uses 51. |
+
+Offline checks 2026-11-03: all 56 cases of `mods/_build/run_tests.py` pass
+(mod suites and the LDK/Shuffle spawn simulator).
+
 ## v1.2 test build (2026-10-27, `release/v1.2/`, not published as a release)
 
 v1.1's frozen packages (Shuffle 0.6.6, Env Kill XP 2.0.0, Unlock All 1.1.0,

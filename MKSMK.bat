@@ -9,8 +9,8 @@ set "V1=%REPO%release\v1"
 rem The ladder: dev builds tested on top of the newest frozen set, one rung at
 rem a time. When a rung passes QA, freeze it into a new release\v1.x, point
 rem BASE there and drop the mod from LADDER.
-set "BASE=%REPO%release\v1.2"
-set "BASE_NAME=v1.2 test build"
+set "BASE=%REPO%release\v1.3"
+set "BASE_NAME=v1.3 test build"
 set LADDER="%REPO%mods\mksmk_probe"
 set "LADDER_NAMES=(nothing on the ladder yet)"
 where py >nul 2>nul && (set "PY=py -3") || (set "PY=python")

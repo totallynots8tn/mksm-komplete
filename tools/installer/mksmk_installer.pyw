@@ -5,9 +5,11 @@ MKSMK.bat's "v1 release" does: uninstall every mod (language packs are
 left alone), then install and enable the ticked ones. Removed mods go to
 mods\\.mksmk-backup\\<time>\\, as with modtool. A mod that ships several
 variants (LDK in the dev builds) shows a level choice; one variant shows none.
+Retired mod ids (modtool.RETIRED, e.g. the old Shuffle variants) are never
+offered, even when an old package folder still has them.
 
 Packages come from a "packages" folder next to this file (or next to the
-.exe built by build_exe.py), otherwise from the project's newest release\\v1.x folder (v1.2 while it is the test build).
+.exe built by build_exe.py), otherwise from the project's newest release\\v1.x folder (v1.3 while it is the test build).
 Play starts ShaolinMonksRecomp.exe from the folder the newest Recomp log
 names, so it works once the game has been started at least once.
 """
@@ -26,25 +28,24 @@ if not FROZEN:
 import modtool  # noqa: E402
 
 TITLE = "MKSM Komplete+"
-GROUPS = (
+GROUPS = (       # Shaolin Shuffle is one mod since 0.11 (modtool has no variants for it)
     ("Legendary Dark Knight", modtool.LDK_VARIANTS, ("x2", "x3", "x4")),
-    ("Shaolin Shuffle", modtool.SHUFFLE_VARIANTS, ("normal", "wild", "chaos")),
 )
 OFF_BY_DEFAULT = {"mksmk_probe"}
 BLURBS = {      # one line per mod, in player words
     "Legendary Dark Knight": "3x the enemies in every fight",
-    "Shaolin Shuffle": "enemy randomizer",
+    "randomizer": "enemy randomizer, with enemies from other areas",
     "env_kill_xp": "hazard kills give XP",
     "coop_solo": "co-op routes and secrets in single player",
     "unlock_all": "unlock every character and extra",
     "mksmk_probe": "diagnostics for bug reports (changes nothing)",
     "mk_upgrade": "XP shop: health, stamina, weapons, EX moves, fatalities",
-    "time_rifts": "co-op rift portals replay their area (experimental)",
+    "time_rifts": "rifts in Wu Shi's co-op arena and Mileena's arena drop a boss (experimental)",
 }
 
 
 def package_folder():
-    for folder in (HERE / "packages", ROOT / "release" / "v1.2", ROOT / "release" / "v1"):
+    for folder in (HERE / "packages", ROOT / "release" / "v1.3", ROOT / "release" / "v1"):
         if folder.is_dir() and any(folder.glob("*.tar.xz")):
             return folder
     return None
@@ -81,6 +82,8 @@ def plan(packages, chosen, levels):
     variant it has and enables the chosen level (the others conflict)."""
     out = []
     for mid, package in sorted(packages.items()):
+        if mid in modtool.RETIRED:
+            continue
         group = next((g for g in GROUPS if mid in g[1]), None)
         if group:
             name, variants, _ = group
@@ -141,6 +144,8 @@ class App(tk.Tk):
         box.pack(fill="x", padx=16, pady=4)
         seen = set()
         for mid, package in sorted(self.packages.items(), key=lambda kv: kv[1]["manifest"].get("name", kv[0])):
+            if mid in modtool.RETIRED:
+                continue
             group = next((g for g in GROUPS if mid in g[1]), None)
             if group:
                 name, variants, order = group
