@@ -41,7 +41,7 @@ echo   %K%5%N%  Pick levels        all dev builds, choose LDK
 echo   %K%6%N%  Uninstall all      language packs stay; backups kept
 echo.
 echo   %K%7%N%  QA console         record, live state, notes, summary
-echo   %K%8%N%  Installer window   the players' installer
+echo   %K%8%N%  Launcher           the players' window: Play, Mods, Tester
 echo   %K%Q%N%  Quit
 echo.
 choice /c 12345678q /n /m "  Pick: "
@@ -86,7 +86,7 @@ call :console
 goto menu
 
 :opt8
-start "" %PYW% "%REPO%tools\installer\mksmk_installer.pyw"
+start "" %PYW% "%REPO%tools\launcher\mksmk_launcher.pyw"
 goto menu
 
 :done
