@@ -1,4 +1,4 @@
-# Solo Co-op Paths 0.6.2
+# Solo Co-op Paths 0.6.3
 
 Opens co-op-only routes and secret areas in single player.
 
@@ -228,6 +228,12 @@ In single player, a flag cleared within 10 seconds of being set is now held
 for about 15 seconds more. That gives you time to step from one plate to
 the other. Flags that stay set longer, co-op and versus are untouched. Set
 `SOLO_LATCH = false` in `coop_solo.lua` to turn it off.
+
+## 0.6.3: the plate rewrite is single player only
+
+The 0.5 plate rewrite changes a trigger's conditions in place. It ran in
+co-op and versus too, where a real second player must still meet the
+authored conditions; it now runs in single player only, as described above.
 
 ## 0.6.2: release build
 

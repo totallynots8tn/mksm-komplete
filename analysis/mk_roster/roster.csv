@@ -1,0 +1,92 @@
+type,name,role,slots,instances,killable,sound_bank,model_tag,anim_kb,model_id,tex_id,alt_model_id,alt_tex_id,fx_id,preloaded_in,boss_battle,mods,umksm_tier,evidence
+0,Liu Kang,player,1,1,yes,iukang,liukang pants xtras face,1448,0x17a1,0x17a0,0x1b30,0x1b2f,0x179d,,,,0,P1 by default; move menu root 0
+1,Kung Lao,player,1,1,yes,unglao,xtras pants armhands extras,1289,0x17ad,0x17ac,0x1b36,0x1b35,0x17a9,,,,0,P2 by default; move menu root 1
+2,,enemy,1,34,yes,,YUA9 rt_02 rt_02 rt_02,219,0x17b9,0x17b8,,,0x17b5,,,,,
+3,,enemy,1,10,yes,,MqAk d_end d_end,435,0x17c3,0x17c2,,,0x17bf,,,,,
+4,clay soldier?,enemy,1,12,yes,lay_soldier,body wepshields sword shield,237,0x17cd,0x17cc,,,0x17c9,129 130 142 143 166,,,,
+5,,enemy,1,7,yes,,eyebrow eyebrow_end eye_lids eye_lids_end,17,0x17d7,0x17d6,,,0x17d3,,,,,
+6,,enemy,1,7,yes,,,42,0x17e1,0x17e0,,,0x17dd,,,,,
+7,swordsman,enemy,1,12,yes,,sword,69,0x17eb,0x17ea,,,0x17e7,,,,,
+8,corpse,enemy,1,15,yes,orpse_1,dR_A,142,0x17f5,0x17f4,,,0x17f1,19 44 136 160 164,Scorpion Battle (map 160),,,
+9,,enemy,1,17,yes,d_merc_1,Mutant Texture weapon02 weapon01 BNi4B,215,0x17ff,0x17fe,,,0x17fb,33 45 46 187,,,,
+10,captain,enemy,1,15,yes,k_captain_1,kama_r kama_l KR-A KR-A,105,0x1809,0x1808,,,0x1805,65 68 69 74 162 192 194 196 197,Start Evil Monastery (map 192),Shuffle outsider,,Shaolin Shuffle outsider
+11,general (naginata),enemy,1,15,yes,k_general_1,naginata KR-A KR-A CLvH,174,0x1813,0x1812,,,0x180f,67 68 69 74 162 198,,Shuffle outsider,,Shaolin Shuffle outsider
+12,archer,enemy,1,15,yes,k_archer_1,xbow KR-A KR-A CLvH,147,0x181d,0x181c,,,0x1819,64 65 69 162 196 197 198,,Shuffle outsider,,Shaolin Shuffle outsider
+13,handler,enemy,1,15,yes,k_handler_1,snakewarrior c_prod KR-A KR-A,198,0x1827,0x1826,,,0x1823,64 71 74 162 197,,Shuffle outsider,,Shaolin Shuffle outsider
+14,Tarkatan,enemy,1,15,yes,arkata_1,Mutant Texture BEaF dR_A,225,0x1831,0x1830,,,0x182d,0 1 2 3 4 5 6 8 12 17 19 20 24 25 102 103 104 106 107 161 168 193 199 224 225 226 227,Start WuShi (map 103),Shuffle outsider,,the most common grunt: preloaded by most early maps
+15,Oni,enemy,1,10,yes,ni_1,dokaebi KR-A KR-A CLvH,318,0x183b,0x183a,,,0x1837,64 96 97 98 99 100 101 102 163 168,,Shuffle outsider,,"model ""dokaebi"""
+16,,enemy,1,9,yes,d_merc_1,dR_A,207,0x1845,0x1844,,,0x1841,33 45 48,,,,
+17,,enemy,1,9,yes,os_1,body scythe BEaF dR_A,98,0x184f,0x184e,,,0x184b,128 135 136 146 147 166,Start Forest (map 128),,,
+18,corpse,enemy,1,15,yes,orpse_1,fR_A,110,0x1859,0x1858,,,0x1855,0 24 128 129 132 136 137 142,Start Forest (map 128),Shuffle outsider,,
+19,knight,enemy,1,18,no,lem_knight,sword d_end d_end d_end,159,0x1863,0x1862,,,0x185f,41 182,,,,"sound bank ""...lem_knight"""
+20,masked humanoid,enemy,1,14,yes,,mask KR-A vCLvH KR-A,251,0x186d,0x186c,,,0x1869,,,,,
+21,,enemy,1,8,yes,,mouth mouth_end fangs fangs_end,0,0x1877,0x1876,,,0x1873,,,,,
+22,,enemy,1,12,yes,,fR_A,0,0x1881,0x1880,,,0x187d,0 3 5 6 24 25 99,,,,
+23,,enemy,1,11,yes,,rsword rpad r BW lsword,310,0x188b,0x188a,,,0x1887,,,,,
+24,,enemy,1,12,yes,,AHfa dR_A,292,0x1895,0x1894,,,0x1891,,,,,
+25,katana humanoid,enemy,1,2,yes,,katana vicle vicle face,149,0x189f,0x189e,,,0x189b,,,,,
+26,mask guard,enemy,1,8,yes,askguard_1,weapon sword BCk6 scabbard,205,0x18a9,0x18a8,,,0x18a5,7 101 103 107 132 161,Start WuShi (map 103),Shuffle outsider,,
+27,priest,enemy,1,8,yes,riest_1,none vicle vicle dR_A,242,0x18b3,0x18b2,,,0x18af,1 4 6 7 8 17 19 20 169 192 193 194 199,Start Evil Monastery (map 192),Shuffle outsider,,
+28,bladed humanoid,unknown,1,2,yes,,BEaF dR_A,148,0x18bd,0x18bc,,,0x18b9,,,LDK/Shuffle boss,,instances 2 like the bosses; core.lua listed it as an Orochi (names were two off)
+29,,enemy,1,12,no,,fR_A,119,0x18c7,0x18c6,,,0x18c3,,,,,
+30,Orochi,boss,1,4,yes,ellbeast_1,orochi vicle vicle face,389,0x18d1,0x18d0,,,0x18cd,12 67 165,,Time Rifts boss,,"model ""orochi"", sound ""hellbeast""; Time Rifts 0.6.0 QA: dropped in map 110, fought, beaten"
+31,Shokan,enemy,1,16,yes,hokan_1,CD4C CD4C CD4C CD4C,356,0x18db,0x18da,,,0x18d7,48,,,,
+32,,enemy,1,16,yes,,vicle vicle face jaw_end,829,0x18e5,0x18e4,,,0x18e1,,,,,
+33,,enemy,1,16,yes,,vicle vicle face jaw_end,829,0x18ef,0x18ee,,,0x18eb,,,,,
+34,archer (quiver),enemy,1,7,yes,,Arrow01 quiver Bow02 Bow04,355,0x18f9,0x18f8,,,0x18f5,,,LDK/Shuffle boss,,core.lua lists it as a boss (it was thought to be a club warlord)
+35,archer (quiver),enemy,1,7,yes,,Arrow01 quiver Bow02 Bow04,350,0x1903,0x1902,,,0x18ff,,,,,
+36,Oni Warlord,boss,1,4,yes,ni_warlord,warlord club weapon d_end,168,0x190d,0x190c,,,0x1909,41 101 163 170,,LDK/Shuffle boss,,"model ""warlord"" + club; Time Rifts 0.5.7 QA: dropped in map 110, leapt the fence"
+37,,enemy,1,6,yes,,weapon d_end ponytail01 ponytail02,347,0x1917,0x1916,,,0x1913,,,,,
+38,,enemy,1,2,yes,,CqR3,0,0x1921,0x1920,,,0x191d,,,,,
+39,,enemy,1,18,yes,,AHfa dR_A,265,0x192b,0x192a,,,0x1927,74,,,,
+40,winged creature,enemy,1,18,yes,,Q1-C MIP_K,0,0x1935,0x1934,,,0x1931,,,,,
+41,winged creature,enemy,1,20,yes,,,18,0x193f,0x193e,,,0x193b,,,,,
+42,tree mouth,enemy,1,18,yes,reemouth,face mandible jaw_return m_lower_lip,44,0x1949,0x1948,,,0x1945,128 129 135 137 146 147 166,Start Forest (map 128),Shuffle outsider,,Living Forest; Shaolin Shuffle outsider
+43,tree arms,enemy,1,18,yes,reearms,rt05 rt05 rt05 rt01,199,0x1953,0x1952,,,0x194f,128 130 135,Start Forest (map 128),Shuffle outsider,,Living Forest; Shaolin Shuffle outsider
+44,bat,enemy,1,20,yes,at_1,,24,0x195d,0x195c,,,0x1959,,,,,
+45,swamp snake,enemy,1,18,yes,wampsnake,tailbone16 tailbone15 tailbone14 tailbone13,135,0x1967,0x1966,,,0x1963,129 130 137,,LDK/Shuffle boss,,
+46,skull,enemy,1,66,yes,kull_1,,32,0x1971,0x1970,,,0x196d,1 6 19 192 224 225 226 227,Start Evil Monastery (map 192),,,instances 66: a swarm
+47,Goro (mace),boss,2,2,no,oro,mace goro face body,786,0x197b,0x197a,,,0x1977,176,,LDK/Shuffle boss,,one of the only two 2-slot types
+48,tentacles,enemy,1,34,yes,,tentacle01 tentacle02 tentacle03 tentacle04,91,0x1985,0x1984,,,0x1981,,,,,
+49,dagger creature,enemy,1,3,yes,,d_end d_end hair00 hair01,614,0x198f,0x198e,,,0x198b,,,,,
+50,big snake,enemy,1,2,yes,ig_snake,tail01 tail02 tail03 tail04,841,0x1999,0x1998,,,0x1995,144,Reptile Battle (map 144),LDK/Shuffle boss,,map 144 (Reptile battle) preloads it
+51,,unknown,1,2,yes,,SfG8 face jaw_end upper_mouth,252,0x19a3,0x19a2,,,0x199f,,,LDK/Shuffle boss,,
+52,Scorpion,mk,1,2,no,corpion_npc,scorpion sc_01 sc_02 sc_03,770,0x19ad,0x19ac,,,0x19a9,160 190,Scorpion Battle (map 160),LDK/Shuffle boss,0,NPC/boss model; map 160 (Scorpion battle) preloads it
+53,Noob Saibot,mk,1,2,yes,,noob sc_01 sc_02 sc_03,0,0x19b7,0x19b6,,,0x19b3,,,LDK/Shuffle boss,2,no sound bank or animation record of its own (ninja skeleton like Scorpion and Smoke)
+54,Kano,mk,1,2,no,ano,Kano Kano1 Kano2 Kano3,215,0x19c1,0x19c0,,,0x19bd,72 187,,LDK/Shuffle boss,2,
+55,Scorpion (burned),mk,1,2,no,c_burned,scorpion sc_01 sc_02 sc_03,486,0x19cb,0x19ca,,,0x19c7,160 165,Scorpion Battle (map 160),LDK/Shuffle boss,0,map 160 (Scorpion battle) preloads it
+56,Baraka,mk,1,2,no,araka,baraka eyebrow eyebrow_end eye_lids,780,0x19d5,0x19d4,,,0x19d1,15 161,Baraka Battle (map 15),LDK/Shuffle boss,1,map 15 (Baraka battle) preloads it
+57,Goro,boss,2,2,no,oro,mace goro face body,786,0x19df,0x19de,,,0x19db,47 191,Goro Battle (map 47),LDK/Shuffle boss,,2 slots; map 47 (Goro battle) preloads it
+58,Kintaro,boss,1,2,no,intaro,Kintaro Xbox test_l_shoulder test_r_shoulder houlder,427,0x19e9,0x19e8,,,0x19e5,,,LDK/Shuffle boss,2,
+59,Reptile,mk,1,2,no,eptile_npc,reptile atama color blackstuff,283,0x19f3,0x19f2,,,0x19ef,144 164 190,Reptile Battle (map 144),LDK/Shuffle boss,1,map 144 (Reptile battle) preloads it; LDK v1 cloned it into waves (patch 4)
+60,unnamed humanoid,unknown,1,5,yes,,vicle vicle face mandible,0,0x19fd,0x19fc,,,0x19f9,,,LDK/Shuffle boss,,next to Shang Tsung in the table
+61,unnamed humanoid,unknown,1,3,yes,,vicle vicle gFEb mvCvQI,1624,0x1a07,0x1a06,,,0x1a03,,,LDK/Shuffle boss,,next to Shang Tsung in the table
+62,Shang Tsung (young),mk,1,2,no,hang_tsung,young shang tsung eyebrow eyebrow_end eye_lids,327,0x1a11,0x1a10,,,0x1a0d,73,Final Battle (map 73),LDK/Shuffle boss,2,map 73 (final battle) preloads it
+63,Shang Tsung (old),mk,1,2,yes,,oldshang shang extra skirt,255,0x1a1b,0x1a1a,,,0x1a17,169,,LDK/Shuffle boss,2,
+64,Shao Kahn,boss,1,2,no,haokahn,shao kahn Skin kahn Black stuff,420,0x1a25,0x1a24,,,0x1a21,73,Final Battle (map 73),LDK/Shuffle boss,2,"map 73 (final battle) preloads it; Time Rifts 0.7.x dropped it as ""Mileena"" (removed: 62,000 units from P1)"
+65,Kitana,mk,1,2,yes,itana_npc,kitana bodyx armlegs extra,400,0x1a2f,0x1a2e,,,0x1a2b,194 195,KMJ Battle (map 195),LDK/Shuffle boss,1,map 195 (KMJ battle) preloads it
+66,Mileena,mk,1,2,no,ileena,ninjagirl body girl armlegs,333,0x1a39,0x1a38,,,0x1a35,132 195,KMJ Battle (map 195),LDK/Shuffle boss; Time Rifts boss,2,maps 132 (her secret arena) and 195 (KMJ battle) preload it
+67,Jade,mk,1,2,no,ade,jade body armlegs atama,306,0x1a43,0x1a42,,,0x1a3f,195,KMJ Battle (map 195),LDK/Shuffle boss,2,map 195 (KMJ battle) preloads it
+68,Ermac,mk,1,2,no,rmac,ermac eyebrow eyebrow_end eye_lids,431,0x1a4d,0x1a4c,,,0x1a49,108 190,Ermac Battle (map 108),LDK/Shuffle boss,1,map 108 (Ermac battle) preloads it
+69,Sub-Zero,mk,1,2,no,ubzero_npc,subzero color black extra,318,0x1a57,0x1a56,,,0x1a53,44 45 46 73 190,Final Battle (map 73),LDK/Shuffle boss,0,NPC model
+70,Smoke,mk,1,2,yes,,smoke sc_01 sc_02 sc_03,33,0x1a61,0x1a60,,,0x1a5d,146 147,,LDK/Shuffle boss,2,no sound bank of its own
+71,Johnny Cage (story),mk,1,2,no,age,face Skin Black stuff Color stuff,189,0x1a6b,0x1a6a,,,0x1a67,47 104 106,Goro Battle (map 47),LDK/Shuffle boss,1,"sound bank ""cage"""
+72,Raiden,mk,1,2,yes,,xbox_raiden Cone01 Pu2AP eyebrow,62,0x1a75,0x1a74,,,0x1a71,41 96,,LDK/Shuffle boss,2,"model ""xbox_raiden"""
+73,,unknown,1,2,yes,,eye_lids eyebrow CqR3 HBRZ,21,0x1a7f,0x1a7e,,,0x1a7b,48,,,,
+74,Jax,mk,1,2,no,ax,grenade01 grenade0103 grenade02 revolver,81,0x1a89,0x1a88,,,0x1a85,72,,LDK/Shuffle boss,,"sound bank ""jax""; model has grenades and a revolver"
+75,,unknown,1,2,yes,,eyebrow eyebrow_end eye_lids eye_lids_end,14,0x1a93,0x1a92,,,0x1a8f,72,,,,
+76,monk?,enemy,1,8,yes,,AHfa dR_A,232,0x1a9d,0x1a9c,,,0x1a99,106,,,,"generic humanoid, instances 8; Shuffle/LDK QA: fought and died in Goro's Lair (then called Johnny Cage; the screenshot showed a monk)"
+77,monk?,enemy,1,8,yes,,AHfa dR_A,232,0x1aa7,0x1aa6,,,0x1aa3,15 24 103 104 107 234 235,Baraka Battle (map 15); Start WuShi (map 103),,,"generic humanoid, instances 8; Wu Shi maps 103/104/107 preload it"
+78,Johnny Cage,mk,1,2,yes,,johnny cage lka1 y cage lka2,0,0x1ab1,0x1ab0,,,0x1aad,,,LDK/Shuffle boss; Time Rifts boss,1,"model ""johnny cage""; never spawned as an enemy yet"
+79,Kung Lao look-alike,unknown,1,2,yes,,xtras pants armhands extras,0,0x1abb,0x1aba,,,0x1ab7,,,,,same materials as type 1
+80,pterodactyl,enemy,1,14,yes,terodactyl,,47,0x1ac5,0x1ac4,,,0x1ac1,1 5 7 8 25 30,Start Tombs (map 30),,,
+81,Kintaro (morning star),unknown,1,1,yes,intaro,morningstar brokenpillar eyebrow eyebrow_end,432,0x1acf,0x1ace,0x1acf,0x1ace,0x1acb,,,LDK/Shuffle boss,,instances 1 like the player rows
+82,Scorpion,playable,1,1,yes,corpion_npc,scorpion sc_01 sc_02 sc_03,1597,0x1ad9,0x1ad8,0x1b3c,0x1b3b,0x1ad5,,,LDK/Shuffle boss,0,move menu root 0x52; full player animation set
+83,Baraka,versus,1,1,yes,araka,baraka eyebrow eyebrow_end eye_lids,999,0x1ae3,0x1ae2,0x1b42,0x1b41,0x1adf,,,LDK/Shuffle boss,1,
+84,Reptile,versus,1,1,yes,eptile,reptile atama color blackstuff,986,0x1aed,0x1aec,0x1b48,0x1b47,0x1ae9,,,LDK/Shuffle boss,1,
+85,Ermac,versus,1,1,yes,rmac,eyebrow eyebrow_end eye_lids eye_lids_end,833,0x1af7,0x1af6,,,0x1af3,,,LDK/Shuffle boss,1,
+86,Johnny Cage (stone),mk,1,2,yes,age_stone,stonecage face cage Skin,194,0x1b01,0x1b00,,,0x1afd,108,Ermac Battle (map 108),LDK/Shuffle boss,1,
+87,creature (front/back limbs),enemy,1,10,yes,,fr_head_end fl_head_end fr_shoulder fr_bicep,0,0x1b0b,0x1b0a,,,0x1b07,234 235,,,,
+88,Sub-Zero,playable,1,1,yes,ubzero,subzero color black extra,1193,0x1b15,0x1b14,0x1b4e,0x1b4d,0x1b11,,,LDK/Shuffle boss,0,move menu root 0x58; full player animation set
+89,Kitana,versus,1,1,yes,itana,kitana bodyx armlegs extra,1088,0x1b1f,0x1b1e,0x1b54,0x1b53,0x1b1b,,,LDK/Shuffle boss,1,
+90,Johnny Cage,versus,1,1,yes,age,face Skin Black stuff Color stuff,1041,0x1b29,0x1b28,0x1b5a,0x1b59,0x1b25,,,LDK/Shuffle boss,1,

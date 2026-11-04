@@ -1,4 +1,4 @@
--- Solo Co-op Paths 0.6.1 (experimental).
+-- Solo Co-op Paths 0.6.3 (experimental).
 -- 0.4 made co-op layout scripts see istwoplayer=yes / isoneplayer=no in solo,
 -- while map-trigger conditions still saw the honest player count so
 -- solo-progression plates could fire. The co-op plate itself still would not
@@ -43,6 +43,10 @@ local STONE_COLOR    = 0x00015574
 -- PLATE_WINDOW frames of being set is held for LATCH_FRAMES more (~15 s), so
 -- one player can step from one plate to the other. Set SOLO_LATCH=false to
 -- turn this off.
+--
+-- 0.6.3: the plate rewrite runs in single player only. It rewrites trigger
+-- conditions in place, and 0.6.2 also did that in co-op and versus, where
+-- the real second player must still meet the authored conditions.
 local SOLO_LATCH     = true
 local GAME_EVENT     = 0x00013134
 local FRAME          = 0x005CE878
@@ -224,7 +228,7 @@ return {
         address = TRIG_CHECK,
         before = function(ctx)
             expire_latches()
-            if not REWRITE_PLATE then return end
+            if not REWRITE_PLATE or not single_player() then return end
             local rec = ctx.ecx
             local mgr = game.read_u32(TRIG_MGR_PTR)
             if not ok(mgr) then return end

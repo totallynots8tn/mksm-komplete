@@ -74,6 +74,8 @@ local TRY_FIRE      = 0x0016F560
 local FIRE_EVENTS   = 0x0016ED90
 local FRAME         = 0x005CE878
 local GAME_MANAGER  = 0x005ACEBC
+local CURRENT_MAP   = 0x00505970
+local ARENA_MAP     = 110
 local STONE_POWER   = 0x00581B48
 local ACTION_MASK   = 0x00582140
 local MULTIPASS_BIT = 0x20000      -- def+0x70 flag: trigger needs more than one pass
@@ -103,19 +105,25 @@ local arm_logged = {}
 local multi = {}
 local need_of = {}
 local done = false
+local event_stack = {}
+local rift_event_pending = {}
+local rift_events = {}
+local RIFT_EVENT_LIMIT = 32
 
 local RECORD_CAP   = 5            -- max entries per key before it goes quiet
 
 -- Reported when the game saves (probe_save.lua). Entries go to the shared
 -- head + tail log, so the start of the session and the activity just before
 -- the save are both kept.
+local rift_event_text
 local function report(reason)
     done = true
     local manager = game.read_u32(GAME_MANAGER)
     local mode = ok(manager) and game.read_u32(manager + 0x88) or -1
     error("PLATE " .. reason .. " mode=" .. mode .. " n=" .. log_count()
         .. " stone=" .. game.read_u32(STONE_POWER)
-        .. " mask=" .. hex(game.read_u32(ACTION_MASK)) .. " | " .. log_text(), 0)
+        .. " mask=" .. hex(game.read_u32(ACTION_MASK)) .. " | " .. log_text()
+        .. " rift110=" .. rift_event_text(), 0)
 end
 
 local record = log_add
@@ -233,6 +241,27 @@ local function activator(address)
     return tostring(signed(game.read_u32(ref + 0x10)))
 end
 
+rift_event_text = function()
+    local out = {}
+    for i, sample in ipairs(rift_events) do
+        out[i] = sample.key .. "x" .. sample.count .. "@" .. sample.first .. "-" .. sample.last
+    end
+    return #out > 0 and table.concat(out, "/") or "-"
+end
+
+local function rift_event_add(key)
+    for _, sample in ipairs(rift_events) do
+        if sample.key == key then
+            sample.count = sample.count + 1
+            sample.last = hex(game.read_u32(FRAME))
+            return
+        end
+    end
+    if #rift_events >= RIFT_EVENT_LIMIT then return end
+    local frame = hex(game.read_u32(FRAME))
+    rift_events[#rift_events + 1] = { key = key, count = 1, first = frame, last = frame }
+end
+
 local hooks = {
     {
         address = SAVE_GAME,
@@ -292,15 +321,20 @@ local hooks = {
     {
         address = FIRE_EVENTS,
         before = function(ctx)
-            if done then return end
             local mgr = manager()
             local index = mgr and trigger_index(mgr, ctx.ecx - 0x68)
+            local in_arena = game.read_u32(CURRENT_MAP) == ARENA_MAP
+            event_stack[#event_stack + 1] = { index = index, arena = in_arena }
+            if done then return end
             if index and ((dumped[index] or 0) > 0 or armed_at) then
                 local who = activator(ctx.esp + 4)
                 local count = (fires[index] or 0) + 1
                 fires[index] = count
                 if count <= 3 or count % 60 == 0 then record("E" .. index .. "@" .. who .. "#" .. count) end
             end
+        end,
+        after = function()
+            event_stack[#event_stack] = nil
         end,
     },
 }
@@ -310,6 +344,14 @@ for execute, name in pairs(NAMES) do
     hooks[#hooks + 1] = {
         address = execute,
         before = function(ctx)
+            local active_event = event_stack[#event_stack]
+            local rift_stack = rift_event_pending[name]
+            if not rift_stack then rift_stack = {}; rift_event_pending[name] = rift_stack end
+            if active_event and active_event.arena and active_event.index then
+                rift_stack[#rift_stack + 1] = { index = active_event.index, who = activator(ctx.esp + 4) }
+            else
+                rift_stack[#rift_stack + 1] = false
+            end
             if done then return end
             local top = stack[#stack]
             if armed_at or (top and top.level > 0) then
@@ -317,6 +359,11 @@ for execute, name in pairs(NAMES) do
             end
         end,
         after = function(ctx)
+            local rift_stack = rift_event_pending[name]
+            local rift = rift_stack and table.remove(rift_stack) or nil
+            if rift and not done then
+                rift_event_add("T" .. rift.index .. ":" .. name .. "(" .. rift.who .. ")=" .. (ctx.eax & 0xFF))
+            end
             if done then return end
             local who = pending[name]
             if who == nil then return end

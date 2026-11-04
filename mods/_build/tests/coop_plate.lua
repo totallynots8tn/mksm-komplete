@@ -69,6 +69,16 @@ local function check(r)
     H.invoke(m, 0x0016F4B0, { ecx = r, esp = STACK }, nil)
 end
 
+-- 0.6.3: in co-op (and versus) the rewrite never runs, even on a fresh record
+H.w32(GM + 0x88, 1)
+check(rec(0)); check(rec(1))
+assert(H.r32(ARGS0 + 4) == 1 and H.r32(SLOTS1 + 4) == 2 and H.r32(ARGS1 + 4) == 0x77,
+    "co-op: a plate's conditions rewritten")
+H.w32(GM + 0x88, 2)
+check(rec(0))
+assert(H.r32(ARGS0 + 4) == 1, "versus: a plate's conditions rewritten")
+H.w32(GM + 0x88, 0)
+
 check(rec(0)); check(rec(1)); check(rec(2))
 -- second pass must be cached (no error, no extra writes beyond budget)
 check(rec(0)); check(rec(1))

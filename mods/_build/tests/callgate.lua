@@ -57,3 +57,38 @@ assert(report and report:find("^CALLGATE v0.2 OK"), "expected an OK report, got:
 assert(gate_calls == 3, "three gate calls, got " .. gate_calls)
 print("frames through vanilla:", vanilla_calls, "gate calls:", gate_calls, "max writes:", H.max_writes, "max instr:", H.max_instr)
 print("PASS callgate library")
+
+-- v1.1: a call the target's hook couldn't make (an argument that is no
+-- integer, string or block; a frame of more writes than one callback may
+-- make) errors where it is queued, so nothing is armed and the vtable stays
+local lib = assert(io.open("src/callgate_lib.lua", "rb")):read("a")
+local path = "tests/_callgate_bad.lua"
+local f = assert(io.open(path, "wb"))
+f:write(lib .. [[
+callgate.target(0x00011938)
+local bad = 0
+local hooks = { { address = 0x00154F60, before = function(ctx)
+    bad = bad + 1
+    if bad == 1 then
+        local big = {}
+        for i = 1, 300 do big[i] = i end
+        callgate.call(0x00011938, { args = { callgate.block(big) } })
+    else
+        callgate.call(0x00011938, { args = { true } })
+    end
+end } }
+return callgate.hooks(hooks)
+]])
+f:close()
+local before = #H.failed
+local bad = H.load(path)
+os.remove(path)
+for k = 1, 2 do
+  H.invoke(bad, GAMEPLAY, { esp = E0 - 4 }, nil)
+  H.invoke(bad, PRE_GATE, { esp = E0 }, nil)
+  assert(H.r32(SINGLETON) == VTABLE, "a rejected call armed the gate")
+end
+assert(#H.failed == before + 2 and H.failed[before + 1]:find("writes") and H.failed[before + 2]:find("not an integer"),
+  "bad calls not rejected where they are queued: " .. tostring(H.failed[before + 1]) .. " / " .. tostring(H.failed[before + 2]))
+print("PASS callgate rejects bad calls before arming")
+

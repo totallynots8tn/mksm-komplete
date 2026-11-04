@@ -19,7 +19,9 @@ local function kills(stats, t) return H.r8(stats+0x118+t) end
 local function cmd(addr, idx, effect) H.w32(REF+0x10, idx); H.w32(STACK+8, REF); H.invoke(m, addr, {esp=STACK}, effect) end
 local function instakill(idx) H.w32(STACK+4, entity(idx)); H.invoke(m, 0x1F2500, {esp=STACK}, function() H.w32(actor(idx)+0x368, 0) end) end
 instakill(5)                                                   print("off-map kill -> P1 kills[15]:", kills(STATS1,15))
+assert(kills(STATS1,15) == 1, "off-map kill not counted")
 instakill(5)                                                   print("same victim again (still 1):", kills(STATS1,15))
+assert(kills(STATS1,15) == 1, "same victim counted twice")
 cmd(0x153DC0, 6, function() H.w32(actor(6)+0x368, 0) end)     print("spike kill -> kills[15]:", kills(STATS1,15))
 cmd(0x153DC0, 7, function() H.w32(actor(7)+0x368, 40) end)    print("spike hurt only (still 2):", kills(STATS1,15))
 cmd(0x1F25B0, 9, nil)                                          print("pit kill elite -> kills[36]:", kills(STATS1,36))
@@ -27,4 +29,21 @@ instakill(8)                                                   print("no-XP flag
 H.w32(STACK+4, entity(0)); H.invoke(m, 0x1F2500, {esp=STACK})   print("player fell (still 2):", kills(STATS1,15))
 H.w32(MGR+0x88, 1); H.w32(STATS2+0xC4, 30); instakill(10)      print("co-op, P2 longer combo -> P2 kills[15]:", kills(STATS2,15), "P1:", kills(STATS1,15))
 H.w32(MGR+0x88, 2); instakill(11)                              print("versus (P1 still 2, P2 still 1):", kills(STATS1,15), kills(STATS2,15))
+assert(kills(STATS1,15) == 2 and kills(STATS1,36) == 1 and kills(STATS2,15) == 1, "kill credits")
+-- 2.0.1: a new enemy in a freed slot is a new victim, even within the 5 s
+-- window; while the slot stays in use the victim is paid once
+H.w32(MGR+0x88, 0)
+local FLAGS = 0x81600000
+H.w32(0x51004C, FLAGS)
+for i = 0, 11 do H.w16(FLAGS + i*2, 1) end
+H.w32(actor(5)+0x368, 100); H.w32(0x5CE878, 1100)
+local function frame_tick() H.invoke(m, 0x154F60, {esp=STACK}) end
+frame_tick(); instakill(5)
+assert(kills(STATS1,15) == 2, "slot still in use: paid again")
+H.w16(FLAGS + 5*2, 0); frame_tick()                            -- the victim is gone
+H.w16(FLAGS + 5*2, 1); H.w32(actor(5)+0x368, 100)              -- a new enemy takes the slot
+instakill(5)                                                   print("new enemy in a freed slot -> kills[15]:", kills(STATS1,15))
+assert(kills(STATS1,15) == 3, "a new enemy in a reused slot not paid")
 print("errors:", #H.failed, H.failed[1] or "")
+assert(#H.failed == 0, H.failed[1])
+print("PASS env_kill_xp")

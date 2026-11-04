@@ -1,5 +1,13 @@
 
--- ===== Legendary Dark Knight 3.11.0 (with Boss Invasion) =====
+-- ===== Legendary Dark Knight 3.11.3 (with Boss Invasion) =====
+-- 3.11.3: the shared outsider pool (core.lua) lost the tree mouth and tree arms.
+-- 3.11.2: the shared boss list (core.lua) with corrected character names
+-- covers every Mortal Kombat character.
+-- 3.11.1: clones may come in as Shaolin Shuffle's outsider (a type from
+-- another level with a heap of its own that the census never saw, because
+-- Shuffle converts entries after both mods built it), under the same memory
+-- rule, so areas where the authored types' heaps are full still get
+-- reinforcements. A group Time Rifts marks as its own is never expanded.
 -- 3.11: Goro's Lair (maps 96-100, not the fatality room 99) authors only 1-3 Onis per group, all
 -- spawning within a second or two, so even x3 felt empty. There every
 -- eligible group gets as many clones as one callback can write (MAX_CLONES);
@@ -132,8 +140,8 @@ local function plan_expansion(group)
     if count == nil then
         return
     end
-    if fatality_area() then
-        groups[group] = { orig = count, target = count }   -- fatality room: vanilla
+    if fatality_area() or rift_group(base) then
+        groups[group] = { orig = count, target = count }   -- fatality room, rift boss: vanilla
         return
     end
     local state = groups[group]
@@ -194,6 +202,22 @@ local function plan_expansion(group)
                       invader = target > boss_end and rnd() % 100 < INVADER_CHANCE and target - 1 or nil }
 end
 
+-- Shaolin Shuffle's outsider: a type from its pool that groups still to
+-- come author (need, rebuilt at every group start) though the census never
+-- saw it. It only ever takes plain entries, so only plain clones become it.
+local pool_kinds = {}
+for _, kind in ipairs(OUTSIDERS) do pool_kinds[kind] = true end
+local function shuffle_outsider(kind)
+    return pool_kinds[kind] == true and (census[kind] or 0) == 0 and (need[kind] or 0) > 0
+end
+
+-- Whether a clone's entry may take this type: the area authors the type in
+-- an entry with the same behaviour signature, or it is Shuffle's outsider
+-- and the entry is plain.
+local function takes(kind, entry)
+    return fits(kind, entry) or (shuffle_outsider(kind) and signature(entry) == GENERIC)
+end
+
 -- Loaded types with a heap, as {common = {...}, elite = {...}}, minus `skip`.
 local function loaded_kinds(skip)
     local common, elite, seen = {}, {}, {}
@@ -201,7 +225,7 @@ local function loaded_kinds(skip)
         local kind = game.read_u32(LOADED_TYPES + index * 4)
         if kind ~= NO_TYPE and kind ~= skip and not seen[kind] and heap_of(kind) then
             seen[kind] = true
-            if is_common(kind) then
+            if is_common(kind) or shuffle_outsider(kind) then
                 common[#common + 1] = kind
             elseif census[kind] == 1 and not is_boss(kind) then
                 elite[#elite + 1] = kind
@@ -219,7 +243,7 @@ local function first_with_surplus(list, entry)
     local first = rnd() % count
     for i = 0, count - 1 do
         local kind = list[((first + i) % count) + 1]
-        if fits(kind, entry) and surplus_for(kind) then
+        if takes(kind, entry) and surplus_for(kind) then
             return kind
         end
     end

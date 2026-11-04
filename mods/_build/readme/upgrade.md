@@ -1,4 +1,4 @@
-# Extended Upgrades: XP Shop 0.11.1 (preview, experimental)
+# Extended Upgrades: XP Shop 0.15.0 (preview, experimental)
 
 The XP shop spends XP in the game's own upgrade menu, on the game's own menu
 entries. Nothing new is added to the menu, and everything it sells comes **on
@@ -6,33 +6,55 @@ top of** what the game gives you.
 
 ## What it does
 
-Pause > Moves > **Basic Moves** becomes **Upgrades**, every **Specials** row
+Pause > Moves > **Basic Moves** becomes **Upgrades**, **Skill** becomes
+**Fatality meter**, **Platform** becomes **Weapons**, every **Specials** row
 can be bought a second time as its **EX** move, and the **Fatalities** you
-haven't discovered can be bought. Every other category, Skill and Team
-included, is unchanged.
+haven't discovered can be bought. Skill's and Platform's own rows only
+showed what you have: the techniques and platform abilities keep working,
+they just aren't listed any more. Combos and Team are unchanged.
 
 | Category | Row | Cost | Effect |
 | --- | --- | --- | --- |
 | Upgrades > Health | Health +1 to +4 | 5,000 / 10,000 / 15,000 / 20,000 XP | 1 / 2 / 4 / 8 health-upgrade steps (+100 / +200 / +400 / +800 max health in solo), above the game's own 4 |
 | Upgrades > Stamina | Stamina +1 to +4 | 5,000 / 10,000 / 15,000 / 20,000 XP | everything that spends the blue bar costs less: it plays as 125 / 150 / 200 / 300% |
-| Upgrades > Weapons | one row per weapon lying in the current area | 2,000 XP per summon | the weapon appears beside you at full durability |
+| Upgrades > Items | Meter refill +1 / +2 / +3 | 3,000 / 5,500 / 7,500 XP per refill | the fatality meter (the red orbs) gains 1 / 2 / 3 full levels at once |
+| Fatality meter | Meter +1 to +4 | 5,000 / 10,000 / 15,000 / 20,000 XP | every fatality-meter gain is 125 / 150 / 200 / 300%, and fatality mode lasts 17 / 33 / 50 / 67% longer (a full meter lasts like 3.5 / 4 / 4.5 / 5 orbs) |
+| Weapons | Shard, Short shard, Sword, Kamas, Broadsword, Hook swords, Axe | 1,500 / 1,750 / 2,000 / 2,250 / 2,500 / 2,750 / 3,000 XP per summon | the weapon appears beside you at full durability, in any area |
 | Specials > X, Y or B | each move you own, again as "<move> EX", in any order | 5,000 / 10,000 / 15,000 / 20,000 / 25,000 XP (Special 1 / 2 / 3 / 4 / 5) | L2 + that move's input (no R2): the move as an EX, for extra stamina |
 | Fatalities | any row still showing ??? | 5,000 XP each | reveals that fatality's input and video |
 
-- **Buying:** pick the next row and confirm in the usual Upgrade dialog. Health
-  and Stamina rows are bought in order. Rows
+- **Buying:** pick the next row and confirm in the usual Upgrade dialog. Health,
+  Stamina and Fatality meter rows are bought in order. Rows
   only unlock when you have the XP, and as with Combos the description stays
   hidden until you can buy a row.
-- **Weapons** sells the weapons of the area you are in: the kamas where kamas
-  lie, a sword where a sword lies. Buying one brings it to where you stand,
-  at full durability, the moment you unpause. If you throw it, it flies back
-  to that spot. If it breaks, it goes back to where the level keeps it, as
-  usual; buy it again to bring it to you. You can buy a weapon as often as
-  you like, but not while you are holding it. The first time you open Moves
-  in an area whose weapons you can afford, the game's "new abilities" popup
-  tells you they are for sale. An area without weapons shows "None
-  here". The game's own respawn does the moving, so a weapon the area never
-  had can't be summoned (yet).
+- **Weapons** sells all seven weapon types in every area. Buying one brings
+  it to where you stand, at full durability, the moment you unpause. If you
+  throw it, it flies back to that spot. If it breaks, it goes back to where
+  the level keeps it (a weapon the shop spawned goes back to where you bought
+  it); buy it again to bring it to you. You can buy a weapon as often as you
+  like, but not while you are holding it. The first time you open Moves in
+  an area where weapons lie and you can afford one, the game's "new
+  abilities" popup tells you they are for sale.
+  **Weapons the area doesn't have (experimental):** the game's own spawn
+  command (the one levels use) places it beside you. One at a time: while a
+  spawn is under way the other missing types are locked. If the weapon
+  doesn't appear within about five seconds of unpausing (the area has no
+  room for its model), the XP comes back and that type isn't sold again in
+  that area until you restart the game.
+- **Meter refills** (Items): each lights that many more levels of the
+  fatality meter at once, and what you had built towards the next level is
+  kept as long as the meter has room for it. A refill is for sale only while
+  the meter has that many levels left to light: the levels are the ones the
+  story has given you (one early on, three later), and a full meter sells
+  nothing. Buy as often as you like: the row reads as bought until you open
+  Moves again. Nothing is sold during fatality mode (the game drains the
+  meter from its own timer then). Each co-op player refills their own meter.
+- **Fatality meter** (was Skill): every gain of the meter (hits, blocked
+  hits) is bigger, 125 / 150 / 200 / 300% at +1 to +4, and once you enter
+  fatality mode the meter drains slower, so the mode lasts longer: at +4
+  three orbs last as long as five would. The orbs themselves stay the
+  story's (up to three); what fatalities and team attacks cost is
+  unchanged. In co-op it is shared, like Health, and helps both players.
 - **EX moves** (experimental): every row in Specials is bought twice. The
   first purchase is the game's own (the move, on R2); once you own it, the
   row is for sale again as "<move> EX", with the move's own input and video.
@@ -47,9 +69,16 @@ included, is unchanged.
   without enough stamina L2 + the button stays a block. L2 + a button whose
   EX you haven't bought is unchanged, and L2 + R2 + a button is left free.
   The red orbs stay the fatality meter.
-  An EX move is stronger: its hits on enemies do 10x damage, and once its last hit or projectile is out it
-  recovers three times as fast. (A fireball that lands up to about a second and
-  a half after the press still counts.) Each co-op player buys their own.
+  An EX move is stronger: its hits on enemies do 5x damage, and once its
+  last hit or projectile is out it recovers three times as fast. (A fireball
+  that lands up to about a second and a half after the press still counts.)
+  Each co-op player buys their own.
+  **EX cancels:** during an EX move, L2 + *another* button with an EX (say
+  L2 + Y into L2 + X) is held until the first move's last hit or fireball is
+  out, and the second EX comes out right then: a press made early is kept, a
+  tap works too, and it costs its own stamina. Pressing the *same* button
+  again is the move's own chain (X, X, X) and works as before. A press that
+  can't happen within about three-quarters of a second is dropped.
 - **Fatalities** all work without being discovered; the game only hides
   their inputs until you perform one. A ??? row stays hidden while you browse
   (no input, no video); press A on it to buy. Buying reveals its input the same
@@ -86,7 +115,44 @@ Combo extenders, in a menu entry that already exists. The reverse-engineering is
 
 ## Changelog
 
-- **0.11.1:** the impact pause is off again (an EX should read as a cancel, not a pause).
+- **0.15.0:** the Fatality meter upgrades also make fatality mode last
+  longer: its drain runs at 6/7, 3/4, 2/3 and 3/5 speed at +1 to +4 (at +4 a
+  full meter lasts like 5 orbs). The rows are now called "Meter +1" to "+4".
+
+- **0.14.0:** Skill becomes **Fatality meter**: Faster meter +1 to +4 (5,000
+  to 20,000 XP) make every meter gain 125 / 150 / 200 / 300%. Platform
+  becomes **Weapons**: all seven weapon types in every area, each its own
+  price (1,500 to 3,000 XP); a type the area doesn't have is spawned by the
+  game's own command (experimental, refunded if it doesn't appear). Items
+  keeps only the meter refills, now called "Meter refill +1/+2/+3". Skill's
+  and Platform's own rows are no longer listed (what they listed still works).
+
+- **0.13.0:** buy fatality meter fills: Weapons becomes **Items**, and the
+  rows the area's weapons leave sell Fatality meter +1 / +2 / +3 (3,000 /
+  5,500 / 7,500 XP, placeholder prices), filled at once and bought again and
+  again, for finishing bosses where the game lets you (the hidden Survival
+  stages). The "None here" row is gone: an area without weapons shows the
+  three fills. The weapons popup now points to Upgrades > Items.
+- **0.12.0:** EX cancels: L2 + another EX button during an EX move is no
+  longer eaten (0.11.3 ended the move on any attack press and dropped the
+  press, leaving Liu idle); it now comes out as the next EX the moment the
+  first move's last hit or fireball is out. The same button is the chain, as
+  before. The impact pause 0.11.3 brought back is gone again. EX purchases
+  are kept in level slots 19-21 again: 23-26 are the game's own (any of
+  them non-zero lets a co-op player start a team attack), so purchases 0.11.3
+  saved there move back on the next load, together with any older EX that
+  0.11.3 stopped reading. In co-op, only real hits of an EX count as EX
+  damage (the other player's hits during your EX don't). L2 and R2 are read
+  from the trigger bytes only, like the game reads them. The EX moves run in
+  a script of their own (`upgrade_ex.lua`), so an error there can no longer
+  switch off Health, Stamina, Weapons and the menu with it.
+- **0.11.3:** fixes an EX that was already bought and never fired. The purchase
+  flags lived in level slots 19-22, which are the game's own: buying a combo
+  calls `Upgrade(player, 13 + row)` and writes 13-22, so a combo row could read
+  as "all five EX bought" (the row turned unsellable and L2 did nothing). The
+  flags are in slots 23-26 now, and only a byte carrying this shop's bit-7 mark
+  counts as owned. **EX bought before 0.11.3 reads as nothing bought: buy it
+  again.** Health, Stamina, Weapons and Fatalities are untouched.
 - **0.11.0:** EX hits do 10x damage with an eight-frame impact pause. The boost
   now changes the final TakeDamage argument, not only the combat-message argument.
 - **0.10.4:** EX hits do 5x damage (was 4x); the extra stamina cost doubles

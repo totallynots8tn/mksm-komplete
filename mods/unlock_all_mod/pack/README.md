@@ -29,7 +29,7 @@ or creating a new profile cannot silently re-lock the roster.
 ## Install
 
 1. Open the Recomp launcher's Mods tab.
-2. Choose "Install from file..." and select `unlock_all-1.1.0.tar.xz`.
+2. Choose "Install from file..." and select `unlock_all-1.1.1.tar.xz`.
 3. Enable **Unlock All** in the mod list.
 4. Start the game.
 
@@ -37,8 +37,16 @@ Requires Shaolin Monks Recomp 0.2.0 or later.
 
 ## Notes
 
-- The mod changes game memory only. It does not edit save files, so disabling
-  it returns the profile to its real unlock state.
+- The mod changes game memory only, but **the game saves that memory**: each
+  save copies the unlock bitset into the save (`0xA0420`, the mirror of the
+  profile load at `0xA03C0` that this mod hooks). Once you have saved with the
+  mod on, that save keeps everything unlocked after you disable the mod. If
+  you want your own earned unlocks back later, play the mod on a separate save.
 - The unlock is active for every profile load while the mod is enabled.
 - Local mod only. Do not redistribute extracted game resources or assets
   without distribution rights.
+
+## Changelog
+
+- **1.1.1:** the readme no longer says disabling the mod re-locks a save; saving
+  with it on writes the unlocks into the save. The script is unchanged.

@@ -1,4 +1,4 @@
--- ===== callgate v1: make the game call one of its own routines =====
+-- ===== callgate v1.1: make the game call one of its own routines =====
 -- Routine scripts can only read and write memory, but the Recomp resolves
 -- indirect calls through its table of recompiled routines, so pointing a
 -- virtual call at another routine is a guest call (callgate_test 0.1.1).
@@ -33,6 +33,13 @@
 -- address in the script's own hooks too. done runs from the gate's next hook
 -- (0x12C93, the same frame), never from the target's hooks: routine Lua has no
 -- pcall, and a failing callback drops its writes, esp included.
+--
+-- v1.1: a failing target hook would also drop the vtable's restore and leave
+-- the game calling a stale stack word, so everything that hook does is
+-- checked when the call is queued: callgate.call errors there, in the
+-- caller's callback, before anything is armed, on an argument that isn't an
+-- integer, a string or a block, or on a frame whose writes would come near
+-- the runtime's 256 per callback.
 local callgate = (function()
     local GATE_PRE  = 0x00012284
     local GATE_POST = 0x00012C93
@@ -43,6 +50,7 @@ local callgate = (function()
     local SLOT      = 0x18
     local FAKE_SLOT = 0x40          -- below esp at the arming point
     local FRAME_GAP = 0x40          -- between the new frame's data and the entry esp
+    local MAX_WRITES = 200          -- writes the target's before hook may make
 
     local M = {}
     local targets, queue = {}, {}
@@ -61,11 +69,47 @@ local callgate = (function()
         return #queue + (active and 1 or 0) + (finished and 1 or 0)
     end
 
+    -- words a value writes into the frame's data area, its nested blocks
+    -- included; errors on anything enter() could not place
+    local function words_of(v, depth)
+        local t = type(v)
+        if t == "number" and math.type(v) == "integer" then
+            return 0
+        elseif t == "string" then
+            return (#v + 4) // 4
+        elseif t == "table" and type(v.block) == "table" and depth < 8 then
+            local n = #v.block
+            for _, w in ipairs(v.block) do
+                n = n + words_of(w, depth + 1)
+            end
+            return n
+        end
+        error("callgate: an argument is not an integer, a string or a block (" .. t .. ")", 0)
+    end
+
     function M.call(address, opts)
         if not targets[address] then
             error(string.format("callgate: %08X was not declared with callgate.target", address), 2)
         end
-        queue[#queue + 1] = { address = address, opts = opts or {} }
+        opts = opts or {}
+        local args = opts.args or {}
+        local writes = 2 + #args                    -- the vtable, the return address, the arguments
+        for _, a in ipairs(args) do
+            writes = writes + words_of(a, 0)
+        end
+        if writes > MAX_WRITES then
+            error(string.format("callgate: %08X's frame needs %d writes (at most %d)", address, writes, MAX_WRITES), 2)
+        end
+        local ecx = opts.ecx or 0
+        if math.type(ecx) ~= "integer" or ecx < 0 or ecx > 0xFFFFFFFF then
+            error("callgate: ecx is not a 32-bit value", 2)
+        end
+        for name, v in pairs(opts.regs or {}) do
+            if math.type(v) ~= "integer" or v < 0 or v > 0xFFFFFFFF then
+                error("callgate: register " .. tostring(name) .. " is not a 32-bit value", 2)
+            end
+        end
+        queue[#queue + 1] = { address = address, opts = opts }
     end
 
     -- bytes a value needs in the frame's data area, its nested blocks included

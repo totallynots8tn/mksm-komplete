@@ -1,0 +1,27 @@
+diff --git a/mods/_build/readme/ldk.md b/mods/_build/readme/ldk.md
+index 3bbbd03..1fbe70f 100644
+--- a/mods/_build/readme/ldk.md
++++ b/mods/_build/readme/ldk.md
+@@ -1,4 +1,21 @@
+-# Legendary Dark Knight Mode 3.11.0 (x2 / x3 / x4, with Boss Invasion)
++# Legendary Dark Knight Mode 3.13.0 (with Boss Invasion)
++
++## 3.13: fill every eligible encounter
++
++There is now one LDK, not x2/x3/x4 variants. Every eligible encounter gets as
++many reinforcements as fit its 12-entry capacity and the eight-clone hook
++budget, everywhere rather than only in Goro's Lair. Each authored enemy's
++copies stay together. The heap guard admits only enemies whose memory is spare
++after every authored spawn, and the character-pool gate holds the rest until
++there is room. The fatality tutorial remains vanilla.
++
++## 3.12: complete each enemy's set first
++
++Reinforcements now complete one eligible authored enemy's x2/x3/x4 set before
++moving to the next, instead of repeating the whole group in identical waves.
++For x3, the first enemy's two clones come first, then the next enemy's two.
++Group sizes, the Goro's Lair fill, and all memory and character-pool rules are
++unchanged.
+ 
+ ## 3.11: Goro's Lair fills its groups
+ 

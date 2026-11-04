@@ -10,7 +10,11 @@ Every time the game writes save.dat, a timestamped copy goes to qa/<run>/saves/
 and a line goes to qa/<run>/index.csv (time, size, SHA-256, the save slots'
 "CHARACTER.MAP.PLAYTIME" labels). Game logs (Recomp keeps only the newest 30)
 and crash dumps written after the recorder starts are copied to qa/<run>/logs/
-and qa/<run>/crashes/ as they change (--all-logs also copies older ones). The game's own folders are only read, never written. Stop with Ctrl+C.
+and qa/<run>/crashes/ as they change (--all-logs also copies older ones). The
+mods installed when recording starts (id, version, on/off, from the
+launcher's mods/installed.toml) go to qa/<run>/mods.txt, so every crash and
+script error can be tied to the builds that were running. The game's own
+folders are only read, never written. Stop with Ctrl+C.
 """
 import argparse, csv, hashlib, os, re, shutil, sys, time
 from datetime import datetime
@@ -27,6 +31,34 @@ LOG_EVERY = 10.0    # seconds between log syncs
 
 def stamp():
     return datetime.now().strftime("%H:%M:%S")
+
+
+MOD_ROW = re.compile(r'id = "([^"]+)", version = "([^"]+)", enabled = (true|false)')
+
+
+def installed_mods():
+    """'[x] id version' per installed mod ([ ] when disabled), from the launcher's
+    registry; empty when it can't be read."""
+    try:
+        text = (DATA / "mods" / "installed.toml").read_text(encoding="utf-8")
+    except OSError:
+        return []
+    return [f"{'[x]' if on == 'true' else '[ ]'} {mid} {version}" for mid, version, on in MOD_ROW.findall(text)]
+
+
+def snapshot_mods(run_dir):
+    """Append the installed mod set to <run>/mods.txt unless it is the one
+    already recorded last."""
+    rows = installed_mods()
+    if not rows:
+        return
+    path = Path(run_dir) / "mods.txt"
+    old = path.read_text(encoding="utf-8") if path.exists() else ""
+    last = old.rsplit("## ", 1)[-1].split("\n", 1)[-1].strip() if old else ""
+    if last == "\n".join(rows):
+        return
+    with open(path, "a", encoding="utf-8") as f:
+        f.write(f"## {datetime.now():%Y-%m-%d %H:%M:%S}\n" + "\n".join(rows) + "\n")
 
 
 def state(path):
@@ -51,6 +83,7 @@ class Recorder:
         for sub in ("saves", "logs", "crashes"):
             (self.dir / sub).mkdir(parents=True, exist_ok=True)
         self.index = self.dir / "index.csv"
+        snapshot_mods(self.dir)
         if not self.index.exists():
             with open(self.index, "w", newline="", encoding="utf-8") as f:
                 csv.writer(f).writerow(["time", "archived_as", "source", "size", "sha256", "slots"])

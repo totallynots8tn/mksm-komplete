@@ -1,4 +1,27 @@
-# Legendary Dark Knight Mode 3.11.0 (x2 / x3 / x4, with Boss Invasion)
+# Legendary Dark Knight Mode 3.11.3 (x2 / x3 / x4, with Boss Invasion)
+
+## 3.11.3: Shaolin Shuffle's outsiders lost the trees
+
+Follows Shaolin Shuffle 0.12.1, which no longer brings tree mouths or tree
+arms into other levels (LDK recognises Shuffle's outsider types).
+
+## 3.11.2: every Mortal Kombat character counts as a boss
+
+The character numbers behind LDK's boss list were two off (see
+`analysis/mk_roster/`). Every type that was protected still is, and these real
+Mortal Kombat characters are now protected too, so LDK never clones them into
+a wave: Kintaro, Sub-Zero, Smoke, Raiden, Jax, Johnny Cage and the versus
+models. Nothing else changes.
+
+## 3.11.1: Shaolin Shuffle's outsiders join the reinforcements
+
+With Shaolin Shuffle on, an area's outsider (an enemy type from another level,
+with memory of its own) can now be what a reinforcement spawns as, under the
+same memory rule as any other type, when the authored types' memory is full.
+Before, LDK never counted it (Shuffle adds it after LDK's census), so those
+reinforcements were cancelled. In the offline sim of a one-type area such as
+Goro's Lair this raised the extras from 77 to 93 (failed spawns 28 to 18).
+A Time Rifts boss group is never expanded.
 
 ## 3.11: Goro's Lair fills its groups
 

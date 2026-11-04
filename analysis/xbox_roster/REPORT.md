@@ -1,5 +1,11 @@
 # Xbox roster RE: character loading, the stream gate, brutality leads
 
+> **Correction (2026-11-01):** the character names in this report and in
+> `characters.json` are two types off. The game's file id `F` is `pwf.py`
+> record `F - 0x14`, so each name here belongs to the type two numbers up
+> (Mileena is 66, not 64). The addresses and mechanisms stand. Use
+> `analysis/mk_roster/` for names.
+
 All addresses are Xbox `default.xbe` (x86, SHA-256 `48240902…db74a`), verified by
 disassembly in this round. "Hookable" means the address is in
 `analysis/routine_targets.txt`. Data dumps: `characters.json`, `maps.json`.

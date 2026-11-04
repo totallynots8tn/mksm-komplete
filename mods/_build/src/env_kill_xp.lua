@@ -1,4 +1,4 @@
--- Environmental Kill XP 2.0: hazard kills count exactly like normal kills.
+-- Environmental Kill XP 2.0.1: hazard kills count exactly like normal kills.
 --
 -- How the game pays kill XP: every player has a combo stats object
 -- ([[entity+0x2B6C]+0x50], getter 0x1579F). A normal kill goes through
@@ -16,6 +16,12 @@
 --   applydamage          (0x153DC0)  spikes, saws, fire and other hazard damage
 --   bodydamage           (0x180CA0)  hazard dismemberment
 -- The game then shows and pays the XP itself, with your multiplier.
+--
+-- 2.0.1: a victim is paid once, however many of those paths it goes
+-- through, until its character slot is freed. 2.0 keyed that on the slot and
+-- a 5-second window alone, so a new enemy spawned into the slot of one just
+-- killed by a hazard (LDK crowds reuse slots fast) earned nothing when it
+-- died the same way within those 5 seconds.
 local KILL_AND_HIDE  = 0x001F25B0
 local APPLY_DAMAGE   = 0x00153DC0
 local BODY_DAMAGE    = 0x00180CA0
@@ -40,6 +46,8 @@ local GAME_MANAGER   = 0x005ACEBC
 local GAME_MODE      = 0x88         -- 0 single player, 1 co-op, 2 versus
 local FRAME_COUNTER  = 0x005CE878
 local PAY_ONCE       = 300          -- frames during which one victim counts once
+local GAMEPLAY       = 0x00154F60   -- gameplay update, once a frame (not while paused)
+local CHAR_FLAGS     = 0x0051004C   -- -> u16 per character slot, non-zero while in use
 
 local function plausible(p)
     if p < 0x10000 or p % 4 ~= 0 then
@@ -127,6 +135,24 @@ local function register_kill(entity)
     counted[entity] = now
 end
 
+-- Once a frame: a paid victim whose slot has been freed is gone, so the
+-- next character in that slot is a new victim.
+local function forget_freed()
+    if next(counted) == nil then
+        return
+    end
+    local flags = game.read_u32(CHAR_FLAGS)
+    if not plausible(flags) then
+        return
+    end
+    for entity in pairs(counted) do
+        local index = (entity - CHAR_TABLE) // CHAR_STRIDE
+        if game.read_u16(flags + index * 2) == 0 then
+            counted[entity] = nil
+        end
+    end
+end
+
 local function health_of(actor)
     return signed(game.read_u32(actor + HEALTH), 32)
 end
@@ -208,4 +234,5 @@ return {
         before = function(ctx) remember(ctx, "body") end,
         after = function(ctx) settle("body") end,
     },
+    { address = GAMEPLAY, before = function(ctx) forget_freed() end },
 }

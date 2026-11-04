@@ -1,10 +1,12 @@
--- Shaolin Shuffle 0.11.3 preload rules: a map whose roster has a regular enemy
+-- Shaolin Shuffle 0.12.1 preload rules: a map whose roster has a regular enemy
 -- type gets one outsider appended (cap raised so the preload isn't skipped)
 -- when the roster plus the outsider fit in 3 memory slots, or in all 4 when
 -- the area's freshly loaded spawn groups author no type outside the roster.
 -- Otherwise the roster is left as authored (0.11.2's in-place swap crashed
 -- map 104). Boss-only and MK-only lists and versus keep the authored
--- roster, which is restored on every visit.
+-- roster, which is restored on every visit. 0.12: some outsiders are
+-- Mortal Kombat warriors, never in a boss arena, never a type the area's
+-- groups author, and only when the groups were freshly loaded.
 package.path = "tests/?.lua;" .. package.path
 local H = require("harness")
 local m = H.load(arg[1])
@@ -14,6 +16,16 @@ local STACK, GM = 0xD00F0000, 0x81200000
 local POOL = {}
 local pool_line = assert(io.open(arg[1], "rb")):read("a"):match("local OUTSIDERS%s*=%s*(%b{})")
 for id in assert(pool_line, "no OUTSIDERS line"):gmatch("%d+") do POOL[tonumber(id)] = true end
+local WARRIORS = {}
+local warrior_line = assert(io.open(arg[1], "rb")):read("a"):match("local MK_WARRIORS%s*=%s*(%b{})")
+for id in assert(warrior_line, "no MK_WARRIORS line"):gmatch("%d+") do WARRIORS[tonumber(id)] = true end
+local warriors_seen, regulars_seen = 0, 0
+local function outsider_ok(kind, own)
+  if own[kind] then return false end
+  if WARRIORS[kind] then warriors_seen = warriors_seen + 1; return true end
+  if POOL[kind] then regulars_seen = regulars_seen + 1; return true end
+  return false
+end
 local NONE = 0xFFFFFFFF
 H.w32(0x005ACEBC, GM); H.w32(GM + 0x88, 0)
 
@@ -50,7 +62,7 @@ for visit = 1, 12 do
   new_area(); preload(GORO)
   local a, b, c = list(GORO)
   assert(a == 15, "authored type stays first")
-  assert(POOL[b] and b ~= 15, "outsider from the pool, not the area's own type: " .. tostring(b))
+  assert(outsider_ok(b, { [15] = true }), "outsider from the pools, not the area's own type: " .. tostring(b))
   assert(c == NONE, "list stays -1 terminated")
   assert(H.r32(GORO + 0x20) == 2, "cap raised to 2 so the preload isn't skipped")
   seen[b] = true
@@ -65,7 +77,7 @@ for visit = 1, 6 do
   local a, b, c = list(TWO)
   local d = H.r32(TWO + 0x30)
   assert(a == 14 and b == 26, "authored types stay in place")
-  assert(POOL[c] and c ~= 14 and c ~= 26, "outsider from the pool, not one of the area's types: " .. tostring(c))
+  assert(outsider_ok(c, { [14] = true, [26] = true }), "outsider from the pools, not one of the area's types: " .. tostring(c))
   assert(d == NONE, "list stays -1 terminated")
   assert(H.r32(TWO + 0x20) == 3, "cap raised to the new list length")
 end
@@ -77,7 +89,7 @@ for _, d in ipairs({ BOSSY, WIDE }) do
   groups({ first, first })
   new_area(); preload(d)
   local o = H.r32(d + 0x24 + n * 4)
-  assert(POOL[o], "fourth slot outsider when every authored type is listed: " .. tostring(o))
+  assert(POOL[o], "fourth slot outsider when every authored type is listed (never a warrior: the roster has a boss): " .. tostring(o))
   assert(H.r32(d + 0x28 + n * 4) == NONE and H.r32(d + 0x20) == n + 1, "terminated, cap raised")
   groups({ first, 0x16 })                    -- a group authors a type the roster lacks
   new_area(); preload(d)
@@ -123,8 +135,28 @@ local a, b, c = list(GORO)
 assert(a == 15 and b == NONE and c == 0x55555555 and H.r32(GORO + 0x20) == 1, "versus restores the authored roster")
 H.w32(GM + 0x88, 0)
 new_area(); preload(GORO)
-assert(POOL[select(2, list(GORO))], "single player gets an outsider again")
+assert(outsider_ok(select(2, list(GORO)), { [15] = true }), "single player gets an outsider again")
+
+-- 0.12: warriors come in, but never one the area's groups author, and only
+-- with freshly loaded groups to check
+assert(warriors_seen > 0 and regulars_seen > 0, "both warriors and regular outsiders show up")
+local authored_warrior = next(WARRIORS)
+groups({ 15, authored_warrior })
+for visit = 1, 30 do
+  H.w32(0x005CE878, visit * 7907)
+  new_area(); preload(GORO)
+  local o = select(2, list(GORO))
+  assert(o ~= authored_warrior and o ~= 15 and (POOL[o] or WARRIORS[o]), "no warrior the area authors: " .. tostring(o))
+end
+groups({ 15 })
+for visit = 1, 30 do
+  H.w32(0x005CE878, visit * 7901)
+  preload(GORO)                              -- no fresh groups: nothing to check them against
+  assert(POOL[select(2, list(GORO))], "no warrior without freshly loaded groups")
+end
+groups({})
 
 assert(#H.failed == 0, "script error: " .. tostring(H.failed[1]))
 print("max_writes", H.max_writes, "max_instr", H.max_instr)
-print("PASS shuffle 0.11.3 preload rules")
+print("warriors seen:", warriors_seen, "regular outsiders seen:", regulars_seen)
+print("PASS shuffle 0.12.1 preload rules")

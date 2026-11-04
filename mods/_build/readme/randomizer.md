@@ -1,6 +1,6 @@
-# Shaolin Shuffle 0.11.3
+# Shaolin Shuffle 0.12.1
 
-Changes which enemy types a room spawns, two ways:
+Changes which enemy types a room spawns, three ways:
 
 - **Room mixing (0.10).** A room that authors one regular enemy type trades
   plain spawn slots with a room of another type, so it spawns several types.
@@ -11,6 +11,11 @@ Changes which enemy types a room spawns, two ways:
   slots into it. An area with one or two loaded enemy types gets one as an
   extra type, and so does an area with three when nothing in it needs the
   fourth memory slot.
+- **Mortal Kombat warriors (0.12).** About one outsider area in three gets
+  a Mortal Kombat character instead. Two of the area's rooms each get one
+  warrior: Scorpion, Hell Scorpion, Kano, Baraka, Reptile, Kitana, Mileena,
+  Jade, Ermac or Sub-Zero. They fight to the death: the mod lifts the "can't
+  die" flag their story fights give them.
 
 Slots with scripted entrances, bosses and elites keep their exact type: only
 plain slots (no entrance flags, no mover data) ever change type.
@@ -34,6 +39,42 @@ two-slot characters are never outsiders.
 
 If you had Shaolin Shuffle (Wild) or (Chaos) installed, remove them; this
 mod replaces both.
+
+## 0.12.1: no trees
+
+The Living Forest's tree mouth and tree arms are no longer outsiders: they
+are hazards a room's wave doesn't count, hard to kill, and they stayed in the
+room after its wave was over.
+
+## 0.12.0: Mortal Kombat warriors
+
+Most Mortal Kombat characters are bosses whose story fights end in a
+cutscene, so the game makes them unkillable: their health stops at 1 and the
+fight's script takes over. Out of that fight, such a warrior would never
+fall, so its room would never end. Shuffle turns the flag off on the warriors
+it brings, the frame they appear.
+
+A Mortal Kombat character's memory slot holds two copies of it, so an area
+gets at most two warrior spawns, one per room. If a third copy would come up
+at once, that spawn goes back to the room's own enemy. Warriors never come
+to a boss arena or to an area that already has that character (its own
+fight), and Legendary Dark Knight never clones them.
+
+## 0.11.5: Mortal Kombat characters stay put
+
+The shared boss list (also LDK's) had its character numbers two off (see
+`analysis/mk_roster/`). Every type that was protected still is, and the real
+Kintaro, Sub-Zero, Smoke, Raiden, Jax, Johnny Cage and the versus models are
+now protected too: Shuffle never moves them into another spawn slot.
+
+## 0.11.4: script safety
+
+When a cutscene evicted the outsider in the same spawn tick as a re-shuffle,
+the restore and the new shuffle together could exceed the 256 memory writes a
+script may make in one callback, which switches the script off for the
+session. The restore now gets its own tick. A Time Rifts boss group is never
+shuffled. The outsider pool is shared with LDK, which can now use the outsider
+for its reinforcements.
 
 ## 0.11.3: crash fix
 

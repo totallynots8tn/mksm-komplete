@@ -61,8 +61,8 @@ return {
 ### Runtime rules (the launcher enforces these)
 
 - **At most 64 routine scripts** may be active across all enabled mods, or the
-  game refuses to boot. The v1 set uses 59 (the probe alone uses 54), so keep
-  new mods to one or two scripts. `build.py` rejects a mod that leaves fewer
+  game refuses to boot. The full dev set uses 51 (the probe alone uses 42), so
+  keep new mods to one or two scripts. `build.py` rejects a mod that leaves fewer
   than 8 free.
 - **Instruction budget** per hook call (about 100,000 Lua instructions) and a
   **write budget** of 256 memory writes per call. Spread big scans across
@@ -96,12 +96,20 @@ python build.py mksmk_probe   # just one
 ```
 
 Tests need any Lua 5.3+/5.4 interpreter (`lua54`, `texlua`, or `lupa` for
-Python). Run them from `mods/_build`:
+Python). `run_tests.py` builds every mod and runs every test case (the spawn
+sim in all its level shapes included) and exits non-zero if one fails. Run it
+from `mods/_build`:
+
+```bash
+python run_tests.py
+```
+
+`python run_tests.py sim upgrade` runs only the cases whose names start with
+those words; `--no-build` tests the packs already built. Single tests run the
+same way, for example:
 
 ```bash
 lua tests/sim.lua ../ldk_x3/pack/scripts/ldk.lua
-lua tests/env.lua
-lua tests/probe_heartbeat.lua ../mksmk_probe/pack/scripts/probe_heartbeat.lua ../mksmk_probe/pack/scripts/probe_heartbeat_2.lua
 ```
 
 `tests/harness.lua` emulates the runtime: committed memory regions, the write

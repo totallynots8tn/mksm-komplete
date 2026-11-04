@@ -1,0 +1,2666 @@
+{
+ "types": [
+  {
+   "type": 0,
+   "name": "Liu Kang",
+   "role": "player",
+   "slots": 1,
+   "instances": 1,
+   "killable": "yes",
+   "sound_bank": "iukang",
+   "model_tag": "liukang pants xtras face",
+   "anim_kb": 1448,
+   "model_id": "0x17a1",
+   "tex_id": "0x17a0",
+   "alt_model_id": "0x1b30",
+   "alt_tex_id": "0x1b2f",
+   "fx_id": "0x179d",
+   "preloaded_in": "",
+   "boss_battle": "",
+   "mods": "",
+   "umksm_tier": 0,
+   "evidence": "P1 by default; move menu root 0"
+  },
+  {
+   "type": 1,
+   "name": "Kung Lao",
+   "role": "player",
+   "slots": 1,
+   "instances": 1,
+   "killable": "yes",
+   "sound_bank": "unglao",
+   "model_tag": "xtras pants armhands extras",
+   "anim_kb": 1289,
+   "model_id": "0x17ad",
+   "tex_id": "0x17ac",
+   "alt_model_id": "0x1b36",
+   "alt_tex_id": "0x1b35",
+   "fx_id": "0x17a9",
+   "preloaded_in": "",
+   "boss_battle": "",
+   "mods": "",
+   "umksm_tier": 0,
+   "evidence": "P2 by default; move menu root 1"
+  },
+  {
+   "type": 2,
+   "name": "",
+   "role": "enemy",
+   "slots": 1,
+   "instances": 34,
+   "killable": "yes",
+   "sound_bank": "",
+   "model_tag": "YUA9 rt_02 rt_02 rt_02",
+   "anim_kb": 219,
+   "model_id": "0x17b9",
+   "tex_id": "0x17b8",
+   "alt_model_id": "",
+   "alt_tex_id": "",
+   "fx_id": "0x17b5",
+   "preloaded_in": "",
+   "boss_battle": "",
+   "mods": "",
+   "umksm_tier": "",
+   "evidence": ""
+  },
+  {
+   "type": 3,
+   "name": "",
+   "role": "enemy",
+   "slots": 1,
+   "instances": 10,
+   "killable": "yes",
+   "sound_bank": "",
+   "model_tag": "MqAk d_end d_end",
+   "anim_kb": 435,
+   "model_id": "0x17c3",
+   "tex_id": "0x17c2",
+   "alt_model_id": "",
+   "alt_tex_id": "",
+   "fx_id": "0x17bf",
+   "preloaded_in": "",
+   "boss_battle": "",
+   "mods": "",
+   "umksm_tier": "",
+   "evidence": ""
+  },
+  {
+   "type": 4,
+   "name": "clay soldier?",
+   "role": "enemy",
+   "slots": 1,
+   "instances": 12,
+   "killable": "yes",
+   "sound_bank": "lay_soldier",
+   "model_tag": "body wepshields sword shield",
+   "anim_kb": 237,
+   "model_id": "0x17cd",
+   "tex_id": "0x17cc",
+   "alt_model_id": "",
+   "alt_tex_id": "",
+   "fx_id": "0x17c9",
+   "preloaded_in": "129 130 142 143 166",
+   "boss_battle": "",
+   "mods": "",
+   "umksm_tier": "",
+   "evidence": ""
+  },
+  {
+   "type": 5,
+   "name": "",
+   "role": "enemy",
+   "slots": 1,
+   "instances": 7,
+   "killable": "yes",
+   "sound_bank": "",
+   "model_tag": "eyebrow eyebrow_end eye_lids eye_lids_end",
+   "anim_kb": 17,
+   "model_id": "0x17d7",
+   "tex_id": "0x17d6",
+   "alt_model_id": "",
+   "alt_tex_id": "",
+   "fx_id": "0x17d3",
+   "preloaded_in": "",
+   "boss_battle": "",
+   "mods": "",
+   "umksm_tier": "",
+   "evidence": ""
+  },
+  {
+   "type": 6,
+   "name": "",
+   "role": "enemy",
+   "slots": 1,
+   "instances": 7,
+   "killable": "yes",
+   "sound_bank": "",
+   "model_tag": "",
+   "anim_kb": 42,
+   "model_id": "0x17e1",
+   "tex_id": "0x17e0",
+   "alt_model_id": "",
+   "alt_tex_id": "",
+   "fx_id": "0x17dd",
+   "preloaded_in": "",
+   "boss_battle": "",
+   "mods": "",
+   "umksm_tier": "",
+   "evidence": ""
+  },
+  {
+   "type": 7,
+   "name": "swordsman",
+   "role": "enemy",
+   "slots": 1,
+   "instances": 12,
+   "killable": "yes",
+   "sound_bank": "",
+   "model_tag": "sword",
+   "anim_kb": 69,
+   "model_id": "0x17eb",
+   "tex_id": "0x17ea",
+   "alt_model_id": "",
+   "alt_tex_id": "",
+   "fx_id": "0x17e7",
+   "preloaded_in": "",
+   "boss_battle": "",
+   "mods": "",
+   "umksm_tier": "",
+   "evidence": ""
+  },
+  {
+   "type": 8,
+   "name": "corpse",
+   "role": "enemy",
+   "slots": 1,
+   "instances": 15,
+   "killable": "yes",
+   "sound_bank": "orpse_1",
+   "model_tag": "dR_A",
+   "anim_kb": 142,
+   "model_id": "0x17f5",
+   "tex_id": "0x17f4",
+   "alt_model_id": "",
+   "alt_tex_id": "",
+   "fx_id": "0x17f1",
+   "preloaded_in": "19 44 136 160 164",
+   "boss_battle": "Scorpion Battle (map 160)",
+   "mods": "",
+   "umksm_tier": "",
+   "evidence": ""
+  },
+  {
+   "type": 9,
+   "name": "",
+   "role": "enemy",
+   "slots": 1,
+   "instances": 17,
+   "killable": "yes",
+   "sound_bank": "d_merc_1",
+   "model_tag": "Mutant Texture weapon02 weapon01 BNi4B",
+   "anim_kb": 215,
+   "model_id": "0x17ff",
+   "tex_id": "0x17fe",
+   "alt_model_id": "",
+   "alt_tex_id": "",
+   "fx_id": "0x17fb",
+   "preloaded_in": "33 45 46 187",
+   "boss_battle": "",
+   "mods": "",
+   "umksm_tier": "",
+   "evidence": ""
+  },
+  {
+   "type": 10,
+   "name": "captain",
+   "role": "enemy",
+   "slots": 1,
+   "instances": 15,
+   "killable": "yes",
+   "sound_bank": "k_captain_1",
+   "model_tag": "kama_r kama_l KR-A KR-A",
+   "anim_kb": 105,
+   "model_id": "0x1809",
+   "tex_id": "0x1808",
+   "alt_model_id": "",
+   "alt_tex_id": "",
+   "fx_id": "0x1805",
+   "preloaded_in": "65 68 69 74 162 192 194 196 197",
+   "boss_battle": "Start Evil Monastery (map 192)",
+   "mods": "Shuffle outsider",
+   "umksm_tier": "",
+   "evidence": "Shaolin Shuffle outsider"
+  },
+  {
+   "type": 11,
+   "name": "general (naginata)",
+   "role": "enemy",
+   "slots": 1,
+   "instances": 15,
+   "killable": "yes",
+   "sound_bank": "k_general_1",
+   "model_tag": "naginata KR-A KR-A CLvH",
+   "anim_kb": 174,
+   "model_id": "0x1813",
+   "tex_id": "0x1812",
+   "alt_model_id": "",
+   "alt_tex_id": "",
+   "fx_id": "0x180f",
+   "preloaded_in": "67 68 69 74 162 198",
+   "boss_battle": "",
+   "mods": "Shuffle outsider",
+   "umksm_tier": "",
+   "evidence": "Shaolin Shuffle outsider"
+  },
+  {
+   "type": 12,
+   "name": "archer",
+   "role": "enemy",
+   "slots": 1,
+   "instances": 15,
+   "killable": "yes",
+   "sound_bank": "k_archer_1",
+   "model_tag": "xbow KR-A KR-A CLvH",
+   "anim_kb": 147,
+   "model_id": "0x181d",
+   "tex_id": "0x181c",
+   "alt_model_id": "",
+   "alt_tex_id": "",
+   "fx_id": "0x1819",
+   "preloaded_in": "64 65 69 162 196 197 198",
+   "boss_battle": "",
+   "mods": "Shuffle outsider",
+   "umksm_tier": "",
+   "evidence": "Shaolin Shuffle outsider"
+  },
+  {
+   "type": 13,
+   "name": "handler",
+   "role": "enemy",
+   "slots": 1,
+   "instances": 15,
+   "killable": "yes",
+   "sound_bank": "k_handler_1",
+   "model_tag": "snakewarrior c_prod KR-A KR-A",
+   "anim_kb": 198,
+   "model_id": "0x1827",
+   "tex_id": "0x1826",
+   "alt_model_id": "",
+   "alt_tex_id": "",
+   "fx_id": "0x1823",
+   "preloaded_in": "64 71 74 162 197",
+   "boss_battle": "",
+   "mods": "Shuffle outsider",
+   "umksm_tier": "",
+   "evidence": "Shaolin Shuffle outsider"
+  },
+  {
+   "type": 14,
+   "name": "Tarkatan",
+   "role": "enemy",
+   "slots": 1,
+   "instances": 15,
+   "killable": "yes",
+   "sound_bank": "arkata_1",
+   "model_tag": "Mutant Texture BEaF dR_A",
+   "anim_kb": 225,
+   "model_id": "0x1831",
+   "tex_id": "0x1830",
+   "alt_model_id": "",
+   "alt_tex_id": "",
+   "fx_id": "0x182d",
+   "preloaded_in": "0 1 2 3 4 5 6 8 12 17 19 20 24 25 102 103 104 106 107 161 168 193 199 224 225 226 227",
+   "boss_battle": "Start WuShi (map 103)",
+   "mods": "Shuffle outsider",
+   "umksm_tier": "",
+   "evidence": "the most common grunt: preloaded by most early maps"
+  },
+  {
+   "type": 15,
+   "name": "Oni",
+   "role": "enemy",
+   "slots": 1,
+   "instances": 10,
+   "killable": "yes",
+   "sound_bank": "ni_1",
+   "model_tag": "dokaebi KR-A KR-A CLvH",
+   "anim_kb": 318,
+   "model_id": "0x183b",
+   "tex_id": "0x183a",
+   "alt_model_id": "",
+   "alt_tex_id": "",
+   "fx_id": "0x1837",
+   "preloaded_in": "64 96 97 98 99 100 101 102 163 168",
+   "boss_battle": "",
+   "mods": "Shuffle outsider",
+   "umksm_tier": "",
+   "evidence": "model \"dokaebi\""
+  },
+  {
+   "type": 16,
+   "name": "",
+   "role": "enemy",
+   "slots": 1,
+   "instances": 9,
+   "killable": "yes",
+   "sound_bank": "d_merc_1",
+   "model_tag": "dR_A",
+   "anim_kb": 207,
+   "model_id": "0x1845",
+   "tex_id": "0x1844",
+   "alt_model_id": "",
+   "alt_tex_id": "",
+   "fx_id": "0x1841",
+   "preloaded_in": "33 45 48",
+   "boss_battle": "",
+   "mods": "",
+   "umksm_tier": "",
+   "evidence": ""
+  },
+  {
+   "type": 17,
+   "name": "",
+   "role": "enemy",
+   "slots": 1,
+   "instances": 9,
+   "killable": "yes",
+   "sound_bank": "os_1",
+   "model_tag": "body scythe BEaF dR_A",
+   "anim_kb": 98,
+   "model_id": "0x184f",
+   "tex_id": "0x184e",
+   "alt_model_id": "",
+   "alt_tex_id": "",
+   "fx_id": "0x184b",
+   "preloaded_in": "128 135 136 146 147 166",
+   "boss_battle": "Start Forest (map 128)",
+   "mods": "",
+   "umksm_tier": "",
+   "evidence": ""
+  },
+  {
+   "type": 18,
+   "name": "corpse",
+   "role": "enemy",
+   "slots": 1,
+   "instances": 15,
+   "killable": "yes",
+   "sound_bank": "orpse_1",
+   "model_tag": "fR_A",
+   "anim_kb": 110,
+   "model_id": "0x1859",
+   "tex_id": "0x1858",
+   "alt_model_id": "",
+   "alt_tex_id": "",
+   "fx_id": "0x1855",
+   "preloaded_in": "0 24 128 129 132 136 137 142",
+   "boss_battle": "Start Forest (map 128)",
+   "mods": "Shuffle outsider",
+   "umksm_tier": "",
+   "evidence": ""
+  },
+  {
+   "type": 19,
+   "name": "knight",
+   "role": "enemy",
+   "slots": 1,
+   "instances": 18,
+   "killable": "no",
+   "sound_bank": "lem_knight",
+   "model_tag": "sword d_end d_end d_end",
+   "anim_kb": 159,
+   "model_id": "0x1863",
+   "tex_id": "0x1862",
+   "alt_model_id": "",
+   "alt_tex_id": "",
+   "fx_id": "0x185f",
+   "preloaded_in": "41 182",
+   "boss_battle": "",
+   "mods": "",
+   "umksm_tier": "",
+   "evidence": "sound bank \"...lem_knight\""
+  },
+  {
+   "type": 20,
+   "name": "masked humanoid",
+   "role": "enemy",
+   "slots": 1,
+   "instances": 14,
+   "killable": "yes",
+   "sound_bank": "",
+   "model_tag": "mask KR-A vCLvH KR-A",
+   "anim_kb": 251,
+   "model_id": "0x186d",
+   "tex_id": "0x186c",
+   "alt_model_id": "",
+   "alt_tex_id": "",
+   "fx_id": "0x1869",
+   "preloaded_in": "",
+   "boss_battle": "",
+   "mods": "",
+   "umksm_tier": "",
+   "evidence": ""
+  },
+  {
+   "type": 21,
+   "name": "",
+   "role": "enemy",
+   "slots": 1,
+   "instances": 8,
+   "killable": "yes",
+   "sound_bank": "",
+   "model_tag": "mouth mouth_end fangs fangs_end",
+   "anim_kb": 0,
+   "model_id": "0x1877",
+   "tex_id": "0x1876",
+   "alt_model_id": "",
+   "alt_tex_id": "",
+   "fx_id": "0x1873",
+   "preloaded_in": "",
+   "boss_battle": "",
+   "mods": "",
+   "umksm_tier": "",
+   "evidence": ""
+  },
+  {
+   "type": 22,
+   "name": "",
+   "role": "enemy",
+   "slots": 1,
+   "instances": 12,
+   "killable": "yes",
+   "sound_bank": "",
+   "model_tag": "fR_A",
+   "anim_kb": 0,
+   "model_id": "0x1881",
+   "tex_id": "0x1880",
+   "alt_model_id": "",
+   "alt_tex_id": "",
+   "fx_id": "0x187d",
+   "preloaded_in": "0 3 5 6 24 25 99",
+   "boss_battle": "",
+   "mods": "",
+   "umksm_tier": "",
+   "evidence": ""
+  },
+  {
+   "type": 23,
+   "name": "",
+   "role": "enemy",
+   "slots": 1,
+   "instances": 11,
+   "killable": "yes",
+   "sound_bank": "",
+   "model_tag": "rsword rpad r BW lsword",
+   "anim_kb": 310,
+   "model_id": "0x188b",
+   "tex_id": "0x188a",
+   "alt_model_id": "",
+   "alt_tex_id": "",
+   "fx_id": "0x1887",
+   "preloaded_in": "",
+   "boss_battle": "",
+   "mods": "",
+   "umksm_tier": "",
+   "evidence": ""
+  },
+  {
+   "type": 24,
+   "name": "",
+   "role": "enemy",
+   "slots": 1,
+   "instances": 12,
+   "killable": "yes",
+   "sound_bank": "",
+   "model_tag": "AHfa dR_A",
+   "anim_kb": 292,
+   "model_id": "0x1895",
+   "tex_id": "0x1894",
+   "alt_model_id": "",
+   "alt_tex_id": "",
+   "fx_id": "0x1891",
+   "preloaded_in": "",
+   "boss_battle": "",
+   "mods": "",
+   "umksm_tier": "",
+   "evidence": ""
+  },
+  {
+   "type": 25,
+   "name": "katana humanoid",
+   "role": "enemy",
+   "slots": 1,
+   "instances": 2,
+   "killable": "yes",
+   "sound_bank": "",
+   "model_tag": "katana vicle vicle face",
+   "anim_kb": 149,
+   "model_id": "0x189f",
+   "tex_id": "0x189e",
+   "alt_model_id": "",
+   "alt_tex_id": "",
+   "fx_id": "0x189b",
+   "preloaded_in": "",
+   "boss_battle": "",
+   "mods": "",
+   "umksm_tier": "",
+   "evidence": ""
+  },
+  {
+   "type": 26,
+   "name": "mask guard",
+   "role": "enemy",
+   "slots": 1,
+   "instances": 8,
+   "killable": "yes",
+   "sound_bank": "askguard_1",
+   "model_tag": "weapon sword BCk6 scabbard",
+   "anim_kb": 205,
+   "model_id": "0x18a9",
+   "tex_id": "0x18a8",
+   "alt_model_id": "",
+   "alt_tex_id": "",
+   "fx_id": "0x18a5",
+   "preloaded_in": "7 101 103 107 132 161",
+   "boss_battle": "Start WuShi (map 103)",
+   "mods": "Shuffle outsider",
+   "umksm_tier": "",
+   "evidence": ""
+  },
+  {
+   "type": 27,
+   "name": "priest",
+   "role": "enemy",
+   "slots": 1,
+   "instances": 8,
+   "killable": "yes",
+   "sound_bank": "riest_1",
+   "model_tag": "none vicle vicle dR_A",
+   "anim_kb": 242,
+   "model_id": "0x18b3",
+   "tex_id": "0x18b2",
+   "alt_model_id": "",
+   "alt_tex_id": "",
+   "fx_id": "0x18af",
+   "preloaded_in": "1 4 6 7 8 17 19 20 169 192 193 194 199",
+   "boss_battle": "Start Evil Monastery (map 192)",
+   "mods": "Shuffle outsider",
+   "umksm_tier": "",
+   "evidence": ""
+  },
+  {
+   "type": 28,
+   "name": "bladed humanoid",
+   "role": "unknown",
+   "slots": 1,
+   "instances": 2,
+   "killable": "yes",
+   "sound_bank": "",
+   "model_tag": "BEaF dR_A",
+   "anim_kb": 148,
+   "model_id": "0x18bd",
+   "tex_id": "0x18bc",
+   "alt_model_id": "",
+   "alt_tex_id": "",
+   "fx_id": "0x18b9",
+   "preloaded_in": "",
+   "boss_battle": "",
+   "mods": "LDK/Shuffle boss",
+   "umksm_tier": "",
+   "evidence": "instances 2 like the bosses; core.lua listed it as an Orochi (names were two off)"
+  },
+  {
+   "type": 29,
+   "name": "",
+   "role": "enemy",
+   "slots": 1,
+   "instances": 12,
+   "killable": "no",
+   "sound_bank": "",
+   "model_tag": "fR_A",
+   "anim_kb": 119,
+   "model_id": "0x18c7",
+   "tex_id": "0x18c6",
+   "alt_model_id": "",
+   "alt_tex_id": "",
+   "fx_id": "0x18c3",
+   "preloaded_in": "",
+   "boss_battle": "",
+   "mods": "",
+   "umksm_tier": "",
+   "evidence": ""
+  },
+  {
+   "type": 30,
+   "name": "Orochi",
+   "role": "boss",
+   "slots": 1,
+   "instances": 4,
+   "killable": "yes",
+   "sound_bank": "ellbeast_1",
+   "model_tag": "orochi vicle vicle face",
+   "anim_kb": 389,
+   "model_id": "0x18d1",
+   "tex_id": "0x18d0",
+   "alt_model_id": "",
+   "alt_tex_id": "",
+   "fx_id": "0x18cd",
+   "preloaded_in": "12 67 165",
+   "boss_battle": "",
+   "mods": "Time Rifts boss",
+   "umksm_tier": "",
+   "evidence": "model \"orochi\", sound \"hellbeast\"; Time Rifts 0.6.0 QA: dropped in map 110, fought, beaten"
+  },
+  {
+   "type": 31,
+   "name": "Shokan",
+   "role": "enemy",
+   "slots": 1,
+   "instances": 16,
+   "killable": "yes",
+   "sound_bank": "hokan_1",
+   "model_tag": "CD4C CD4C CD4C CD4C",
+   "anim_kb": 356,
+   "model_id": "0x18db",
+   "tex_id": "0x18da",
+   "alt_model_id": "",
+   "alt_tex_id": "",
+   "fx_id": "0x18d7",
+   "preloaded_in": "48",
+   "boss_battle": "",
+   "mods": "",
+   "umksm_tier": "",
+   "evidence": ""
+  },
+  {
+   "type": 32,
+   "name": "",
+   "role": "enemy",
+   "slots": 1,
+   "instances": 16,
+   "killable": "yes",
+   "sound_bank": "",
+   "model_tag": "vicle vicle face jaw_end",
+   "anim_kb": 829,
+   "model_id": "0x18e5",
+   "tex_id": "0x18e4",
+   "alt_model_id": "",
+   "alt_tex_id": "",
+   "fx_id": "0x18e1",
+   "preloaded_in": "",
+   "boss_battle": "",
+   "mods": "",
+   "umksm_tier": "",
+   "evidence": ""
+  },
+  {
+   "type": 33,
+   "name": "",
+   "role": "enemy",
+   "slots": 1,
+   "instances": 16,
+   "killable": "yes",
+   "sound_bank": "",
+   "model_tag": "vicle vicle face jaw_end",
+   "anim_kb": 829,
+   "model_id": "0x18ef",
+   "tex_id": "0x18ee",
+   "alt_model_id": "",
+   "alt_tex_id": "",
+   "fx_id": "0x18eb",
+   "preloaded_in": "",
+   "boss_battle": "",
+   "mods": "",
+   "umksm_tier": "",
+   "evidence": ""
+  },
+  {
+   "type": 34,
+   "name": "archer (quiver)",
+   "role": "enemy",
+   "slots": 1,
+   "instances": 7,
+   "killable": "yes",
+   "sound_bank": "",
+   "model_tag": "Arrow01 quiver Bow02 Bow04",
+   "anim_kb": 355,
+   "model_id": "0x18f9",
+   "tex_id": "0x18f8",
+   "alt_model_id": "",
+   "alt_tex_id": "",
+   "fx_id": "0x18f5",
+   "preloaded_in": "",
+   "boss_battle": "",
+   "mods": "LDK/Shuffle boss",
+   "umksm_tier": "",
+   "evidence": "core.lua lists it as a boss (it was thought to be a club warlord)"
+  },
+  {
+   "type": 35,
+   "name": "archer (quiver)",
+   "role": "enemy",
+   "slots": 1,
+   "instances": 7,
+   "killable": "yes",
+   "sound_bank": "",
+   "model_tag": "Arrow01 quiver Bow02 Bow04",
+   "anim_kb": 350,
+   "model_id": "0x1903",
+   "tex_id": "0x1902",
+   "alt_model_id": "",
+   "alt_tex_id": "",
+   "fx_id": "0x18ff",
+   "preloaded_in": "",
+   "boss_battle": "",
+   "mods": "",
+   "umksm_tier": "",
+   "evidence": ""
+  },
+  {
+   "type": 36,
+   "name": "Oni Warlord",
+   "role": "boss",
+   "slots": 1,
+   "instances": 4,
+   "killable": "yes",
+   "sound_bank": "ni_warlord",
+   "model_tag": "warlord club weapon d_end",
+   "anim_kb": 168,
+   "model_id": "0x190d",
+   "tex_id": "0x190c",
+   "alt_model_id": "",
+   "alt_tex_id": "",
+   "fx_id": "0x1909",
+   "preloaded_in": "41 101 163 170",
+   "boss_battle": "",
+   "mods": "LDK/Shuffle boss",
+   "umksm_tier": "",
+   "evidence": "model \"warlord\" + club; Time Rifts 0.5.7 QA: dropped in map 110, leapt the fence"
+  },
+  {
+   "type": 37,
+   "name": "",
+   "role": "enemy",
+   "slots": 1,
+   "instances": 6,
+   "killable": "yes",
+   "sound_bank": "",
+   "model_tag": "weapon d_end ponytail01 ponytail02",
+   "anim_kb": 347,
+   "model_id": "0x1917",
+   "tex_id": "0x1916",
+   "alt_model_id": "",
+   "alt_tex_id": "",
+   "fx_id": "0x1913",
+   "preloaded_in": "",
+   "boss_battle": "",
+   "mods": "",
+   "umksm_tier": "",
+   "evidence": ""
+  },
+  {
+   "type": 38,
+   "name": "",
+   "role": "enemy",
+   "slots": 1,
+   "instances": 2,
+   "killable": "yes",
+   "sound_bank": "",
+   "model_tag": "CqR3",
+   "anim_kb": 0,
+   "model_id": "0x1921",
+   "tex_id": "0x1920",
+   "alt_model_id": "",
+   "alt_tex_id": "",
+   "fx_id": "0x191d",
+   "preloaded_in": "",
+   "boss_battle": "",
+   "mods": "",
+   "umksm_tier": "",
+   "evidence": ""
+  },
+  {
+   "type": 39,
+   "name": "",
+   "role": "enemy",
+   "slots": 1,
+   "instances": 18,
+   "killable": "yes",
+   "sound_bank": "",
+   "model_tag": "AHfa dR_A",
+   "anim_kb": 265,
+   "model_id": "0x192b",
+   "tex_id": "0x192a",
+   "alt_model_id": "",
+   "alt_tex_id": "",
+   "fx_id": "0x1927",
+   "preloaded_in": "74",
+   "boss_battle": "",
+   "mods": "",
+   "umksm_tier": "",
+   "evidence": ""
+  },
+  {
+   "type": 40,
+   "name": "winged creature",
+   "role": "enemy",
+   "slots": 1,
+   "instances": 18,
+   "killable": "yes",
+   "sound_bank": "",
+   "model_tag": "Q1-C MIP_K",
+   "anim_kb": 0,
+   "model_id": "0x1935",
+   "tex_id": "0x1934",
+   "alt_model_id": "",
+   "alt_tex_id": "",
+   "fx_id": "0x1931",
+   "preloaded_in": "",
+   "boss_battle": "",
+   "mods": "",
+   "umksm_tier": "",
+   "evidence": ""
+  },
+  {
+   "type": 41,
+   "name": "winged creature",
+   "role": "enemy",
+   "slots": 1,
+   "instances": 20,
+   "killable": "yes",
+   "sound_bank": "",
+   "model_tag": "",
+   "anim_kb": 18,
+   "model_id": "0x193f",
+   "tex_id": "0x193e",
+   "alt_model_id": "",
+   "alt_tex_id": "",
+   "fx_id": "0x193b",
+   "preloaded_in": "",
+   "boss_battle": "",
+   "mods": "",
+   "umksm_tier": "",
+   "evidence": ""
+  },
+  {
+   "type": 42,
+   "name": "tree mouth",
+   "role": "enemy",
+   "slots": 1,
+   "instances": 18,
+   "killable": "yes",
+   "sound_bank": "reemouth",
+   "model_tag": "face mandible jaw_return m_lower_lip",
+   "anim_kb": 44,
+   "model_id": "0x1949",
+   "tex_id": "0x1948",
+   "alt_model_id": "",
+   "alt_tex_id": "",
+   "fx_id": "0x1945",
+   "preloaded_in": "128 129 135 137 146 147 166",
+   "boss_battle": "Start Forest (map 128)",
+   "mods": "Shuffle outsider",
+   "umksm_tier": "",
+   "evidence": "Living Forest; Shaolin Shuffle outsider"
+  },
+  {
+   "type": 43,
+   "name": "tree arms",
+   "role": "enemy",
+   "slots": 1,
+   "instances": 18,
+   "killable": "yes",
+   "sound_bank": "reearms",
+   "model_tag": "rt05 rt05 rt05 rt01",
+   "anim_kb": 199,
+   "model_id": "0x1953",
+   "tex_id": "0x1952",
+   "alt_model_id": "",
+   "alt_tex_id": "",
+   "fx_id": "0x194f",
+   "preloaded_in": "128 130 135",
+   "boss_battle": "Start Forest (map 128)",
+   "mods": "Shuffle outsider",
+   "umksm_tier": "",
+   "evidence": "Living Forest; Shaolin Shuffle outsider"
+  },
+  {
+   "type": 44,
+   "name": "bat",
+   "role": "enemy",
+   "slots": 1,
+   "instances": 20,
+   "killable": "yes",
+   "sound_bank": "at_1",
+   "model_tag": "",
+   "anim_kb": 24,
+   "model_id": "0x195d",
+   "tex_id": "0x195c",
+   "alt_model_id": "",
+   "alt_tex_id": "",
+   "fx_id": "0x1959",
+   "preloaded_in": "",
+   "boss_battle": "",
+   "mods": "",
+   "umksm_tier": "",
+   "evidence": ""
+  },
+  {
+   "type": 45,
+   "name": "swamp snake",
+   "role": "enemy",
+   "slots": 1,
+   "instances": 18,
+   "killable": "yes",
+   "sound_bank": "wampsnake",
+   "model_tag": "tailbone16 tailbone15 tailbone14 tailbone13",
+   "anim_kb": 135,
+   "model_id": "0x1967",
+   "tex_id": "0x1966",
+   "alt_model_id": "",
+   "alt_tex_id": "",
+   "fx_id": "0x1963",
+   "preloaded_in": "129 130 137",
+   "boss_battle": "",
+   "mods": "LDK/Shuffle boss",
+   "umksm_tier": "",
+   "evidence": ""
+  },
+  {
+   "type": 46,
+   "name": "skull",
+   "role": "enemy",
+   "slots": 1,
+   "instances": 66,
+   "killable": "yes",
+   "sound_bank": "kull_1",
+   "model_tag": "",
+   "anim_kb": 32,
+   "model_id": "0x1971",
+   "tex_id": "0x1970",
+   "alt_model_id": "",
+   "alt_tex_id": "",
+   "fx_id": "0x196d",
+   "preloaded_in": "1 6 19 192 224 225 226 227",
+   "boss_battle": "Start Evil Monastery (map 192)",
+   "mods": "",
+   "umksm_tier": "",
+   "evidence": "instances 66: a swarm"
+  },
+  {
+   "type": 47,
+   "name": "Goro (mace)",
+   "role": "boss",
+   "slots": 2,
+   "instances": 2,
+   "killable": "no",
+   "sound_bank": "oro",
+   "model_tag": "mace goro face body",
+   "anim_kb": 786,
+   "model_id": "0x197b",
+   "tex_id": "0x197a",
+   "alt_model_id": "",
+   "alt_tex_id": "",
+   "fx_id": "0x1977",
+   "preloaded_in": "176",
+   "boss_battle": "",
+   "mods": "LDK/Shuffle boss",
+   "umksm_tier": "",
+   "evidence": "one of the only two 2-slot types"
+  },
+  {
+   "type": 48,
+   "name": "tentacles",
+   "role": "enemy",
+   "slots": 1,
+   "instances": 34,
+   "killable": "yes",
+   "sound_bank": "",
+   "model_tag": "tentacle01 tentacle02 tentacle03 tentacle04",
+   "anim_kb": 91,
+   "model_id": "0x1985",
+   "tex_id": "0x1984",
+   "alt_model_id": "",
+   "alt_tex_id": "",
+   "fx_id": "0x1981",
+   "preloaded_in": "",
+   "boss_battle": "",
+   "mods": "",
+   "umksm_tier": "",
+   "evidence": ""
+  },
+  {
+   "type": 49,
+   "name": "dagger creature",
+   "role": "enemy",
+   "slots": 1,
+   "instances": 3,
+   "killable": "yes",
+   "sound_bank": "",
+   "model_tag": "d_end d_end hair00 hair01",
+   "anim_kb": 614,
+   "model_id": "0x198f",
+   "tex_id": "0x198e",
+   "alt_model_id": "",
+   "alt_tex_id": "",
+   "fx_id": "0x198b",
+   "preloaded_in": "",
+   "boss_battle": "",
+   "mods": "",
+   "umksm_tier": "",
+   "evidence": ""
+  },
+  {
+   "type": 50,
+   "name": "big snake",
+   "role": "enemy",
+   "slots": 1,
+   "instances": 2,
+   "killable": "yes",
+   "sound_bank": "ig_snake",
+   "model_tag": "tail01 tail02 tail03 tail04",
+   "anim_kb": 841,
+   "model_id": "0x1999",
+   "tex_id": "0x1998",
+   "alt_model_id": "",
+   "alt_tex_id": "",
+   "fx_id": "0x1995",
+   "preloaded_in": "144",
+   "boss_battle": "Reptile Battle (map 144)",
+   "mods": "LDK/Shuffle boss",
+   "umksm_tier": "",
+   "evidence": "map 144 (Reptile battle) preloads it"
+  },
+  {
+   "type": 51,
+   "name": "",
+   "role": "unknown",
+   "slots": 1,
+   "instances": 2,
+   "killable": "yes",
+   "sound_bank": "",
+   "model_tag": "SfG8 face jaw_end upper_mouth",
+   "anim_kb": 252,
+   "model_id": "0x19a3",
+   "tex_id": "0x19a2",
+   "alt_model_id": "",
+   "alt_tex_id": "",
+   "fx_id": "0x199f",
+   "preloaded_in": "",
+   "boss_battle": "",
+   "mods": "LDK/Shuffle boss",
+   "umksm_tier": "",
+   "evidence": ""
+  },
+  {
+   "type": 52,
+   "name": "Scorpion",
+   "role": "mk",
+   "slots": 1,
+   "instances": 2,
+   "killable": "no",
+   "sound_bank": "corpion_npc",
+   "model_tag": "scorpion sc_01 sc_02 sc_03",
+   "anim_kb": 770,
+   "model_id": "0x19ad",
+   "tex_id": "0x19ac",
+   "alt_model_id": "",
+   "alt_tex_id": "",
+   "fx_id": "0x19a9",
+   "preloaded_in": "160 190",
+   "boss_battle": "Scorpion Battle (map 160)",
+   "mods": "LDK/Shuffle boss",
+   "umksm_tier": 0,
+   "evidence": "NPC/boss model; map 160 (Scorpion battle) preloads it"
+  },
+  {
+   "type": 53,
+   "name": "Noob Saibot",
+   "role": "mk",
+   "slots": 1,
+   "instances": 2,
+   "killable": "yes",
+   "sound_bank": "",
+   "model_tag": "noob sc_01 sc_02 sc_03",
+   "anim_kb": 0,
+   "model_id": "0x19b7",
+   "tex_id": "0x19b6",
+   "alt_model_id": "",
+   "alt_tex_id": "",
+   "fx_id": "0x19b3",
+   "preloaded_in": "",
+   "boss_battle": "",
+   "mods": "LDK/Shuffle boss",
+   "umksm_tier": 2,
+   "evidence": "no sound bank or animation record of its own (ninja skeleton like Scorpion and Smoke)"
+  },
+  {
+   "type": 54,
+   "name": "Kano",
+   "role": "mk",
+   "slots": 1,
+   "instances": 2,
+   "killable": "no",
+   "sound_bank": "ano",
+   "model_tag": "Kano Kano1 Kano2 Kano3",
+   "anim_kb": 215,
+   "model_id": "0x19c1",
+   "tex_id": "0x19c0",
+   "alt_model_id": "",
+   "alt_tex_id": "",
+   "fx_id": "0x19bd",
+   "preloaded_in": "72 187",
+   "boss_battle": "",
+   "mods": "LDK/Shuffle boss",
+   "umksm_tier": 2,
+   "evidence": ""
+  },
+  {
+   "type": 55,
+   "name": "Scorpion (burned)",
+   "role": "mk",
+   "slots": 1,
+   "instances": 2,
+   "killable": "no",
+   "sound_bank": "c_burned",
+   "model_tag": "scorpion sc_01 sc_02 sc_03",
+   "anim_kb": 486,
+   "model_id": "0x19cb",
+   "tex_id": "0x19ca",
+   "alt_model_id": "",
+   "alt_tex_id": "",
+   "fx_id": "0x19c7",
+   "preloaded_in": "160 165",
+   "boss_battle": "Scorpion Battle (map 160)",
+   "mods": "LDK/Shuffle boss",
+   "umksm_tier": 0,
+   "evidence": "map 160 (Scorpion battle) preloads it"
+  },
+  {
+   "type": 56,
+   "name": "Baraka",
+   "role": "mk",
+   "slots": 1,
+   "instances": 2,
+   "killable": "no",
+   "sound_bank": "araka",
+   "model_tag": "baraka eyebrow eyebrow_end eye_lids",
+   "anim_kb": 780,
+   "model_id": "0x19d5",
+   "tex_id": "0x19d4",
+   "alt_model_id": "",
+   "alt_tex_id": "",
+   "fx_id": "0x19d1",
+   "preloaded_in": "15 161",
+   "boss_battle": "Baraka Battle (map 15)",
+   "mods": "LDK/Shuffle boss",
+   "umksm_tier": 1,
+   "evidence": "map 15 (Baraka battle) preloads it"
+  },
+  {
+   "type": 57,
+   "name": "Goro",
+   "role": "boss",
+   "slots": 2,
+   "instances": 2,
+   "killable": "no",
+   "sound_bank": "oro",
+   "model_tag": "mace goro face body",
+   "anim_kb": 786,
+   "model_id": "0x19df",
+   "tex_id": "0x19de",
+   "alt_model_id": "",
+   "alt_tex_id": "",
+   "fx_id": "0x19db",
+   "preloaded_in": "47 191",
+   "boss_battle": "Goro Battle (map 47)",
+   "mods": "LDK/Shuffle boss",
+   "umksm_tier": "",
+   "evidence": "2 slots; map 47 (Goro battle) preloads it"
+  },
+  {
+   "type": 58,
+   "name": "Kintaro",
+   "role": "boss",
+   "slots": 1,
+   "instances": 2,
+   "killable": "no",
+   "sound_bank": "intaro",
+   "model_tag": "Kintaro Xbox test_l_shoulder test_r_shoulder houlder",
+   "anim_kb": 427,
+   "model_id": "0x19e9",
+   "tex_id": "0x19e8",
+   "alt_model_id": "",
+   "alt_tex_id": "",
+   "fx_id": "0x19e5",
+   "preloaded_in": "",
+   "boss_battle": "",
+   "mods": "LDK/Shuffle boss",
+   "umksm_tier": 2,
+   "evidence": ""
+  },
+  {
+   "type": 59,
+   "name": "Reptile",
+   "role": "mk",
+   "slots": 1,
+   "instances": 2,
+   "killable": "no",
+   "sound_bank": "eptile_npc",
+   "model_tag": "reptile atama color blackstuff",
+   "anim_kb": 283,
+   "model_id": "0x19f3",
+   "tex_id": "0x19f2",
+   "alt_model_id": "",
+   "alt_tex_id": "",
+   "fx_id": "0x19ef",
+   "preloaded_in": "144 164 190",
+   "boss_battle": "Reptile Battle (map 144)",
+   "mods": "LDK/Shuffle boss",
+   "umksm_tier": 1,
+   "evidence": "map 144 (Reptile battle) preloads it; LDK v1 cloned it into waves (patch 4)"
+  },
+  {
+   "type": 60,
+   "name": "unnamed humanoid",
+   "role": "unknown",
+   "slots": 1,
+   "instances": 5,
+   "killable": "yes",
+   "sound_bank": "",
+   "model_tag": "vicle vicle face mandible",
+   "anim_kb": 0,
+   "model_id": "0x19fd",
+   "tex_id": "0x19fc",
+   "alt_model_id": "",
+   "alt_tex_id": "",
+   "fx_id": "0x19f9",
+   "preloaded_in": "",
+   "boss_battle": "",
+   "mods": "LDK/Shuffle boss",
+   "umksm_tier": "",
+   "evidence": "next to Shang Tsung in the table"
+  },
+  {
+   "type": 61,
+   "name": "unnamed humanoid",
+   "role": "unknown",
+   "slots": 1,
+   "instances": 3,
+   "killable": "yes",
+   "sound_bank": "",
+   "model_tag": "vicle vicle gFEb mvCvQI",
+   "anim_kb": 1624,
+   "model_id": "0x1a07",
+   "tex_id": "0x1a06",
+   "alt_model_id": "",
+   "alt_tex_id": "",
+   "fx_id": "0x1a03",
+   "preloaded_in": "",
+   "boss_battle": "",
+   "mods": "LDK/Shuffle boss",
+   "umksm_tier": "",
+   "evidence": "next to Shang Tsung in the table"
+  },
+  {
+   "type": 62,
+   "name": "Shang Tsung (young)",
+   "role": "mk",
+   "slots": 1,
+   "instances": 2,
+   "killable": "no",
+   "sound_bank": "hang_tsung",
+   "model_tag": "young shang tsung eyebrow eyebrow_end eye_lids",
+   "anim_kb": 327,
+   "model_id": "0x1a11",
+   "tex_id": "0x1a10",
+   "alt_model_id": "",
+   "alt_tex_id": "",
+   "fx_id": "0x1a0d",
+   "preloaded_in": "73",
+   "boss_battle": "Final Battle (map 73)",
+   "mods": "LDK/Shuffle boss",
+   "umksm_tier": 2,
+   "evidence": "map 73 (final battle) preloads it"
+  },
+  {
+   "type": 63,
+   "name": "Shang Tsung (old)",
+   "role": "mk",
+   "slots": 1,
+   "instances": 2,
+   "killable": "yes",
+   "sound_bank": "",
+   "model_tag": "oldshang shang extra skirt",
+   "anim_kb": 255,
+   "model_id": "0x1a1b",
+   "tex_id": "0x1a1a",
+   "alt_model_id": "",
+   "alt_tex_id": "",
+   "fx_id": "0x1a17",
+   "preloaded_in": "169",
+   "boss_battle": "",
+   "mods": "LDK/Shuffle boss",
+   "umksm_tier": 2,
+   "evidence": ""
+  },
+  {
+   "type": 64,
+   "name": "Shao Kahn",
+   "role": "boss",
+   "slots": 1,
+   "instances": 2,
+   "killable": "no",
+   "sound_bank": "haokahn",
+   "model_tag": "shao kahn Skin kahn Black stuff",
+   "anim_kb": 420,
+   "model_id": "0x1a25",
+   "tex_id": "0x1a24",
+   "alt_model_id": "",
+   "alt_tex_id": "",
+   "fx_id": "0x1a21",
+   "preloaded_in": "73",
+   "boss_battle": "Final Battle (map 73)",
+   "mods": "LDK/Shuffle boss",
+   "umksm_tier": 2,
+   "evidence": "map 73 (final battle) preloads it; Time Rifts 0.7.x dropped it as \"Mileena\" (removed: 62,000 units from P1)"
+  },
+  {
+   "type": 65,
+   "name": "Kitana",
+   "role": "mk",
+   "slots": 1,
+   "instances": 2,
+   "killable": "yes",
+   "sound_bank": "itana_npc",
+   "model_tag": "kitana bodyx armlegs extra",
+   "anim_kb": 400,
+   "model_id": "0x1a2f",
+   "tex_id": "0x1a2e",
+   "alt_model_id": "",
+   "alt_tex_id": "",
+   "fx_id": "0x1a2b",
+   "preloaded_in": "194 195",
+   "boss_battle": "KMJ Battle (map 195)",
+   "mods": "LDK/Shuffle boss",
+   "umksm_tier": 1,
+   "evidence": "map 195 (KMJ battle) preloads it"
+  },
+  {
+   "type": 66,
+   "name": "Mileena",
+   "role": "mk",
+   "slots": 1,
+   "instances": 2,
+   "killable": "no",
+   "sound_bank": "ileena",
+   "model_tag": "ninjagirl body girl armlegs",
+   "anim_kb": 333,
+   "model_id": "0x1a39",
+   "tex_id": "0x1a38",
+   "alt_model_id": "",
+   "alt_tex_id": "",
+   "fx_id": "0x1a35",
+   "preloaded_in": "132 195",
+   "boss_battle": "KMJ Battle (map 195)",
+   "mods": "LDK/Shuffle boss; Time Rifts boss",
+   "umksm_tier": 2,
+   "evidence": "maps 132 (her secret arena) and 195 (KMJ battle) preload it"
+  },
+  {
+   "type": 67,
+   "name": "Jade",
+   "role": "mk",
+   "slots": 1,
+   "instances": 2,
+   "killable": "no",
+   "sound_bank": "ade",
+   "model_tag": "jade body armlegs atama",
+   "anim_kb": 306,
+   "model_id": "0x1a43",
+   "tex_id": "0x1a42",
+   "alt_model_id": "",
+   "alt_tex_id": "",
+   "fx_id": "0x1a3f",
+   "preloaded_in": "195",
+   "boss_battle": "KMJ Battle (map 195)",
+   "mods": "LDK/Shuffle boss",
+   "umksm_tier": 2,
+   "evidence": "map 195 (KMJ battle) preloads it"
+  },
+  {
+   "type": 68,
+   "name": "Ermac",
+   "role": "mk",
+   "slots": 1,
+   "instances": 2,
+   "killable": "no",
+   "sound_bank": "rmac",
+   "model_tag": "ermac eyebrow eyebrow_end eye_lids",
+   "anim_kb": 431,
+   "model_id": "0x1a4d",
+   "tex_id": "0x1a4c",
+   "alt_model_id": "",
+   "alt_tex_id": "",
+   "fx_id": "0x1a49",
+   "preloaded_in": "108 190",
+   "boss_battle": "Ermac Battle (map 108)",
+   "mods": "LDK/Shuffle boss",
+   "umksm_tier": 1,
+   "evidence": "map 108 (Ermac battle) preloads it"
+  },
+  {
+   "type": 69,
+   "name": "Sub-Zero",
+   "role": "mk",
+   "slots": 1,
+   "instances": 2,
+   "killable": "no",
+   "sound_bank": "ubzero_npc",
+   "model_tag": "subzero color black extra",
+   "anim_kb": 318,
+   "model_id": "0x1a57",
+   "tex_id": "0x1a56",
+   "alt_model_id": "",
+   "alt_tex_id": "",
+   "fx_id": "0x1a53",
+   "preloaded_in": "44 45 46 73 190",
+   "boss_battle": "Final Battle (map 73)",
+   "mods": "LDK/Shuffle boss",
+   "umksm_tier": 0,
+   "evidence": "NPC model"
+  },
+  {
+   "type": 70,
+   "name": "Smoke",
+   "role": "mk",
+   "slots": 1,
+   "instances": 2,
+   "killable": "yes",
+   "sound_bank": "",
+   "model_tag": "smoke sc_01 sc_02 sc_03",
+   "anim_kb": 33,
+   "model_id": "0x1a61",
+   "tex_id": "0x1a60",
+   "alt_model_id": "",
+   "alt_tex_id": "",
+   "fx_id": "0x1a5d",
+   "preloaded_in": "146 147",
+   "boss_battle": "",
+   "mods": "LDK/Shuffle boss",
+   "umksm_tier": 2,
+   "evidence": "no sound bank of its own"
+  },
+  {
+   "type": 71,
+   "name": "Johnny Cage (story)",
+   "role": "mk",
+   "slots": 1,
+   "instances": 2,
+   "killable": "no",
+   "sound_bank": "age",
+   "model_tag": "face Skin Black stuff Color stuff",
+   "anim_kb": 189,
+   "model_id": "0x1a6b",
+   "tex_id": "0x1a6a",
+   "alt_model_id": "",
+   "alt_tex_id": "",
+   "fx_id": "0x1a67",
+   "preloaded_in": "47 104 106",
+   "boss_battle": "Goro Battle (map 47)",
+   "mods": "LDK/Shuffle boss",
+   "umksm_tier": 1,
+   "evidence": "sound bank \"cage\""
+  },
+  {
+   "type": 72,
+   "name": "Raiden",
+   "role": "mk",
+   "slots": 1,
+   "instances": 2,
+   "killable": "yes",
+   "sound_bank": "",
+   "model_tag": "xbox_raiden Cone01 Pu2AP eyebrow",
+   "anim_kb": 62,
+   "model_id": "0x1a75",
+   "tex_id": "0x1a74",
+   "alt_model_id": "",
+   "alt_tex_id": "",
+   "fx_id": "0x1a71",
+   "preloaded_in": "41 96",
+   "boss_battle": "",
+   "mods": "LDK/Shuffle boss",
+   "umksm_tier": 2,
+   "evidence": "model \"xbox_raiden\""
+  },
+  {
+   "type": 73,
+   "name": "",
+   "role": "unknown",
+   "slots": 1,
+   "instances": 2,
+   "killable": "yes",
+   "sound_bank": "",
+   "model_tag": "eye_lids eyebrow CqR3 HBRZ",
+   "anim_kb": 21,
+   "model_id": "0x1a7f",
+   "tex_id": "0x1a7e",
+   "alt_model_id": "",
+   "alt_tex_id": "",
+   "fx_id": "0x1a7b",
+   "preloaded_in": "48",
+   "boss_battle": "",
+   "mods": "",
+   "umksm_tier": "",
+   "evidence": ""
+  },
+  {
+   "type": 74,
+   "name": "Jax",
+   "role": "mk",
+   "slots": 1,
+   "instances": 2,
+   "killable": "no",
+   "sound_bank": "ax",
+   "model_tag": "grenade01 grenade0103 grenade02 revolver",
+   "anim_kb": 81,
+   "model_id": "0x1a89",
+   "tex_id": "0x1a88",
+   "alt_model_id": "",
+   "alt_tex_id": "",
+   "fx_id": "0x1a85",
+   "preloaded_in": "72",
+   "boss_battle": "",
+   "mods": "LDK/Shuffle boss",
+   "umksm_tier": "",
+   "evidence": "sound bank \"jax\"; model has grenades and a revolver"
+  },
+  {
+   "type": 75,
+   "name": "",
+   "role": "unknown",
+   "slots": 1,
+   "instances": 2,
+   "killable": "yes",
+   "sound_bank": "",
+   "model_tag": "eyebrow eyebrow_end eye_lids eye_lids_end",
+   "anim_kb": 14,
+   "model_id": "0x1a93",
+   "tex_id": "0x1a92",
+   "alt_model_id": "",
+   "alt_tex_id": "",
+   "fx_id": "0x1a8f",
+   "preloaded_in": "72",
+   "boss_battle": "",
+   "mods": "",
+   "umksm_tier": "",
+   "evidence": ""
+  },
+  {
+   "type": 76,
+   "name": "monk?",
+   "role": "enemy",
+   "slots": 1,
+   "instances": 8,
+   "killable": "yes",
+   "sound_bank": "",
+   "model_tag": "AHfa dR_A",
+   "anim_kb": 232,
+   "model_id": "0x1a9d",
+   "tex_id": "0x1a9c",
+   "alt_model_id": "",
+   "alt_tex_id": "",
+   "fx_id": "0x1a99",
+   "preloaded_in": "106",
+   "boss_battle": "",
+   "mods": "",
+   "umksm_tier": "",
+   "evidence": "generic humanoid, instances 8; Shuffle/LDK QA: fought and died in Goro's Lair (then called Johnny Cage; the screenshot showed a monk)"
+  },
+  {
+   "type": 77,
+   "name": "monk?",
+   "role": "enemy",
+   "slots": 1,
+   "instances": 8,
+   "killable": "yes",
+   "sound_bank": "",
+   "model_tag": "AHfa dR_A",
+   "anim_kb": 232,
+   "model_id": "0x1aa7",
+   "tex_id": "0x1aa6",
+   "alt_model_id": "",
+   "alt_tex_id": "",
+   "fx_id": "0x1aa3",
+   "preloaded_in": "15 24 103 104 107 234 235",
+   "boss_battle": "Baraka Battle (map 15); Start WuShi (map 103)",
+   "mods": "",
+   "umksm_tier": "",
+   "evidence": "generic humanoid, instances 8; Wu Shi maps 103/104/107 preload it"
+  },
+  {
+   "type": 78,
+   "name": "Johnny Cage",
+   "role": "mk",
+   "slots": 1,
+   "instances": 2,
+   "killable": "yes",
+   "sound_bank": "",
+   "model_tag": "johnny cage lka1 y cage lka2",
+   "anim_kb": 0,
+   "model_id": "0x1ab1",
+   "tex_id": "0x1ab0",
+   "alt_model_id": "",
+   "alt_tex_id": "",
+   "fx_id": "0x1aad",
+   "preloaded_in": "",
+   "boss_battle": "",
+   "mods": "LDK/Shuffle boss; Time Rifts boss",
+   "umksm_tier": 1,
+   "evidence": "model \"johnny cage\"; never spawned as an enemy yet"
+  },
+  {
+   "type": 79,
+   "name": "Kung Lao look-alike",
+   "role": "unknown",
+   "slots": 1,
+   "instances": 2,
+   "killable": "yes",
+   "sound_bank": "",
+   "model_tag": "xtras pants armhands extras",
+   "anim_kb": 0,
+   "model_id": "0x1abb",
+   "tex_id": "0x1aba",
+   "alt_model_id": "",
+   "alt_tex_id": "",
+   "fx_id": "0x1ab7",
+   "preloaded_in": "",
+   "boss_battle": "",
+   "mods": "",
+   "umksm_tier": "",
+   "evidence": "same materials as type 1"
+  },
+  {
+   "type": 80,
+   "name": "pterodactyl",
+   "role": "enemy",
+   "slots": 1,
+   "instances": 14,
+   "killable": "yes",
+   "sound_bank": "terodactyl",
+   "model_tag": "",
+   "anim_kb": 47,
+   "model_id": "0x1ac5",
+   "tex_id": "0x1ac4",
+   "alt_model_id": "",
+   "alt_tex_id": "",
+   "fx_id": "0x1ac1",
+   "preloaded_in": "1 5 7 8 25 30",
+   "boss_battle": "Start Tombs (map 30)",
+   "mods": "",
+   "umksm_tier": "",
+   "evidence": ""
+  },
+  {
+   "type": 81,
+   "name": "Kintaro (morning star)",
+   "role": "unknown",
+   "slots": 1,
+   "instances": 1,
+   "killable": "yes",
+   "sound_bank": "intaro",
+   "model_tag": "morningstar brokenpillar eyebrow eyebrow_end",
+   "anim_kb": 432,
+   "model_id": "0x1acf",
+   "tex_id": "0x1ace",
+   "alt_model_id": "0x1acf",
+   "alt_tex_id": "0x1ace",
+   "fx_id": "0x1acb",
+   "preloaded_in": "",
+   "boss_battle": "",
+   "mods": "LDK/Shuffle boss",
+   "umksm_tier": "",
+   "evidence": "instances 1 like the player rows"
+  },
+  {
+   "type": 82,
+   "name": "Scorpion",
+   "role": "playable",
+   "slots": 1,
+   "instances": 1,
+   "killable": "yes",
+   "sound_bank": "corpion_npc",
+   "model_tag": "scorpion sc_01 sc_02 sc_03",
+   "anim_kb": 1597,
+   "model_id": "0x1ad9",
+   "tex_id": "0x1ad8",
+   "alt_model_id": "0x1b3c",
+   "alt_tex_id": "0x1b3b",
+   "fx_id": "0x1ad5",
+   "preloaded_in": "",
+   "boss_battle": "",
+   "mods": "LDK/Shuffle boss",
+   "umksm_tier": 0,
+   "evidence": "move menu root 0x52; full player animation set"
+  },
+  {
+   "type": 83,
+   "name": "Baraka",
+   "role": "versus",
+   "slots": 1,
+   "instances": 1,
+   "killable": "yes",
+   "sound_bank": "araka",
+   "model_tag": "baraka eyebrow eyebrow_end eye_lids",
+   "anim_kb": 999,
+   "model_id": "0x1ae3",
+   "tex_id": "0x1ae2",
+   "alt_model_id": "0x1b42",
+   "alt_tex_id": "0x1b41",
+   "fx_id": "0x1adf",
+   "preloaded_in": "",
+   "boss_battle": "",
+   "mods": "LDK/Shuffle boss",
+   "umksm_tier": 1,
+   "evidence": ""
+  },
+  {
+   "type": 84,
+   "name": "Reptile",
+   "role": "versus",
+   "slots": 1,
+   "instances": 1,
+   "killable": "yes",
+   "sound_bank": "eptile",
+   "model_tag": "reptile atama color blackstuff",
+   "anim_kb": 986,
+   "model_id": "0x1aed",
+   "tex_id": "0x1aec",
+   "alt_model_id": "0x1b48",
+   "alt_tex_id": "0x1b47",
+   "fx_id": "0x1ae9",
+   "preloaded_in": "",
+   "boss_battle": "",
+   "mods": "LDK/Shuffle boss",
+   "umksm_tier": 1,
+   "evidence": ""
+  },
+  {
+   "type": 85,
+   "name": "Ermac",
+   "role": "versus",
+   "slots": 1,
+   "instances": 1,
+   "killable": "yes",
+   "sound_bank": "rmac",
+   "model_tag": "eyebrow eyebrow_end eye_lids eye_lids_end",
+   "anim_kb": 833,
+   "model_id": "0x1af7",
+   "tex_id": "0x1af6",
+   "alt_model_id": "",
+   "alt_tex_id": "",
+   "fx_id": "0x1af3",
+   "preloaded_in": "",
+   "boss_battle": "",
+   "mods": "LDK/Shuffle boss",
+   "umksm_tier": 1,
+   "evidence": ""
+  },
+  {
+   "type": 86,
+   "name": "Johnny Cage (stone)",
+   "role": "mk",
+   "slots": 1,
+   "instances": 2,
+   "killable": "yes",
+   "sound_bank": "age_stone",
+   "model_tag": "stonecage face cage Skin",
+   "anim_kb": 194,
+   "model_id": "0x1b01",
+   "tex_id": "0x1b00",
+   "alt_model_id": "",
+   "alt_tex_id": "",
+   "fx_id": "0x1afd",
+   "preloaded_in": "108",
+   "boss_battle": "Ermac Battle (map 108)",
+   "mods": "LDK/Shuffle boss",
+   "umksm_tier": 1,
+   "evidence": ""
+  },
+  {
+   "type": 87,
+   "name": "creature (front/back limbs)",
+   "role": "enemy",
+   "slots": 1,
+   "instances": 10,
+   "killable": "yes",
+   "sound_bank": "",
+   "model_tag": "fr_head_end fl_head_end fr_shoulder fr_bicep",
+   "anim_kb": 0,
+   "model_id": "0x1b0b",
+   "tex_id": "0x1b0a",
+   "alt_model_id": "",
+   "alt_tex_id": "",
+   "fx_id": "0x1b07",
+   "preloaded_in": "234 235",
+   "boss_battle": "",
+   "mods": "",
+   "umksm_tier": "",
+   "evidence": ""
+  },
+  {
+   "type": 88,
+   "name": "Sub-Zero",
+   "role": "playable",
+   "slots": 1,
+   "instances": 1,
+   "killable": "yes",
+   "sound_bank": "ubzero",
+   "model_tag": "subzero color black extra",
+   "anim_kb": 1193,
+   "model_id": "0x1b15",
+   "tex_id": "0x1b14",
+   "alt_model_id": "0x1b4e",
+   "alt_tex_id": "0x1b4d",
+   "fx_id": "0x1b11",
+   "preloaded_in": "",
+   "boss_battle": "",
+   "mods": "LDK/Shuffle boss",
+   "umksm_tier": 0,
+   "evidence": "move menu root 0x58; full player animation set"
+  },
+  {
+   "type": 89,
+   "name": "Kitana",
+   "role": "versus",
+   "slots": 1,
+   "instances": 1,
+   "killable": "yes",
+   "sound_bank": "itana",
+   "model_tag": "kitana bodyx armlegs extra",
+   "anim_kb": 1088,
+   "model_id": "0x1b1f",
+   "tex_id": "0x1b1e",
+   "alt_model_id": "0x1b54",
+   "alt_tex_id": "0x1b53",
+   "fx_id": "0x1b1b",
+   "preloaded_in": "",
+   "boss_battle": "",
+   "mods": "LDK/Shuffle boss",
+   "umksm_tier": 1,
+   "evidence": ""
+  },
+  {
+   "type": 90,
+   "name": "Johnny Cage",
+   "role": "versus",
+   "slots": 1,
+   "instances": 1,
+   "killable": "yes",
+   "sound_bank": "age",
+   "model_tag": "face Skin Black stuff Color stuff",
+   "anim_kb": 1041,
+   "model_id": "0x1b29",
+   "tex_id": "0x1b28",
+   "alt_model_id": "0x1b5a",
+   "alt_tex_id": "0x1b59",
+   "fx_id": "0x1b25",
+   "preloaded_in": "",
+   "boss_battle": "",
+   "mods": "LDK/Shuffle boss",
+   "umksm_tier": 1,
+   "evidence": ""
+  }
+ ],
+ "maps": {
+  "0": {
+   "cap": 3,
+   "preload": [
+    14,
+    18,
+    22
+   ]
+  },
+  "1": {
+   "cap": 4,
+   "preload": [
+    14,
+    80,
+    46,
+    27
+   ]
+  },
+  "2": {
+   "cap": 3,
+   "preload": [
+    14
+   ]
+  },
+  "3": {
+   "cap": 2,
+   "preload": [
+    14,
+    22
+   ]
+  },
+  "4": {
+   "cap": 3,
+   "preload": [
+    14,
+    27
+   ]
+  },
+  "5": {
+   "cap": 3,
+   "preload": [
+    14,
+    80,
+    22
+   ]
+  },
+  "6": {
+   "cap": 4,
+   "preload": [
+    27,
+    14,
+    46,
+    22
+   ]
+  },
+  "7": {
+   "cap": 3,
+   "preload": [
+    27,
+    26,
+    80
+   ]
+  },
+  "8": {
+   "cap": 3,
+   "preload": [
+    14,
+    27,
+    80
+   ]
+  },
+  "12": {
+   "cap": 2,
+   "preload": [
+    30,
+    14
+   ]
+  },
+  "15": {
+   "cap": 3,
+   "preload": [
+    56,
+    77
+   ]
+  },
+  "17": {
+   "cap": 2,
+   "preload": [
+    27,
+    14
+   ]
+  },
+  "19": {
+   "cap": 4,
+   "preload": [
+    27,
+    14,
+    46,
+    8
+   ]
+  },
+  "20": {
+   "cap": 3,
+   "preload": [
+    14,
+    27
+   ]
+  },
+  "24": {
+   "cap": 4,
+   "preload": [
+    77,
+    14,
+    18,
+    22
+   ]
+  },
+  "25": {
+   "cap": 3,
+   "preload": [
+    14,
+    22,
+    80
+   ]
+  },
+  "30": {
+   "cap": 1,
+   "preload": [
+    80
+   ]
+  },
+  "33": {
+   "cap": 2,
+   "preload": [
+    9,
+    16
+   ]
+  },
+  "41": {
+   "cap": 3,
+   "preload": [
+    19,
+    36,
+    72
+   ]
+  },
+  "44": {
+   "cap": 3,
+   "preload": [
+    69,
+    8
+   ]
+  },
+  "45": {
+   "cap": 3,
+   "preload": [
+    69,
+    9,
+    16
+   ]
+  },
+  "46": {
+   "cap": 3,
+   "preload": [
+    69,
+    9
+   ]
+  },
+  "47": {
+   "cap": 3,
+   "preload": [
+    57,
+    71
+   ]
+  },
+  "48": {
+   "cap": 3,
+   "preload": [
+    73,
+    31,
+    16
+   ]
+  },
+  "64": {
+   "cap": 3,
+   "preload": [
+    12,
+    15,
+    13
+   ]
+  },
+  "65": {
+   "cap": 2,
+   "preload": [
+    10,
+    12
+   ]
+  },
+  "66": {
+   "cap": 3,
+   "preload": []
+  },
+  "67": {
+   "cap": 2,
+   "preload": [
+    30,
+    11
+   ]
+  },
+  "68": {
+   "cap": 2,
+   "preload": [
+    10,
+    11
+   ]
+  },
+  "69": {
+   "cap": 3,
+   "preload": [
+    10,
+    11,
+    12
+   ]
+  },
+  "71": {
+   "cap": 2,
+   "preload": [
+    13
+   ]
+  },
+  "72": {
+   "cap": 3,
+   "preload": [
+    74,
+    75,
+    54
+   ]
+  },
+  "73": {
+   "cap": 4,
+   "preload": [
+    62,
+    64,
+    69
+   ]
+  },
+  "74": {
+   "cap": 4,
+   "preload": [
+    10,
+    11,
+    13,
+    39
+   ]
+  },
+  "96": {
+   "cap": 2,
+   "preload": [
+    15,
+    72
+   ]
+  },
+  "97": {
+   "cap": 1,
+   "preload": [
+    15
+   ]
+  },
+  "98": {
+   "cap": 3,
+   "preload": [
+    15
+   ]
+  },
+  "99": {
+   "cap": 2,
+   "preload": [
+    15,
+    22
+   ]
+  },
+  "100": {
+   "cap": 1,
+   "preload": [
+    15
+   ]
+  },
+  "101": {
+   "cap": 3,
+   "preload": [
+    15,
+    26,
+    36
+   ]
+  },
+  "102": {
+   "cap": 2,
+   "preload": [
+    15,
+    14
+   ]
+  },
+  "103": {
+   "cap": 3,
+   "preload": [
+    14,
+    26,
+    77
+   ]
+  },
+  "104": {
+   "cap": 3,
+   "preload": [
+    14,
+    71,
+    77
+   ]
+  },
+  "106": {
+   "cap": 3,
+   "preload": [
+    14,
+    76,
+    71
+   ]
+  },
+  "107": {
+   "cap": 3,
+   "preload": [
+    14,
+    26,
+    77
+   ]
+  },
+  "108": {
+   "cap": 3,
+   "preload": [
+    68,
+    86
+   ]
+  },
+  "110": {
+   "cap": 3,
+   "preload": []
+  },
+  "128": {
+   "cap": 4,
+   "preload": [
+    43,
+    18,
+    17,
+    42
+   ]
+  },
+  "129": {
+   "cap": 4,
+   "preload": [
+    42,
+    4,
+    45,
+    18
+   ]
+  },
+  "130": {
+   "cap": 3,
+   "preload": [
+    4,
+    45,
+    43
+   ]
+  },
+  "132": {
+   "cap": 3,
+   "preload": [
+    26,
+    18,
+    66
+   ]
+  },
+  "135": {
+   "cap": 3,
+   "preload": [
+    42,
+    43,
+    17
+   ]
+  },
+  "136": {
+   "cap": 3,
+   "preload": [
+    18,
+    8,
+    17
+   ]
+  },
+  "137": {
+   "cap": 3,
+   "preload": [
+    42,
+    18,
+    45
+   ]
+  },
+  "142": {
+   "cap": 2,
+   "preload": [
+    4,
+    18
+   ]
+  },
+  "143": {
+   "cap": 1,
+   "preload": [
+    4
+   ]
+  },
+  "144": {
+   "cap": 2,
+   "preload": [
+    50,
+    59
+   ]
+  },
+  "146": {
+   "cap": 3,
+   "preload": [
+    70,
+    42,
+    17
+   ]
+  },
+  "147": {
+   "cap": 3,
+   "preload": [
+    70,
+    42,
+    17
+   ]
+  },
+  "160": {
+   "cap": 3,
+   "preload": [
+    52,
+    55,
+    8
+   ]
+  },
+  "161": {
+   "cap": 3,
+   "preload": [
+    56,
+    14,
+    26
+   ]
+  },
+  "162": {
+   "cap": 4,
+   "preload": [
+    10,
+    11,
+    12,
+    13
+   ]
+  },
+  "163": {
+   "cap": 3,
+   "preload": [
+    15,
+    36
+   ]
+  },
+  "164": {
+   "cap": 2,
+   "preload": [
+    59,
+    8
+   ]
+  },
+  "165": {
+   "cap": 2,
+   "preload": [
+    30,
+    55
+   ]
+  },
+  "166": {
+   "cap": 3,
+   "preload": [
+    17,
+    4,
+    42
+   ]
+  },
+  "167": {
+   "cap": 3,
+   "preload": []
+  },
+  "168": {
+   "cap": 3,
+   "preload": [
+    14,
+    15
+   ]
+  },
+  "169": {
+   "cap": 2,
+   "preload": [
+    63,
+    27
+   ]
+  },
+  "170": {
+   "cap": 3,
+   "preload": [
+    36
+   ]
+  },
+  "171": {
+   "cap": 1,
+   "preload": []
+  },
+  "172": {
+   "cap": 1,
+   "preload": []
+  },
+  "173": {
+   "cap": 1,
+   "preload": []
+  },
+  "174": {
+   "cap": 1,
+   "preload": []
+  },
+  "175": {
+   "cap": 1,
+   "preload": []
+  },
+  "176": {
+   "cap": 4,
+   "preload": [
+    47
+   ]
+  },
+  "177": {
+   "cap": 1,
+   "preload": []
+  },
+  "178": {
+   "cap": 1,
+   "preload": []
+  },
+  "179": {
+   "cap": 1,
+   "preload": []
+  },
+  "180": {
+   "cap": 1,
+   "preload": []
+  },
+  "181": {
+   "cap": 2,
+   "preload": []
+  },
+  "182": {
+   "cap": 3,
+   "preload": [
+    19
+   ]
+  },
+  "183": {
+   "cap": 1,
+   "preload": []
+  },
+  "184": {
+   "cap": 1,
+   "preload": []
+  },
+  "185": {
+   "cap": 1,
+   "preload": []
+  },
+  "186": {
+   "cap": 3,
+   "preload": []
+  },
+  "187": {
+   "cap": 2,
+   "preload": [
+    54,
+    9
+   ]
+  },
+  "188": {
+   "cap": 3,
+   "preload": []
+  },
+  "190": {
+   "cap": 4,
+   "preload": [
+    59,
+    68,
+    69,
+    52
+   ]
+  },
+  "191": {
+   "cap": 3,
+   "preload": [
+    57
+   ]
+  },
+  "192": {
+   "cap": 3,
+   "preload": [
+    27,
+    10,
+    46
+   ]
+  },
+  "193": {
+   "cap": 3,
+   "preload": [
+    27,
+    14
+   ]
+  },
+  "194": {
+   "cap": 3,
+   "preload": [
+    10,
+    27,
+    65
+   ]
+  },
+  "195": {
+   "cap": 3,
+   "preload": [
+    65,
+    66,
+    67
+   ]
+  },
+  "196": {
+   "cap": 2,
+   "preload": [
+    10,
+    12
+   ]
+  },
+  "197": {
+   "cap": 3,
+   "preload": [
+    10,
+    12,
+    13
+   ]
+  },
+  "198": {
+   "cap": 2,
+   "preload": [
+    11,
+    12
+   ]
+  },
+  "199": {
+   "cap": 2,
+   "preload": [
+    14,
+    27
+   ]
+  },
+  "224": {
+   "cap": 3,
+   "preload": [
+    14,
+    46
+   ]
+  },
+  "225": {
+   "cap": 3,
+   "preload": [
+    14,
+    46
+   ]
+  },
+  "226": {
+   "cap": 3,
+   "preload": [
+    14,
+    46
+   ]
+  },
+  "227": {
+   "cap": 3,
+   "preload": [
+    14,
+    46
+   ]
+  },
+  "228": {
+   "cap": 3,
+   "preload": []
+  },
+  "229": {
+   "cap": 3,
+   "preload": []
+  },
+  "230": {
+   "cap": 3,
+   "preload": []
+  },
+  "231": {
+   "cap": 3,
+   "preload": []
+  },
+  "232": {
+   "cap": 3,
+   "preload": []
+  },
+  "233": {
+   "cap": 3,
+   "preload": []
+  },
+  "234": {
+   "cap": 3,
+   "preload": [
+    77,
+    87
+   ]
+  },
+  "235": {
+   "cap": 3,
+   "preload": [
+    77,
+    87
+   ]
+  }
+ },
+ "debug_menu_battles": {
+  "15": "Baraka Battle",
+  "30": "Start Tombs",
+  "47": "Goro Battle",
+  "73": "Final Battle",
+  "103": "Start WuShi",
+  "108": "Ermac Battle",
+  "128": "Start Forest",
+  "144": "Reptile Battle",
+  "160": "Scorpion Battle",
+  "192": "Start Evil Monastery",
+  "195": "KMJ Battle"
+ }
+}

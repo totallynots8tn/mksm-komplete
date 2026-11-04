@@ -1,7 +1,35 @@
 package.path = "tests/?.lua;" .. package.path
 local H = require("harness")
 local mods = {}
-for i = 1, #arg do mods[#mods+1] = H.load(arg[i]) end
+-- WARRIOR=1 (with OUTSIDER=1): Shaolin Shuffle 0.12 brings a Mortal Kombat
+-- warrior in place of every outsider (its MK_CHANCE patched to 100). Their AI
+-- setup makes them unkillable (actor +0xD4 = 0); the type's slot holds
+-- WARRIOR_COPIES model copies (character table +0x08, 2 by default).
+local WARRIOR = os.getenv("WARRIOR") == "1"
+local COPIES = tonumber(os.getenv("WARRIOR_COPIES") or "2")
+-- WARRIOR_TOUGH=1: a warrior outlives its room (the next group starts while
+-- it is still up), so a second warrior entry finds the slot's copies in use
+local TOUGH = os.getenv("WARRIOR_TOUGH") == "1"
+local WARRIORS = {}
+for i = 1, #arg do
+  local path = arg[i]
+  if WARRIOR and path:find("randomizer") then
+    local src = assert(io.open(path, "rb")):read("a")
+    for id in assert(src:match("local MK_WARRIORS%s*=%s*(%b{})"), "no MK_WARRIORS"):gmatch("%d+") do
+      WARRIORS[tonumber(id)] = true
+    end
+    local n
+    src, n = src:gsub("local MK_CHANCE%s*=%s*%d+", "local MK_CHANCE = 100")
+    assert(n == 1, "no MK_CHANCE in " .. path)
+    path = "tests/_sim_warrior.lua"
+    local f = assert(io.open(path, "wb")); f:write(src); f:close()
+  end
+  mods[#mods+1] = H.load(path)
+  if path == "tests/_sim_warrior.lua" then os.remove(path) end
+end
+if WARRIOR then
+  for t = 50, 90 do H.w32(0x4FA9F0 + t*0x30 + 8, COPIES) end
+end
 
 local M = 0x6DBFB0; local GS = 0xA6C
 local FRAME = 0x5CE878; local CAP = 0x5142B8; local POOLSZ = 0x5142A4
@@ -47,6 +75,10 @@ local outsider_slot = nil
 local swap_stats = {}
 local OWN = THREE and {14, 26, 22} or TWO and {14, 26} or {15}
 local OWN_SET = {} for _, t in ipairs(OWN) do OWN_SET[t] = true end
+-- RIFT=1: Time Rifts' boss group: group 49 holds one plain entry of a common
+-- type (3) and the RIFT mark (+0xA10); it starts after the level's own
+-- groups. LDK must not expand it and Shuffle must not change it.
+local RIFT = os.getenv("RIFT") == "1"
 -- LAIR=1: the map number is Goro's Lair's (98), where LDK 3.11 fills groups
 if os.getenv("LAIR") == "1" then H.w32(0x505970, 98) end
 if OUTSIDER then
@@ -210,6 +242,16 @@ local function load_level(seedhdr)
       authored[ent] = t
     end
   end
+  if RIFT then
+    local base = M + 49*GS
+    H.w32(base, 149+seedhdr); H.w32(base+8, 249); H.w32(base+0xC, 349)
+    H.w8(base+0xA6A, 1); H.w16(base+0xA68, 1); H.w32(base+0xA10, 0x54464952)
+    local ent = base + 0x18
+    local t = OUTSIDER and OWN[1] or 3
+    H.w32(ent, t); for _, o in ipairs({4,8,0x10,0x14,0x2C}) do H.w32(ent+o, 0xFFFFFFFF) end
+    H.w32(ent+0x5C, 0xFFFFFFFF); H.w16(ent+0x5A, 0)
+    authored[ent] = t
+  end
   for i,t in ipairs(loaded) do H.w32(LOADED+(i-1)*4, t) end
   if os.getenv("NOLOADHOOK") ~= "1" then for _, m in ipairs(mods) do H.invoke(m, 0x14D2C, {esp=STACK}) end end
   if OUTSIDER then
@@ -284,11 +326,15 @@ local function spawn_entry(entry, g)
     elseif not heap_alloc(t) then stats.crash = (stats.crash or 0) + 1; return end
     H.w16(FLAGS+slot*2, 1)
     H.w16(0x5D1AB8 + slot*0x3238 + 0x1DFE, t)
+    -- the entity's actor; an MK boss's AI setup makes it unkillable
+    local actor = 0x81F00000 + slot * 0x100
+    H.w32(0x5D1AB8 + slot*0x3238 + 0x200, actor)
+    H.w8(actor + 0xD4, (WARRIOR and WARRIORS[t]) and 0 or 1)
     local ctrl = H.r32(M+0x20924)
     local a = H.r16(ctrl+0xA0)
     if a + 1 > stats.ctrlcap[ctrl] then stats.overflow = stats.overflow + 1 end
     H.w16(ctrl+0xA0, a+1)
-    alive[#alive+1] = {slot=slot, ctrl=ctrl, t=t}
+    alive[#alive+1] = {slot=slot, ctrl=ctrl, t=t, born=H.r32(FRAME)}
     if OUTSIDER and outsider_kind and t == outsider_kind then
       stats.o_rooms = stats.o_rooms or {}
       stats.o_rooms[stats.loads .. ":" .. g] = true
@@ -372,6 +418,7 @@ local function run_level(hdr)
   local order = {}
   for g = 0, #level-1 do order[#order+1] = g end
   if RESPAWN then for _ = 1, 19 do order[#order+1] = 0 end end
+  if RIFT then order[#order+1] = 49 end
   for _, g in ipairs(order) do
     if OUTSIDER and EVICT and g == 2 and outsider_kind then
       H.w32(LOADED+outsider_slot*4, 0x4C)  -- a cutscene streams Johnny Cage into the slot
@@ -400,14 +447,54 @@ local function run_level(hdr)
       H.w32(FRAME, H.r32(FRAME)+1); f = f + 1
       spawn_tick()
       if #alive - 0 > stats.maxalive then stats.maxalive = #alive end
-      if #alive > 0 and r() % 40 == 0 then
-        local k = (r() % #alive) + 1; local v = table.remove(alive, k)
+      if WARRIOR then
+        local n = 0
+        for _, v in ipairs(alive) do if WARRIORS[v.t] then n = n + 1 end end
+        if n > (stats.warriors_alive or 0) then stats.warriors_alive = n end
+      end
+      local mortal = {}                     -- who may die now (tough warriors wait for the area's end)
+      for i, v in ipairs(alive) do if not (TOUGH and WARRIORS[v.t]) then mortal[#mortal+1] = i end end
+      if #mortal > 0 and r() % 40 == 0 then
+        local k = mortal[(r() % #mortal) + 1]
+        local v = table.remove(alive, k)
+        if WARRIOR and WARRIORS[v.t] then
+          stats.warrior_deaths = (stats.warrior_deaths or 0) + 1
+          -- killed at least a tick after spawning: Shuffle must have made it killable
+          if H.r32(FRAME) - v.born >= 2 and H.r8(0x81F00000 + v.slot * 0x100 + 0xD4) ~= 1 then
+            stats.unkillable = (stats.unkillable or 0) + 1
+          end
+        end
         H.w16(FLAGS+v.slot*2, 0); H.w16(v.ctrl+0xA0, H.r16(v.ctrl+0xA0)-1); heap_free(v.t)
         H.w16(0x5D1AB8 + v.slot*0x3238 + 0x1DFE, 0xFFFF)
         if RECYCLE then pool[v.t] = (pool[v.t] or 0) + 1 end
       end
-    until (H.r8(M+0x2092A) == 0 and #alive == 0) or f > 20000
+    local busy = false
+    for _, v in ipairs(alive) do if not (TOUGH and WARRIORS[v.t]) then busy = true end end
+    until (H.r8(M+0x2092A) == 0 and not busy) or f > 20000
     if f > 20000 then stats.stuck = (stats.stuck or 0) + 1 end
+  end
+  for k = #alive, 1, -1 do                  -- tough warriors fall when the area ends
+    local v = alive[k]
+    if H.r8(0x81F00000 + v.slot * 0x100 + 0xD4) ~= 1 then stats.unkillable = (stats.unkillable or 0) + 1 end
+    stats.warrior_deaths = (stats.warrior_deaths or 0) + 1
+    table.remove(alive, k)
+    H.w16(FLAGS+v.slot*2, 0); H.w16(v.ctrl+0xA0, H.r16(v.ctrl+0xA0)-1); heap_free(v.t)
+    H.w16(0x5D1AB8 + v.slot*0x3238 + 0x1DFE, 0xFFFF)
+    if RECYCLE then pool[v.t] = (pool[v.t] or 0) + 1 end
+  end
+  if WARRIOR then
+    -- how many entries hold the warrior now, in the area and per group
+    local total = 0
+    for gg = 0, #level-1 do
+      local base, n = M + gg*GS, 0
+      for e = 0, H.r16(base+0xA68)-1 do
+        if WARRIORS[H.r32(base+0x18+e*0x74)] then n = n + 1 end
+      end
+      total = total + n
+      if n > (stats.warrior_group_max or 0) then stats.warrior_group_max = n end
+    end
+    if total > (stats.warrior_area_max or 0) then stats.warrior_area_max = total end
+    if outsider_kind then stats.warrior_kinds = (stats.warrior_kinds or "") .. " " .. outsider_kind end
   end
 end
 run_level(0); run_level(0); run_level(50)
@@ -419,6 +506,13 @@ print("stuck groups:", stats.stuck or 0, "CRASHES (heap exhausted):", stats.cras
 print("failed:", stats.failed, "overflow:", stats.overflow, "max alive:", stats.maxalive)
 print("max writes:", H.max_writes, "max instr:", H.max_instr)
 print("script errors:", #H.failed) for _, e in ipairs(H.failed) do print("  ", e) end
+if RIFT then
+  local base = M + 49*GS
+  local t = OUTSIDER and OWN[1] or 3
+  assert(H.r16(base+0xA68) == 1 and H.r32(base+0x18) == t,
+    "the rift's group was expanded or changed: count " .. H.r16(base+0xA68) .. " type " .. H.r32(base+0x18))
+  print("rift group untouched")
+end
 if OUTSIDER then
   local o = 0
   for t, n in pairs(stats.types) do if not OWN_SET[t] then o = o + n end end
@@ -426,6 +520,25 @@ if OUTSIDER then
   local rooms = 0 for _ in pairs(stats.o_rooms or {}) do rooms = rooms + 1 end
   print("rooms with an outsider spawn:", rooms, "of", stats.loads * #level)
   if SWAP then print("swapped loads:", swap_stats.swapped or 0, "replaced-type entries left in the dormant group:", swap_stats.dormant_left or 0, "streamed on the spot:", swap_stats.streamed or 0) end
+end
+if WARRIOR then
+  local spawns = 0
+  for t, n in pairs(stats.types) do if WARRIORS[t] then spawns = spawns + n end end
+  for k in (stats.warrior_kinds or ""):gmatch("%d+") do
+    assert(WARRIORS[tonumber(k)], "outsider " .. k .. " is not a Mortal Kombat warrior")
+  end
+  print("warriors:" .. (stats.warrior_kinds or " none"), "| spawns", spawns, "| deaths", stats.warrior_deaths or 0,
+    "| unkillable", stats.unkillable or 0, "| max alive", stats.warriors_alive or 0, "of", COPIES,
+    "| entries per area", stats.warrior_area_max or 0, "per group", stats.warrior_group_max or 0)
+  assert(spawns > 0 and (stats.warrior_deaths or 0) > 0, "no warrior spawned and died")
+  assert((stats.unkillable or 0) == 0, "a warrior was still unkillable when it died")
+  assert((stats.warriors_alive or 0) <= COPIES, "more warriors alive than their slot holds")
+  assert((stats.warrior_area_max or 0) <= 2 and (stats.warrior_group_max or 0) <= 1, "too many warrior entries")
+  if TOUGH and COPIES == 1 then
+    -- the second entry of each area went back to its own type before spawning
+    assert(spawns == stats.loads, "a second warrior spawned while the first was up: " .. spawns)
+  end
+  print("warriors ok")
 end
 if MIX then
   local mixed, totals = 0, {}

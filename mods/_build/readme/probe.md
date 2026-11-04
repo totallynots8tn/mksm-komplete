@@ -1,4 +1,4 @@
-# MKSMK Probe 0.10 (diagnostics)
+# MKSMK Probe 0.12.8 (diagnostics)
 
 Changes nothing in the game. It records kills, XP changes and enemy spawns,
 then writes them to the session log
@@ -229,10 +229,64 @@ in its trace.
 ## 0.12: shop, meter and health state
 
 - **`SAVESTAT`** now also reports each player's XP, meter value and level,
-  the EX flags (level slots 19-22, as four digits) and slot 27, current and
+  their whole 28-byte level row and current and
   max health, plus the max-health value, the area's health level and the
   fatality counters (`fat=discovered/performed`). Compare `fat=` before and
   after a reload to see whether discovered fatalities are kept.
+- **0.12.3:** `row=` is the level row (`+0x1C4 + p * 0x1C`) as 28 hex bytes,
+  slot 0 first. It replaces the four `ex=` digits and `s27=`. XP Shop 0.12.0
+  keeps its EX flags in slots 19-21 (bytes 20-22, marked with bit 7; 0.11.3
+  used 23-25) and its shop levels in slot 27 (byte 28). The game's own bytes
+  are the specials (0-3), Platform (4-10), combos (13-17) and the co-op team
+  slots 23-26. The full row shows all of them, so an unexplained level byte in
+  a save can be told apart from a purchase.
+- **0.12.3:** `SAVESTAT` reports `last_trigger=T<n>` (the most recent map
+  trigger that fired) and `loadmaps=` (how many times the area loader ran this
+  session). `last_trigger` can be overwritten by triggers after a portal, so
+  it does not identify the portal by itself.
+- **0.12.4:** `SAVESTAT` adds `loadcalls=`, a short history of recent loader
+  calls. Each record includes the frame (`F`), the active trigger (`T`, or
+  `T-` if the call was outside a trigger event), the current map at loader
+  entry (`cur`), and the requested destination and entry (`to`, `entry`).
+  `def` and `data` are the loader definition and argument pointers. The loader
+  arguments are read from the same definition structure used by Time Rifts
+  (`def+8` points to the argument pair).
+- **0.12.5:** consecutive identical loader requests are compressed into one
+  `loadcalls=` record with the first and last frame plus repeat count
+  (`Ffirst-lastxcount`). This prevents a transition that retries the same
+  request each frame from evicting earlier, distinct portal requests. The
+  history keeps the last eight distinct consecutive request runs.
+- **0.12.6:** `SAVESTAT` adds `rifttrace=` for Wu Shi co-op arena map 110. It
+  records the arena preload list, triggers that fire there, native `callspawn`
+  requests, spawn-group starts (with enabled state and first enemy types), and
+  spawn-entry attempts. `loadcalls=` continues to show requested map and entry.
+  In the trace, `P` is the preload list, `D` the descriptor's spawn-file value,
+  `LG` a spawn-group load, `T` fired triggers, `C` a `callspawn` group argument,
+  `G` started groups, and `S` spawn-entry attempts with position and return.
+- **0.12.7:** `rifttrace=` stores each category separately and aggregates
+  repeated values with counts and first/last frames. The previous single event
+  ring could be filled by a repeatedly firing exit trigger before it reported
+  the earlier arena preload and director activity. The trace is diagnostic
+  only. To capture the baseline, leave Time Rifts disabled, enter map 110,
+  return to Wu Shi and save once.
+- **0.12.8:** the arena trace includes each fired trigger's condition commands,
+  arguments and definition pointer, and tags `callspawn`, group starts and
+  spawn attempts with the active arena trigger when available. It also watches
+  the `callspawnrc` and `callspawnmerge` entry points. This should let one
+  recorded route identify whether the arena's existing trigger starts a native
+  director and which enemy slots it uses. `PLATE` adds a separate `rift110=`
+  list of event commands called while a map-110 trigger is running, with the
+  trigger ID and result; repeated calls are counted rather than taking space
+  from the general event log.
+
+To capture the Wu Shi co-op arena route, enable the Probe and disable Time
+Rifts. Start a fresh QA recording. Load Wu Shi, backtrack through the loading
+screen to the Wu Shi entrance, enter map 110, walk through the arena, return to
+the Wu Shi entrance, then load back to Wu Shi and save once. Keep the whole
+route in one recording; special moves are not needed. Compare `cur`, `to` and
+`entry` in `loadcalls=` to follow each transition; consecutive retries to the
+same destination appear as one counted record. The complete log is available
+in the run folder, so the shortened console preview does not need to be pasted.
 - **`HEARTBEAT`** samples end with player 0's health and meter (`hp450/600 mv380`).
 - `probe_upgrade` read player 0's XP from the wrong field; fixed.
 - Pairs with the QA Console (`MKSMK.bat` > QA console), which reads the same

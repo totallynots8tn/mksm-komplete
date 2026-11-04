@@ -26,9 +26,13 @@ H.invoke(m2, SAVE, { esp = STACK, ecx = 0x5ACE00 }, nil)
 assert(#H.failed == 1, "only copy #1 reports at the first save")
 local r1 = tostring(H.failed[1])
 print("report #1:", r1)
-assert(r1 == "SAVESTAT save#1 frame=1234 map=7 gm=81200000 playtime=2DF55 xp=23330 chars=3,FFFFFFFF"
+-- 0.12.3+: the whole 28-byte level row (slot 0 first), the last trigger and
+-- loader history; 0.12.8: the Wu Shi rift trace (empty here)
+assert(r1 == "SAVESTAT save#1 frame=1234 map=7 last_trigger=- loadmaps=0 loadcalls=-"
+  .. " rifttrace=P[-],D[-],LG[-],T[-],C[-],G[-],S[-] gm=81200000 playtime=2DF55 xp=23330 chars=3,FFFFFFFF"
   .. " +DC=0 +E0=0 +1C4=30400 +1D0=0"
-  .. " P0[xp=23330 mv=380 ml=2 ex=1010 s27=0 hp=450/600] P1[xp=0 mv=0 ml=0 ex=0000 s27=0 hp=-]"
+  .. " P0[xp=23330 mv=380 ml=2 row=00040300000000000000000000000000000000010001000000000000 hp=450/600]"
+  .. " P1[xp=0 mv=0 ml=0 row=00000000000000000000000000000000000000000000000000000000 hp=-]"
   .. " maxhp=600 hplvl=1 fat=5/37 ecx=5ACE00 args=1,2,3,4", "report fields: " .. r1)
 H.w32(GM + 0x4940, 1830)
 H.invoke(m1, SAVE, { esp = STACK, ecx = 0 }, nil)

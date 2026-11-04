@@ -1,5 +1,9 @@
 
--- ===== Shaolin Shuffle 0.11.3 =====
+-- ===== Shaolin Shuffle 0.12.1 =====
+-- 0.12.1: no more tree mouths or tree arms as outsiders (OUTSIDERS, core.lua).
+-- 0.12.0: Mortal Kombat warriors (see MK_WARRIORS below).
+-- 0.11.5: the shared boss list (core.lua) with corrected character names
+-- covers every Mortal Kombat character.
 -- Shuffles enemy types across every spawn slot of the current area. Model
 -- memory is never freed when an enemy dies, and each type's heap is sized
 -- for how many of it the area authors in total. A shuffle keeps those totals
@@ -60,6 +64,13 @@ local MAX_SLOTS   = 150          -- entries shuffled per area (write and instruc
 -- loader's frame): the map's scene places characters of its listed types
 -- outside the spawn groups, so every listed type must stay loaded. Removed;
 -- the roster is only ever added to.
+--
+-- 0.11.4: a cutscene evicting the outsider and a re-shuffle could fall in one
+-- spawn tick: up to 45 restored entries plus a whole shuffle (243 writes) is
+-- over the runtime's 256 writes per callback, which disables the script. The
+-- restore now has its tick to itself. Groups Time Rifts marks as its own
+-- (core.lua) are never shuffled or converted. The outsider pool moved to
+-- core.lua, so LDK can recognise the outsider.
 local PRELOAD            = 0x00015DEE
 local DESC_CAP           = 0x20
 local DESC_LIST          = 0x24
@@ -72,12 +83,38 @@ local SLOT_BUDGET_FULL   = 4            -- when every authored type is in the ro
 local GAME_MANAGER       = 0x005ACEBC
 local GAME_MODE          = 0x88         -- 2 = versus
 -- 0.11: one mod with what was the Wild variant: the v1 pool plus the regular
--- types the QA logs saw as commons in 7+ areas.
-local OUTSIDERS          = { 10, 11, 12, 13, 14, 15, 26, 27, 18, 42, 43 }
+-- types the QA logs saw as commons in 7+ areas (OUTSIDERS, in core.lua).
 local OUTSIDER_MIN       = 1            -- outsiders guaranteed per group with a plain entry
 local OUTSIDER_CHANCE    = 50           -- percent of the other plain entries that also become one
 local OUTSIDER_PER_GROUP = 5
 local OUTSIDER_TOTAL     = 45
+-- 0.12: Mortal Kombat warriors. An area that gets an outsider gets one of
+-- these instead MK_CHANCE percent of the time: a human-sized Mortal Kombat
+-- character with one memory slot and animations of its own
+-- (analysis/mk_roster). Two things about them come from the game:
+-- * Their per-character AI setup (the switch on the type at 0xE2F11) makes
+--   most of them unkillable for their scripted boss fights: actor +0xD4 = 0,
+--   and TakeDamage (0x153E20) then stops their health at 1 so the fight's
+--   script can play its ending. Shuffle sets +0xD4 back to 1 on every live
+--   warrior of its own (keep_killable).
+-- * Character table +0x08 is how many model copies the type's memory slot is
+--   built for (tgtProcessObjectModel 0x113B50): 2 for these. So only
+--   MK_PER_AREA entries, one per group, become the warrior, and an entry
+--   that would spawn one copy too many goes back to its own type first
+--   (keep_copies).
+-- No warrior where the roster lists a boss (a boss arena), where the area's
+-- spawn groups author the warrior's type (its own scripted fight), or when the
+-- groups weren't freshly loaded (they can't be checked).
+local MK_WARRIORS        = { 52, 54, 55, 56, 59, 65, 66, 67, 68, 69 }
+local MK_CHANCE          = 35           -- percent of outsider areas that get a warrior instead
+local MK_PER_AREA        = 2
+local CHAR_COPIES        = 0x08         -- character table: model copies the type's slot holds
+local ACTOR              = 0x200        -- entity: its actor
+local CAN_KILL           = 0xD4         -- actor: 0 = its health stops at 1
+local warrior_kinds = {}
+for _, kind in ipairs(MK_WARRIORS) do
+    warrior_kinds[kind] = true
+end
 -- 0.10: room mixing. An area whose rooms each author one enemy type shows no
 -- variety from the signature-class swap alone, and (before 0.11) the outsider
 -- path needed a single-type roster. So it also swaps plain entries between two types
@@ -152,14 +189,10 @@ local function takes_outsider(roster, budget)
     return regular and slots <= budget
 end
 
--- Whether the area's spawn groups author a character the roster doesn't list
--- (disabled groups included: a trigger may enable them later). The game
--- streams such a type in on the spot when its group starts, into a free slot.
-local function streams_on_the_spot(roster)
-    local listed = {}
-    for _, kind in ipairs(roster.list) do
-        listed[kind] = true
-    end
+-- Every character the area's spawn groups author (disabled groups included:
+-- a trigger may enable them later).
+local function authored_types()
+    local authored = {}
     -- worst case 50 x 22 reads, so the address math is inlined (instruction budget)
     local read = game.read_u32
     for base = MANAGER, MANAGER_END - 1, GROUP_STRIDE do
@@ -169,14 +202,43 @@ local function streams_on_the_spot(roster)
         end
         local entry = base + ENTRY_BASE
         for _ = 1, count do
-            local kind = read(entry)
-            if kind <= 90 and not listed[kind] then
-                return true
-            end
+            authored[read(entry)] = true
             entry = entry + ENTRY_STRIDE
         end
     end
+    return authored
+end
+
+-- Whether the area's spawn groups author a character the roster doesn't list.
+-- The game streams such a type in on the spot when its group starts, into a
+-- free slot.
+local function streams_on_the_spot(roster, authored)
+    local listed = {}
+    for _, kind in ipairs(roster.list) do
+        listed[kind] = true
+    end
+    for kind in pairs(authored) do
+        if kind <= 90 and not listed[kind] then
+            return true
+        end
+    end
     return false
+end
+
+-- The Mortal Kombat warriors this area may take (none in a boss arena).
+local function warrior_pool(roster, own, authored)
+    for _, kind in ipairs(roster.list) do
+        if is_boss(kind) then
+            return {}
+        end
+    end
+    local pool = {}
+    for _, kind in ipairs(MK_WARRIORS) do
+        if not own[kind] and not authored[kind] then
+            pool[#pool + 1] = kind
+        end
+    end
+    return pool
 end
 
 -- Runs before 0xCFAB0 reads the preload list. Restores the map's authored
@@ -197,8 +259,9 @@ local function plan_preload(desc)
     if eligible and outsider and outsider.desc == desc and outsider.area == area_serial then
         kind = outsider.kind                             -- a re-preload (0xD1910) keeps it
     elseif eligible then
+        local authored = fresh and authored_types() or nil
         local budget = SLOT_BUDGET
-        if fresh and not streams_on_the_spot(roster) then
+        if authored and not streams_on_the_spot(roster, authored) then
             budget = SLOT_BUDGET_FULL
         end
         if takes_outsider(roster, budget) then
@@ -207,9 +270,14 @@ local function plan_preload(desc)
             for _, k in ipairs(roster.list) do
                 own[k] = true
             end
-            for _, candidate in ipairs(OUTSIDERS) do
-                if not own[candidate] then
-                    pool[#pool + 1] = candidate
+            if authored and rnd() % 100 < MK_CHANCE then
+                pool = warrior_pool(roster, own, authored)
+            end
+            if #pool == 0 then
+                for _, candidate in ipairs(OUTSIDERS) do
+                    if not own[candidate] then
+                        pool[#pool + 1] = candidate
+                    end
                 end
             end
             if #pool > 0 then
@@ -256,9 +324,10 @@ end
 
 -- A cutscene's modelstream evicted the outsider: put the converted entries
 -- back to their own type so they don't stream it into another free slot.
+-- True when it did (the callback's writes are then spent on it).
 local function release_outsider()
     if #converted == 0 or outsider == nil or is_loaded(outsider.kind) then
-        return
+        return false
     end
     for _, c in ipairs(converted) do
         if game.read_u32(c.entry) == outsider.kind then
@@ -276,6 +345,7 @@ local function release_outsider()
     witnesses = kept
     released = { desc = outsider.desc, area = area_serial }
     outsider = nil
+    return true
 end
 
 -- Turn plain entries into the outsider: OUTSIDER_MIN per group first, so every
@@ -302,6 +372,10 @@ local function convert_outsiders(plain)
         local j = rnd() % i + 1
         plain[i], plain[j] = plain[j], plain[i]
     end
+    local total, group_cap, chance = OUTSIDER_TOTAL, OUTSIDER_PER_GROUP, OUTSIDER_CHANCE
+    if warrior_kinds[kind] then
+        total, group_cap, chance = MK_PER_AREA, 1, 0
+    end
     local per_group = {}
     local function convert(slot)
         local from = game.read_u32(slot.entry)
@@ -317,7 +391,7 @@ local function convert_outsiders(plain)
         end
     end
     for _, slot in ipairs(plain) do
-        if #converted >= OUTSIDER_TOTAL then
+        if #converted >= total then
             return
         end
         if (per_group[slot.group] or 0) < OUTSIDER_MIN then
@@ -325,12 +399,56 @@ local function convert_outsiders(plain)
         end
     end
     for _, slot in ipairs(plain) do
-        if #converted >= OUTSIDER_TOTAL then
+        if #converted >= total then
             return
         end
-        if not slot.done and (per_group[slot.group] or 0) < OUTSIDER_PER_GROUP
-            and rnd() % 100 < OUTSIDER_CHANCE then
+        if not slot.done and (per_group[slot.group] or 0) < group_cap
+            and rnd() % 100 < chance then
             convert(slot)
+        end
+    end
+end
+
+-- This area's live Mortal Kombat warriors stay killable: their AI setup set
+-- +0xD4 to 0 for a scripted boss fight they aren't in. At most a few writes.
+local function keep_killable()
+    local kind = outsider and outsider.kind
+    if not warrior_kinds[kind] then
+        return
+    end
+    local flags = game.read_u32(CHAR_POOL + CHAR_FLAGS)
+    if not plausible(flags) then
+        return
+    end
+    for i = 2, 11 do
+        local entity = ENTITY_BASE + i * ENTITY_STRIDE
+        if game.read_u16(flags + i * 2) ~= 0 and game.read_u16(entity + ENTITY_KIND) == kind then
+            local actor = game.read_u32(entity + ACTOR)
+            if plausible(actor) and game.read_u8(actor + CAN_KILL) == 0 then
+                game.write_u8(actor + CAN_KILL, 1)
+            end
+        end
+    end
+end
+
+-- A warrior entry about to spawn one copy more than the type's slot holds
+-- goes back to its own type for good.
+local function keep_copies(entry)
+    local kind = outsider and outsider.kind
+    if not warrior_kinds[kind] or game.read_u32(entry) ~= kind then
+        return
+    end
+    local copies = game.read_u32(CHAR_TABLE + kind * CHAR_ROW + CHAR_COPIES)
+    if copies < 1 or copies > 66 then
+        copies = 2
+    end
+    if alive_of(kind) < copies then
+        return
+    end
+    for _, c in ipairs(converted) do
+        if c.entry == entry then
+            game.write_u32(entry, c.from)
+            return
         end
     end
 end
@@ -435,7 +553,7 @@ local function shuffle_area(skip_started)
     local total = 0
     for group = 0, GROUP_LIMIT - 1 do
         local base = group_base(group)
-        if game.read_u8(base + ENABLED_OFFSET) ~= 0 and not skip_started[group] then
+        if game.read_u8(base + ENABLED_OFFSET) ~= 0 and not skip_started[group] and not rift_group(base) then
             local count = group_count(base)
             for slot = 0, (count or 0) - 1 do
                 local kind = game.read_u32(entry_address(group, slot))
@@ -465,7 +583,8 @@ local function shuffle_area(skip_started)
     if game.read_u8(MANAGER + ST_ACTIVE) ~= 0 then
         local group = game.read_u16(MANAGER + ST_GROUP)
         local base = group_base(group)
-        if group < GROUP_LIMIT and skip_started[group] and game.read_u8(base + ENABLED_OFFSET) ~= 0 then
+        if group < GROUP_LIMIT and skip_started[group] and game.read_u8(base + ENABLED_OFFSET) ~= 0
+                and not rift_group(base) then
             local count = group_count(base) or 0
             for slot = game.read_u16(MANAGER + ST_SPAWNED), count - 1 do
                 local entry = entry_address(group, slot)
@@ -569,7 +688,10 @@ local hooks = {
             if ctx.ecx ~= MANAGER then
                 return
             end
-            release_outsider()
+            keep_killable()
+            if release_outsider() then
+                return               -- the re-plan waits for the next tick (write budget)
+            end
             if census_key == nil or planned then
                 return
             end
@@ -583,11 +705,14 @@ local hooks = {
     {
         address = SPAWN_ENTRY,
         before = function(ctx)
-            measure_before(game.read_u32(ctx.esp + 4))
+            local entry = game.read_u32(ctx.esp + 4)
+            if ctx.ecx == MANAGER and entry_index(entry) then
+                keep_copies(entry)
+            end
+            measure_before(entry)
             if ctx.ecx ~= MANAGER then
                 return
             end
-            local entry = game.read_u32(ctx.esp + 4)
             if entry_index(entry) then
                 guard_spawn(entry)
             end

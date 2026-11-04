@@ -1,0 +1,8 @@
+# Line endings: the repository stores LF; Windows tools may write CRLF in the
+# working tree, which git treats as unchanged. Batch files need CRLF.
+* text=auto
+*.bat text eol=crlf
+*.cmd text eol=crlf
+# Built packages: mod.json pins every file's SHA-256, so their bytes stay exact.
+mods/*/pack/** -text
+*.tar.xz binary

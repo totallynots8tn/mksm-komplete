@@ -1,4 +1,4 @@
-# Environmental Kill XP 2.0
+# Environmental Kill XP 2.0.1
 
 Hazard kills now count **exactly like normal kills**. Each one adds its XP
 (50 for most enemies, more for elites) to your running combo, gets your combo
@@ -29,5 +29,8 @@ does instead, and the game handles everything else.
   combo gets the kill. Versus has no XP.
 - Enemies the game marks as giving no XP still give none.
 - One death counts once, even if several paths fire for it.
+- **2.0.1:** a new enemy that takes the slot of one just killed by a hazard
+  is a new victim. 2.0 ignored any hazard kill in that slot for 5 seconds, so
+  in LDK's crowds some hazard kills paid nothing.
 
 Requires Shaolin Monks Recomp 0.2.0 or later.

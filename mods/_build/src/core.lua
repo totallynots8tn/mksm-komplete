@@ -562,32 +562,45 @@ end
 -- Oni Warlord is authored twice in its area, so census alone made it a
 -- regular enemy that Shaolin Shuffle and LDK could move into a grunt's spawn
 -- entry outside the arena. Super bosses are the critical-path giants; Mortal
--- Kombat characters are the human-sized bosses.
+-- Kombat characters are the human-sized bosses. Names as corrected on
+-- 2026-11-01 (analysis/mk_roster: the old names were two types off); the
+-- older entries keep their place in these sets whatever they turned out to be.
 local SUPER_BOSSES = {
-    [28] = true,               -- Orochi
-    [34] = true,               -- warlord (club)
+    [28] = true,               -- bladed humanoid (was thought to be an Orochi)
+    [34] = true,               -- archer (was thought to be a club warlord)
     [36] = true,               -- Oni Warlord
-    [45] = true, [55] = true,  -- Goro
-    [47] = true,               -- two-slot boss
-    [56] = true,               -- Kintaro
-    [57] = true,               -- Reptile (two-slot)
-    [60] = true, [61] = true,  -- Shang Tsung
-    [62] = true,               -- Shao Kahn
+    [45] = true,               -- swamp snake
+    [47] = true, [57] = true,  -- Goro (the only two-slot types)
+    [55] = true,               -- Scorpion, burned
+    [56] = true,               -- Baraka
+    [58] = true,               -- Kintaro
+    [60] = true, [61] = true,  -- unnamed humanoids next to Shang Tsung
+    [62] = true, [63] = true,  -- Shang Tsung, young and old
+    [64] = true,               -- Shao Kahn
 }
 local MK_BOSSES = {
-    [50] = true, [53] = true,  -- Scorpion
-    [51] = true,               -- Noob Saibot
-    [52] = true,               -- Kano
-    [54] = true,               -- Baraka
-    [63] = true,               -- Kitana
-    [64] = true,               -- Mileena
-    [65] = true,               -- Jade
-    [66] = true,               -- Ermac
-    [67] = true,               -- Sub-Zero
-    [68] = true,               -- Smoke
+    [50] = true,               -- big snake (Reptile's arena)
+    [51] = true,               -- unnamed creature
+    [52] = true,               -- Scorpion
+    [53] = true,               -- Noob Saibot
+    [54] = true,               -- Kano
     [59] = true,               -- Reptile, story fight (map 144): authored in three
                                -- waves, so LDK cloned him as a common enemy (v1 patch 4)
-    [82] = true,               -- Reptile (VS model)
+    [65] = true,               -- Kitana
+    [66] = true,               -- Mileena
+    [67] = true,               -- Jade
+    [68] = true,               -- Ermac
+    [69] = true,               -- Sub-Zero
+    [70] = true,               -- Smoke
+    [71] = true,               -- Johnny Cage (story)
+    [72] = true,               -- Raiden
+    [74] = true,               -- Jax
+    [78] = true,               -- Johnny Cage
+    [81] = true,               -- Kintaro (morning star model)
+    [82] = true, [88] = true,  -- Scorpion, Sub-Zero (playable models)
+    [83] = true, [84] = true,  -- Baraka, Reptile (versus models)
+    [85] = true, [86] = true,  -- Ermac (versus), Johnny Cage (stone)
+    [89] = true, [90] = true,  -- Kitana, Johnny Cage (versus models)
 }
 local function is_boss(kind)
     return SUPER_BOSSES[kind] == true or MK_BOSSES[kind] == true
@@ -643,4 +656,24 @@ end
 local function is_common(kind)
     return kind ~= NO_TYPE and (census[kind] or 0) >= 2 and not is_boss(kind)
 end
+
+-- Time Rifts (a separate mod) builds its boss's spawn group itself and marks
+-- it with this word in the group record's tail, which the spawn code never
+-- reads (it reads only the count +0xA68 and the enabled byte +0xA6A there).
+-- LDK and Shaolin Shuffle leave a marked group alone: no clones, no shuffle.
+-- Time Rifts writes the same constants (time_rifts_body.lua).
+local RIFT_MARK_OFFSET = 0xA10
+local RIFT_MARK        = 0x54464952   -- "RIFT"
+local function rift_group(base)
+    return game.read_u32(base + RIFT_MARK_OFFSET) == RIFT_MARK
+end
+
+-- Shaolin Shuffle's outsider pool: regular enemy types (one memory slot
+-- each) that a map's roster gains from another level (randomizer_body.lua).
+-- LDK reads it too: such a type authored now but missing from the census
+-- (built before Shuffle converted entries into it) is Shuffle's outsider,
+-- with a fresh heap of its own. The Living Forest's tree mouth (42) and tree
+-- arms (43) left it (Shuffle 0.12.1): hazards a wave doesn't count, hard to
+-- kill, that stayed in the room after its wave.
+local OUTSIDERS = { 10, 11, 12, 13, 14, 15, 26, 27, 18 }
 -- ===== end shared spawn core =====
