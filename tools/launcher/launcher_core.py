@@ -36,6 +36,8 @@ LEVEL_NAMES = {"x2": "x2", "x3": "x3 Hard", "x4": "x4 Legendary"}
 PROBE = "mksmk_probe"
 PROJECT_URL = "https://github.com/totallynots8tn/mksm-komplete"
 RECOMP_URL = "https://github.com/OAleex/ShaolinMonksRecomp"
+COFFEE_URL = "https://buymeacoffee.com/S8tn"           # as in README.md and release/site
+COFFEE_LABEL = "Insert coin: buy me a coffee"
 
 
 # ------------------------------------------------------------ the game process

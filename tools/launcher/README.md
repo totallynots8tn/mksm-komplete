@@ -17,7 +17,10 @@ needs no `packages` folder, no Python and no install step.
   builds, another test set), QA console (when run from the project folder),
   Repair, Uninstall all, and buttons to open the mods, logs, backups and
   game folders.
-- **Credits**.
+- **Credits**, with the support link. The sidebar's gold **Insert coin: buy me
+  a coffee** button opens the same link as README.md and the site
+  (buymeacoffee.com/S8tn). It pulses like the site's button, unless Windows
+  animations are off.
 
 ## What Install/Update does
 

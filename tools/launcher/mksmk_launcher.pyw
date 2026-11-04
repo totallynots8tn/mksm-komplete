@@ -36,7 +36,7 @@ from launcher_art import (AMBER, AMBER_BG, BG, BLOOD, BLOOD_HI, BLUE, BLUE_BG, C
                           GOLD_HI, GREEN, GREEN_BG, LINE, LINE_HI, MUTED, ORANGE, ORANGE_BG, RED, RED_BG, SIDE, TEXT)
 
 APP = "MKSM Komplete+"
-LAUNCHER_VERSION = "1.0.0"
+LAUNCHER_VERSION = "1.0.1"
 ICON = {"play": "", "mods": "", "tester": "", "credits": "", "folder": "",
         "download": "", "refresh": "", "delete": "", "check": "", "warn": "",
         "info": "", "game": "", "link": "", "settings": "", "error": "",
@@ -48,6 +48,7 @@ FONTS = {
     "btn": ("Segoe UI Semibold", 10), "btn_big": ("Impact", 16), "icon": ("Segoe MDL2 Assets", 11),
     "icon_big": ("Segoe MDL2 Assets", 13), "nav": ("Segoe UI Semibold", 11), "tile_name": ("Segoe UI Semibold", 9),
     "tile_state": ("Segoe UI Semibold", 8), "big_num": ("Impact", 30), "section": ("Impact", 15),
+    "coin": ("Impact", 14), "small_b": ("Segoe UI Semibold", 9),
 }
 S = 1.0                                     # display scale (1.0 = 96 dpi)
 _KEEP = object()
@@ -454,6 +455,61 @@ class NavItem(tk.Canvas):
         self.itemconfigure(self.lbl, fill=color)
 
 
+def animations_on():
+    """Windows' "Show animations in Windows" setting; when it's off nothing pulses."""
+    if os.name != "nt":
+        return True
+    value = ctypes.c_int(1)
+    try:
+        if ctypes.windll.user32.SystemParametersInfoW(0x1042, 0, ctypes.byref(value), 0):  # SPI_GETCLIENTAREAANIMATION
+            return bool(value.value)
+    except (OSError, AttributeError):
+        pass
+    return True
+
+
+class CoinButton(tk.Canvas):
+    """The project's support link ("Insert coin: buy me a coffee"), pulsing gently
+    like the coin button on the project site."""
+    W, H, PAD = 196, 60, 6
+    FRAMES = (0.0, 0.2, 0.45, 0.7, 0.9, 1.0, 0.9, 0.7, 0.45, 0.2)
+
+    def __init__(self, parent):
+        super().__init__(parent, bg=SIDE, highlightthickness=0, bd=0, width=px(self.W), height=px(self.H),
+                         cursor="hand2")
+        self.hover, self.frame = False, 0
+        self.img = self.create_image(0, 0, anchor="nw")
+        x = px(self.PAD) + (px(self.H) - 2 * px(self.PAD))         # right of the coin
+        mid = px(self.H) / 2
+        top = self.create_text(x, mid + px(1), anchor="sw", text="INSERT COIN", font=FONTS["coin"], fill=GOLD_DK)
+        sub = self.create_text(x, mid + px(1), anchor="nw", text="buy me a coffee", font=FONTS["small_b"],
+                               fill="#5c3f0c")
+        for item in (top, sub):              # Impact's side bearing differs: line both up at x
+            self.move(item, x - self.bbox(item)[0], 0)
+        self.bind("<Enter>", lambda e: self._hover(True))
+        self.bind("<Leave>", lambda e: self._hover(False))
+        self.bind("<Button-1>", lambda e: webbrowser.open(core.COFFEE_URL))
+        self._paint()
+        if animations_on():
+            self.after(1500, self._pulse)
+
+    def _hover(self, value):
+        self.hover = value
+        self._paint()
+
+    def _paint(self):
+        t = 0.0 if self.hover else self.FRAMES[self.frame]
+        w, h, hover, pad = px(self.W), px(self.H), self.hover, px(self.PAD)
+        self._ref = photo(("coin", w, h, t, hover), lambda: art.coin_button(w, h, t, hover, SIDE, pad))
+        self.itemconfigure(self.img, image=self._ref)
+
+    def _pulse(self):
+        self.frame = (self.frame + 1) % len(self.FRAMES)
+        if not self.hover:
+            self._paint()
+        self.after(220, self._pulse)
+
+
 class Sidebar(tk.Frame):
     def __init__(self, parent, app):
         super().__init__(parent, bg=SIDE, width=px(236))
@@ -473,6 +529,8 @@ class Sidebar(tk.Frame):
             self.items[key] = item
         self.status = tk.Canvas(self, bg=SIDE, highlightthickness=0, bd=0, height=px(86))
         self.status.pack(side="bottom", fill="x", padx=px(26), pady=(0, px(22)))
+        self.coin = CoinButton(self)
+        self.coin.pack(side="bottom", anchor="w", padx=px(20), pady=(0, px(14)))
 
     def refresh(self):
         for item in self.items.values():
@@ -1041,6 +1099,10 @@ class CreditsPage(Page):
             ("INSPIRED BY\n", "section"),
             ("RelaxDirk's UMKSM", "b"), (": the future-roster ideas. Nothing from UMKSM is included, and no "
                                          "affiliation is implied.\n", ()),
+            ("SUPPORT\n", "section"),
+            link(core.COFFEE_LABEL, core.COFFEE_URL),
+            (". Can't chip in? That's fine. Star the repo, share a clip of a 3x fight, or send a bug report. "
+             "It all keeps the project alive.\n", ()),
             ("THE PACK\n", "section"),
             ("Free and unofficial. Not affiliated with, endorsed by, or sponsored by Midway, Warner Bros. or "
              "NetherRealm Studios. Mortal Kombat and Shaolin Monks are trademarks of their respective owners. You "

@@ -116,6 +116,9 @@ class LauncherCore(unittest.TestCase):
             self.assertTrue((folder / "mod.json").is_file(), mid)
             for f in package["manifest"]["files"]:
                 self.assertTrue((folder / f["path"]).is_file(), f["path"])
+        self.assertEqual(core.plan(self.bundle, modtool.read_registry(self.data / "mods")), [])
+        if self._running():               # modtool refuses while the Recomp runs (as it should)
+            self.skipTest("Shaolin Monks Recomp is running: modtool list not checked")
         listed = subprocess.run([sys.executable, str(ROOT / "mods" / "_build" / "modtool.py"), "list",
                                  "--data", str(self.data)], capture_output=True, text=True, check=True).stdout
         lines = [ln.strip() for ln in listed.splitlines()[1:] if ln.strip()]
@@ -123,7 +126,6 @@ class LauncherCore(unittest.TestCase):
         for mid, r in rows.items():
             line = f"[{'x' if r['enabled'] else ' '}] {r['manifest']['name']} {r['version']}"
             self.assertIn(line, lines)
-        self.assertEqual(core.plan(self.bundle, modtool.read_registry(self.data / "mods")), [])
 
     def test_prefs_choose_level_and_switches(self):
         self.fresh({"on": {"time_rifts": False, "mksmk_probe": True}, "level": "x4"})

@@ -229,6 +229,29 @@ def logo(w, h, bg=SIDE):
     return down(out, w, h)
 
 
+def coin_button(w, h, glow_t=0.0, hover=False, bg=SIDE, pad=6):
+    """The sidebar's gold "insert coin" button, with a coin on the left and a soft
+    gold glow around it (glow_t 0..1, pulsed like the site's coin button)."""
+    W, H, P = int(w) * SS, int(h) * SS, pad * SS
+    out = Image.new("RGBA", (W, H), rgba(bg))
+    if glow_t > 0:
+        halo = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+        ImageDraw.Draw(halo).rounded_rectangle([P * 0.4, P * 0.4, W - 1 - P * 0.4, H - 1 - P * 0.4],
+                                               int((H - 2 * P) * 0.24) + P, fill=rgba(GOLD, int(150 * glow_t)))
+        out.alpha_composite(halo.filter(ImageFilter.GaussianBlur(P * 0.45)))
+    body_w, body_h = W - 2 * P, H - 2 * P
+    top, fill = (mix(GOLD_HI, "#ffffff", 0.18), GOLD_HI) if hover else (GOLD_HI, GOLD)
+    body = vgradient(body_w, body_h, top, fill)
+    r = int(body_h * 0.24)
+    cx, cy, cr = body_h * 0.52, body_h / 2, body_h * 0.30       # the coin
+    d = ImageDraw.Draw(body)
+    d.ellipse([cx - cr, cy - cr, cx + cr, cy + cr], fill=rgba(GOLD_DK))
+    d.ellipse([cx - cr * 0.72, cy - cr * 0.72, cx + cr * 0.72, cy + cr * 0.72], outline=rgba(GOLD), width=SS)
+    d.text((cx, cy + SS * 0.5), "+", font=font(IMPACT, cr * 1.25), fill=rgba(GOLD), anchor="mm")
+    out.paste(body, (P, P), rmask(body_w, body_h, r))
+    return down(out, w, h)
+
+
 def app_icon(size=256):
     """The window and .exe icon: a gold K+ on a dark rounded square."""
     W = size * SS if size <= 128 else size * 2
