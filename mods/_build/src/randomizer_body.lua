@@ -1,5 +1,6 @@
 
--- ===== Shaolin Shuffle 0.12.1 =====
+-- ===== Shaolin Shuffle 0.13.0 =====
+-- 0.13.0: outsiders in full areas too, by a swap where it was tested (SWAPS).
 -- 0.12.1: no more tree mouths or tree arms as outsiders (OUTSIDERS, core.lua).
 -- 0.12.0: Mortal Kombat warriors (see MK_WARRIORS below).
 -- 0.11.5: the shared boss list (core.lua) with corrected character names
@@ -80,6 +81,32 @@ local CHAR_ROW           = 0x30
 local CHAR_SLOTS         = 0x04
 local SLOT_BUDGET        = 3            -- when the level may stream a type in on the spot
 local SLOT_BUDGET_FULL   = 4            -- when every authored type is in the roster
+-- 0.13: outsiders in full areas. An area whose roster leaves no memory slot
+-- for an outsider gets one by a swap instead: one listed regular type whose
+-- spawn entries are all plain leaves the preload list for the outsider, and
+-- every one of its entries becomes the outsider. 0.11.2's swap crashed the
+-- Wu Shi entrance (see 0.11.3), so only pairs that loaded live without a
+-- crash swap (2026-11-03: the type swapped in memory, the map loaded at entry
+-- 1). Map 103's Tarkatans crashed like map 104's, and map 128 streamed its
+-- corpses back over the outsider, so neither is here; the Wu Shi maps with
+-- Tarkatans weren't tested. Keyed by map descriptor.
+local SWAPS = {
+    [0x004FE318] = 12,   -- map 64: archers (with Oni and handlers)
+    [0x004FE6B0] = 10,   -- map 69: captains
+    [0x004FE990] = 10,   -- map 74, the Pit II: captains
+    [0x00501620] = 10,   -- map 197: captains
+    [0x005013F8] = 10,   -- map 194: captains
+    [0x00501288] = 27,   -- map 192, the Evil Monastery: priests
+    [0x004FEDE0] = 15,   -- map 101: Oni
+    [0x004FF458] = 4,    -- map 129: clay soldiers
+    [0x004FF510] = 4,    -- map 130: clay soldiers
+    [0x004FF680] = 17,   -- map 135: type 17
+    [0x004FF738] = 18,   -- map 136: corpses
+    [0x004FF7F0] = 18,   -- map 137: corpses
+    [0x004FE038] = 9,    -- map 45: type 9
+    [0x004FE260] = 31,   -- map 48: Shokan
+}
+local MAX_SWAP_ENTRIES   = 150          -- entries a swap may convert in the preload's callback (write budget)
 local GAME_MANAGER       = 0x005ACEBC
 local GAME_MODE          = 0x88         -- 2 = versus
 -- 0.11: one mod with what was the Wild variant: the v1 pool plus the regular
@@ -225,6 +252,32 @@ local function streams_on_the_spot(roster, authored)
     return false
 end
 
+-- Every spawn entry of `kind` in the area's groups (disabled ones included: a
+-- trigger may enable them later), or nil when one isn't plain (a scripted
+-- entrance needs its own type loaded), one is in a Time Rifts group, there are
+-- none, or there are more than one callback can convert.
+local function swap_entries(kind)
+    local entries = {}
+    local read = game.read_u32
+    for base = MANAGER, MANAGER_END - 1, GROUP_STRIDE do
+        local count = game.read_u16(base + COUNT_OFFSET)
+        if count > ENTRY_SLOTS then
+            count = 0
+        end
+        local entry = base + ENTRY_BASE
+        for _ = 1, count do
+            if read(entry) == kind then
+                if signature(entry) ~= GENERIC or rift_group(base) or #entries >= MAX_SWAP_ENTRIES then
+                    return nil
+                end
+                entries[#entries + 1] = entry
+            end
+            entry = entry + ENTRY_STRIDE
+        end
+    end
+    return #entries > 0 and entries or nil
+end
+
 -- The Mortal Kombat warriors this area may take (none in a boss arena).
 local function warrior_pool(roster, own, authored)
     for _, kind in ipairs(roster.list) do
@@ -243,56 +296,69 @@ end
 
 -- Runs before 0xCFAB0 reads the preload list. Restores the map's authored
 -- roster (an earlier visit may have changed this static list) and, when the
--- roster fits the slot budget, appends an outsider. A re-preload in the same
--- area (0xD1910, after a cutscene) keeps the same outsider.
+-- roster fits the slot budget, appends an outsider; a full roster in SWAPS
+-- trades its type for one instead (0.13), and that type's entries become the
+-- outsider right here, before anything reads the groups. A re-preload in the
+-- same area (0xD1910, after a cutscene) keeps the same outsider.
 local function plan_preload(desc)
     if not plausible(desc) or desc >= 0x01000000 then
         return
     end
     local roster = authored_roster(desc)
     local n = #roster.list
-    local kind = nil
+    local kind, swap, entries = nil, nil, nil
     local evicted = released and released.desc == desc and released.area == area_serial
     local fresh = preload_serial ~= area_serial          -- this area's groups loaded since the last preload
     preload_serial = area_serial
     local eligible = not fatality_area() and not evicted and not versus()
     if eligible and outsider and outsider.desc == desc and outsider.area == area_serial then
-        kind = outsider.kind                             -- a re-preload (0xD1910) keeps it
+        kind, swap = outsider.kind, outsider.swap        -- a re-preload (0xD1910) keeps it
     elseif eligible then
         local authored = fresh and authored_types() or nil
         local budget = SLOT_BUDGET
         if authored and not streams_on_the_spot(roster, authored) then
             budget = SLOT_BUDGET_FULL
         end
+        local own, pool = {}, {}
+        for _, k in ipairs(roster.list) do
+            own[k] = true
+        end
         if takes_outsider(roster, budget) then
             reseed(desc ~ area_serial)
-            local own, pool = {}, {}
-            for _, k in ipairs(roster.list) do
-                own[k] = true
-            end
             if authored and rnd() % 100 < MK_CHANCE then
                 pool = warrior_pool(roster, own, authored)
             end
-            if #pool == 0 then
-                for _, candidate in ipairs(OUTSIDERS) do
-                    if not own[candidate] then
-                        pool[#pool + 1] = candidate
-                    end
+        elseif fresh and own[SWAPS[desc]] then
+            entries = swap_entries(SWAPS[desc])
+            if entries then
+                reseed(desc ~ area_serial)
+                swap = SWAPS[desc]
+            end
+        end
+        if (swap or takes_outsider(roster, budget)) and #pool == 0 then
+            for _, candidate in ipairs(OUTSIDERS) do
+                if not own[candidate] then
+                    pool[#pool + 1] = candidate
                 end
             end
-            if #pool > 0 then
-                kind = pool[rnd() % #pool + 1]
-            end
+        end
+        if #pool > 0 then
+            kind = pool[rnd() % #pool + 1]
+        else
+            swap = nil
         end
     end
     for i, k in ipairs(roster.list) do
+        if k == swap then
+            k = kind                                     -- the swap: the outsider takes the type's place
+        end
         local at = desc + DESC_LIST + (i - 1) * 4
         if game.read_u32(at) ~= k then
             game.write_u32(at, k)
         end
     end
     local slot = desc + DESC_LIST + n * 4
-    if kind then
+    if kind and not swap then
         game.write_u32(slot, kind)
         game.write_u32(slot + 4, NO_TYPE)
         if roster.cap < n + 1 then
@@ -308,7 +374,15 @@ local function plan_preload(desc)
     if game.read_u32(desc + DESC_CAP) ~= roster.cap then
         game.write_u32(desc + DESC_CAP, roster.cap)
     end
-    outsider = nil               -- every map load preloads its own roster
+    if not swap then
+        outsider = nil           -- every map load preloads its own roster
+        return
+    end
+    outsider = { kind = kind, desc = desc, area = area_serial, swap = swap }
+    for _, entry in ipairs(entries or {}) do                 -- none on a re-preload: they hold it already
+        game.write_u32(entry, kind)
+        converted[#converted + 1] = { entry = entry, from = swap }
+    end
 end
 
 -- The outsider type when it is loaded for this area, else nil.
@@ -353,6 +427,9 @@ end
 -- OUTSIDER_PER_GROUP per group and OUTSIDER_TOTAL per area. A re-plan that
 -- finds earlier conversions still in place keeps them instead of adding more.
 local function convert_outsiders(plain)
+    if outsider and outsider.swap then
+        return                   -- a swap's entries were converted at the preload (plan_preload)
+    end
     local kind = outsider_kind()
     if kind == nil then
         converted = {}
@@ -551,6 +628,8 @@ local function shuffle_area(skip_started)
     local eligible = {}          -- type -> may be shuffled (cached per call)
     local plain = {}             -- plain eligible entries, outsider candidates
     local total = 0
+    -- a swap's outsider stays where its type was: release_outsider restores it there
+    local held = outsider and outsider.swap and outsider.kind
     for group = 0, GROUP_LIMIT - 1 do
         local base = group_base(group)
         if game.read_u8(base + ENABLED_OFFSET) ~= 0 and not skip_started[group] and not rift_group(base) then
@@ -559,7 +638,7 @@ local function shuffle_area(skip_started)
                 local kind = game.read_u32(entry_address(group, slot))
                 local ok = eligible[kind]
                 if ok == nil then
-                    ok = is_common(kind) and is_loaded(kind) and heap_of(kind) ~= nil
+                    ok = is_common(kind) and is_loaded(kind) and heap_of(kind) ~= nil and kind ~= held
                     eligible[kind] = ok
                 end
                 if total < MAX_SLOTS and ok then
@@ -591,7 +670,7 @@ local function shuffle_area(skip_started)
                 local kind = game.read_u32(entry)
                 local ok = eligible[kind]
                 if ok == nil then
-                    ok = is_common(kind) and is_loaded(kind) and heap_of(kind) ~= nil
+                    ok = is_common(kind) and is_loaded(kind) and heap_of(kind) ~= nil and kind ~= held
                     eligible[kind] = ok
                 end
                 if ok and signature(entry) == GENERIC then

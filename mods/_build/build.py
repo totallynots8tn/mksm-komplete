@@ -40,7 +40,9 @@ SHUFFLE_SUMMARY = ("Swaps enemy types between spawn slots that behave the same, 
     "spawn slots between rooms so a room that authors one enemy type spawns several. "
     "Areas that load one or two enemy types also get an outsider enemy type from another level "
     "(9 types), always leaving one enemy memory slot free; about one in three gets a Mortal Kombat warrior "
-    "instead (two per area, made killable). Per-type totals never change; bosses keep their places.")
+    "instead (two per area, made killable). Fourteen areas whose memory is full trade one of their own "
+    "enemy types for the outsider instead (each pair was load-tested live). Per-type totals never change; "
+    "bosses keep their places.")
 
 # The XP shop ships as two scripts from one source: the menu and its upgrades,
 # and the EX moves, so an error in one can't switch off the other. Both carry
@@ -89,7 +91,7 @@ MODLIST = [
      {'ldk.lua': lambda: ldk_variant(3)}, {'conflicts': ['ldk', 'ldk_x4']}),
     ('ldk_x4', 'ldk_x4', 'Legendary Dark Knight Mode (x4 Legendary)', 'ldk.md', '3.11.3', LDK_SUMMARY.format(x='x4'),
      {'ldk.lua': lambda: ldk_variant(4)}, {'conflicts': ['ldk', 'ldk_x3']}),
-    ('randomizer', 'randomizer', 'Shaolin Shuffle (Enemy Randomizer)', 'randomizer.md', '0.12.1', SHUFFLE_SUMMARY,
+    ('randomizer', 'randomizer', 'Shaolin Shuffle (Enemy Randomizer)', 'randomizer.md', '0.13.0', SHUFFLE_SUMMARY,
      {'randomizer.lua': lambda: assemble('core.lua', 'randomizer_body.lua')},
      {'conflicts': ['randomizer_wild', 'randomizer_chaos']}),
     ('env_kill_xp', 'env_kill_xp', 'Environmental Kill XP', 'env_kill_xp.md', '2.0.1',

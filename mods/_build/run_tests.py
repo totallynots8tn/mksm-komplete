@@ -54,6 +54,7 @@ CASES = [
     ('probe_shuffle', 'probe_shuffle.lua', [probe('probe_shuffle.lua')], {}, ()),
     ('probe_upgrade', 'probe_upgrade.lua', [probe('probe_upgrade.lua')], {}, ()),
     ('shuffle_outsider', 'shuffle_outsider.lua', [SHUFFLE], {}, ()),
+    ('shuffle_swap', 'shuffle_swap.lua', [SHUFFLE], {}, ()),
     ('time_rifts_110', 'time_rifts_rift.lua', [RIFTS, '110', 'beaten'], {}, ()),
     ('time_rifts_132', 'time_rifts_rift.lua', [RIFTS, '132', 'beaten'], {}, ()),
     ('time_rifts_vanish', 'time_rifts_rift.lua', [RIFTS, '110', 'vanish'], {}, ()),

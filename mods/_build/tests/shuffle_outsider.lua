@@ -1,9 +1,9 @@
--- Shaolin Shuffle 0.12.1 preload rules: a map whose roster has a regular enemy
+-- Shaolin Shuffle 0.13.0 preload rules: a map whose roster has a regular enemy
 -- type gets one outsider appended (cap raised so the preload isn't skipped)
 -- when the roster plus the outsider fit in 3 memory slots, or in all 4 when
 -- the area's freshly loaded spawn groups author no type outside the roster.
 -- Otherwise the roster is left as authored (0.11.2's in-place swap crashed
--- map 104). Boss-only and MK-only lists and versus keep the authored
+-- map 104), except on the maps 0.13 load-tested (tests/shuffle_swap.lua). Boss-only and MK-only lists and versus keep the authored
 -- roster, which is restored on every visit. 0.12: some outsiders are
 -- Mortal Kombat warriors, never in a boss arena, never a type the area's
 -- groups author, and only when the groups were freshly loaded.
@@ -159,4 +159,4 @@ groups({})
 assert(#H.failed == 0, "script error: " .. tostring(H.failed[1]))
 print("max_writes", H.max_writes, "max_instr", H.max_instr)
 print("warriors seen:", warriors_seen, "regular outsiders seen:", regulars_seen)
-print("PASS shuffle 0.12.1 preload rules")
+print("PASS shuffle 0.13.0 preload rules")

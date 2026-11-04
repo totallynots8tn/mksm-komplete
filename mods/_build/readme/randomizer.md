@@ -1,4 +1,4 @@
-# Shaolin Shuffle 0.12.1
+# Shaolin Shuffle 0.13.0
 
 Changes which enemy types a room spawns, three ways:
 
@@ -10,7 +10,8 @@ Changes which enemy types a room spawns, three ways:
   enemy type from another level to the map's preload list and turns plain
   slots into it. An area with one or two loaded enemy types gets one as an
   extra type, and so does an area with three when nothing in it needs the
-  fourth memory slot.
+  fourth memory slot. **0.13:** fourteen areas whose memory is full trade
+  one of their own enemy types for the outsider instead (see below).
 - **Mortal Kombat warriors (0.12).** About one outsider area in three gets
   a Mortal Kombat character instead. Two of the area's rooms each get one
   warrior: Scorpion, Hell Scorpion, Kano, Baraka, Reptile, Kitana, Mileena,
@@ -39,6 +40,27 @@ two-slot characters are never outsiders.
 
 If you had Shaolin Shuffle (Wild) or (Chaos) installed, remove them; this
 mod replaces both.
+
+## 0.13.0: outsiders in full areas
+
+Areas that already fill their enemy memory used to get room mixing only.
+Now fourteen of them trade one of their own enemy types for the outsider:
+the type leaves the area's load list, the outsider takes its memory slot,
+and every spawn of that type becomes the outsider. That's the Foundry's
+archers (map 64), the captains of maps 69, 194 and 197 and the Pit II, the
+Evil Monastery's priests (192), the Oni of map 101, the Living Forest's clay
+soldiers, scythe enemies and corpses (129, 130, 135, 136, 137), and maps 45
+and 48.
+
+Shuffle 0.11.2 tried this everywhere and crashed in the Wu Shi entrance:
+some levels place characters of their own types straight in the scene, and
+those need their type loaded. So each of the fourteen was load-tested live
+with its type swapped out (2026-11-03). Wu Shi's start (map 103) crashed
+like the entrance, and in map 128 the game loaded its corpses straight back,
+so those stay as they were; the other Wu Shi areas with Tarkatans weren't
+tested and keep their roster too. The swap only happens when every spawn of
+the type is a plain one (no scripted entrance), and a cutscene that pushes
+the outsider out puts the area's own type back.
 
 ## 0.12.1: no trees
 
