@@ -1,4 +1,4 @@
-# Time Rifts 0.12.0 (preview)
+# Time Rifts 0.14.3 (preview)
 
 Rifts without a portal model. Step into a rift and its arena reloads; when
 you are back in control, a boss drops in mid-arena and waits for you.
@@ -35,6 +35,31 @@ you are back in control, a boss drops in mid-arena and waits for you.
   Shang Tsung). Smoke tells you which battle you are in. Win a stage and the
   next one loads; after the last you are back with Smoke, who pays 10,000 XP
   the first time and 2,500 after. You can run it again.
+- **The Soul Tombs (map 4), after the gauntlet:** the first postgame rift.
+  In the chamber where Shang Tsung's soul orb is destroyed, the Survival
+  portal's ground rings, rays and red ring rise and the Black button (^)
+  opens the rift. It
+  sends you to Survival 10, the cut stage built on that chamber: Shang Tsung
+  and his priests as the stage has them, then Goro with four Red Dragons,
+  Kintaro with four Black Dragons, and the young Shang Tsung with two of
+  each. Win and you are back in the chamber with 15,000 XP; go down and you
+  are sent back without it. You can run it again. To make room, the rift adds
+  both dragon clans to that stage's load list for its run (Shuffle leaves the
+  Survival stages alone). The stage's own exit stays shut until the last boss
+  is down.
+- **The Champion Shrine (map 108), Ermac's battle, after the gauntlet:** the
+  second postgame rift, the same portal and button. It sends you to
+  Survival 31: Reptile, Ermac, Sub-Zero and Scorpion together, then the
+  burned and the regular Scorpion with zombies and skeletons, two Sub-Zeros
+  with Black Dragons, two Reptiles with the Living Forest's shadows, two
+  Ermacs with priests, two Kanos with Red Dragons, and the ex-champion Goro
+  with his clone. 20,000 XP. Each phase loads the types it needs into the
+  memory the last one leaves.
+
+Both postgame rifts are one script, `postgame.lua`, which writes one
+`POSTGAME 0.14.3 <rift> <verdict>` line per run. Each phase comes out of
+the stage's rift, the spot you landed on: it flashes for a moment when you
+land, when each phase drops and when the chain is won.
 
 Walk away from the rift first, then step in. Beat the boss, save at a statue,
 quit. A rift you beat stays closed on that save (it never opens again), so
@@ -79,6 +104,43 @@ there is one).
 game code reads (the XP Shop uses 19-21 and 27); bit 4 is the gauntlet's.
 
 ## History
+
+- 0.14.3 (the user: the stage's rift stayed up after you dropped in): in the
+  stage the rift only flashes, for 2.5 seconds, when you land, when a phase
+  drops and when the chain is won. The entrance's portal stays up.
+
+- 0.14.2 (QA 2026-11-04 with a live recorder: the Scorpions' phase spawned
+  only the burned Scorpion, and the game crashed two seconds after phase 2's
+  Sub-Zeros spawned; he had been streamed back into another slot than his
+  own): a type that held a slot in the stage only ever comes back into that
+  slot, and one already used in the stage is loaded again there first, so
+  its memory is fresh for the phase's copies.
+
+- 0.14.1 (QA 2026-11-04: the Champion Shrine crashed in the game's model
+  decompression worker, as map 199 did after the Orochi was streamed over
+  its priests; and the phases dropped on Liu): a slot is only streamed over
+  once nobody of its type has been up for 10 seconds (a dismembered
+  fighter's parts outlive it), and each phase drops from the stage's rift.
+
+- 0.14.0: the Champion Shrine rift. The postgame rifts are one script
+  (`postgame.lua`, replacing `soul_rift.lua`) with the rifts as data; a phase
+  is a set of bosses (clones included) and grunts, and every type it lacks is
+  streamed in before the drop, waiting for a slot's last body to go. Types
+  taken: 8 for the zombies, 4 for the skeletons, 17 for the shadows.
+
+- 0.13.1 (QA 2026-11-04: the whole chain was BEATEN, but every boss came
+  alone and the stage's exit opened during Goro's fight): a dragon clan the
+  stage no longer holds when a phase starts is streamed into a free slot
+  with memory first; the stage's own loadmap is taken back while the chain
+  runs; the portal adds Survival 2's rays (105) and red ring (48) to the
+  rings; the notes list the memory slots at the stage and at each phase.
+
+- 0.13.0: the Soul Tombs rift (its own script, `soul_rift.lua`), the first of
+  the postgame rifts: the user's chain of Shang Tsung, Goro, Kintaro and the
+  young Shang Tsung, with the dragon clans. The rings are the global effect
+  109 through the particleoffset command (0x1582A0); Black is pad byte +6
+  and the prompt is text 60. Type 9 is taken for the Black Dragon and 16 for
+  the Red Dragon.
 
 - 0.12.0: the Survival gauntlet in Smoke's secret area (its own script,
   `gauntlet.lua`). The rift opens once the save has game event 115 (the Pit

@@ -1,5 +1,7 @@
 
--- ===== Legendary Dark Knight 3.11.3 (with Boss Invasion) =====
+-- ===== Legendary Dark Knight 3.11.4 (with Boss Invasion) =====
+-- 3.11.4: the tree mouth and tree arms are hazards (HAZARDS, core.lua): never
+-- cloned or sent as reinforcements (their clones blocked the Living Forest).
 -- 3.11.3: the shared outsider pool (core.lua) lost the tree mouth and tree arms.
 -- 3.11.2: the shared boss list (core.lua) with corrected character names
 -- covers every Mortal Kombat character.
@@ -227,7 +229,7 @@ local function loaded_kinds(skip)
             seen[kind] = true
             if is_common(kind) or shuffle_outsider(kind) then
                 common[#common + 1] = kind
-            elseif census[kind] == 1 and not is_boss(kind) then
+            elseif census[kind] == 1 and not is_boss(kind) and not HAZARDS[kind] then
                 elite[#elite + 1] = kind
             end
         end

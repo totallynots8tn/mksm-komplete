@@ -1,5 +1,9 @@
 
--- ===== Shaolin Shuffle 0.13.0 =====
+-- ===== Shaolin Shuffle 0.13.2 =====
+-- 0.13.2: the tree mouth and tree arms are hazards (HAZARDS, core.lua): never
+-- shuffled or mixed between rooms.
+-- 0.13.1: maps 161-191 (the cut Survival stages and the versus arenas) are
+-- Time Rifts' arenas and stay as authored: no outsider, no shuffle (SURVIVAL).
 -- 0.13.0: outsiders in full areas too, by a swap where it was tested (SWAPS).
 -- 0.12.1: no more tree mouths or tree arms as outsiders (OUTSIDERS, core.lua).
 -- 0.12.0: Mortal Kombat warriors (see MK_WARRIORS below).
@@ -107,6 +111,22 @@ local SWAPS = {
     [0x004FE260] = 31,   -- map 48: Shokan
 }
 local MAX_SWAP_ENTRIES   = 150          -- entries a swap may convert in the preload's callback (write budget)
+-- 0.13.1: the cut Survival stages (and the versus arenas between them) are
+-- only reached through Time Rifts, which loads its fights there and adds to
+-- their preload lists (soul_rift.lua). Shuffle leaves them as authored.
+local MAP_TABLE          = 0x005020E8   -- map number -> descriptor
+local CURRENT_MAP        = 0x00505970
+local SURVIVAL_FIRST, SURVIVAL_LAST = 161, 191
+local survival_descs = nil
+local function survival_desc(desc)
+    if survival_descs == nil then
+        survival_descs = {}
+        for m = SURVIVAL_FIRST, SURVIVAL_LAST do
+            survival_descs[game.read_u32(MAP_TABLE + m * 4)] = true
+        end
+    end
+    return survival_descs[desc] == true
+end
 local GAME_MANAGER       = 0x005ACEBC
 local GAME_MODE          = 0x88         -- 2 = versus
 -- 0.11: one mod with what was the Wild variant: the v1 pool plus the regular
@@ -302,6 +322,10 @@ end
 -- same area (0xD1910, after a cutscene) keeps the same outsider.
 local function plan_preload(desc)
     if not plausible(desc) or desc >= 0x01000000 then
+        return
+    end
+    if survival_desc(desc) then
+        outsider = nil           -- Time Rifts' arena: its list stays as Time Rifts left it
         return
     end
     local roster = authored_roster(desc)
@@ -621,6 +645,10 @@ end
 
 local function shuffle_area(skip_started)
     planned = true
+    local map = game.read_u32(CURRENT_MAP)
+    if map >= SURVIVAL_FIRST and map <= SURVIVAL_LAST then
+        return                   -- Time Rifts' arena: as authored
+    end
     if fatality_area() then
         return                   -- fatality room: vanilla (core.lua)
     end

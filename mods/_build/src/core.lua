@@ -606,6 +606,14 @@ local function is_boss(kind)
     return SUPER_BOSSES[kind] == true or MK_BOSSES[kind] == true
 end
 
+-- Hazards: the Living Forest's tree mouth (42) and tree arms (43). The game
+-- spawns them like enemies, but they are scenery a wave can't be won through:
+-- hard to kill, and a room whose way on waits for its enemies to die stays
+-- shut while one is up (QA 2026-11-07: LDK's clones of them blocked the
+-- Living Forest). Never common, so never cloned, shuffled, mixed or sent as
+-- reinforcements; their authored entries stay as they are.
+local HAZARDS = { [42] = true, [43] = true }
+
 -- Fatality tutorial rooms (three in the game; Goro's Lair map 99 is one) gate
 -- their exit on their own respawning wave and on a fatality. Changed waves
 -- soft-locked map 99 twice on 2026-10-24, so an area whose map triggers test
@@ -654,7 +662,7 @@ local function fatality_area()
 end
 
 local function is_common(kind)
-    return kind ~= NO_TYPE and (census[kind] or 0) >= 2 and not is_boss(kind)
+    return kind ~= NO_TYPE and (census[kind] or 0) >= 2 and not is_boss(kind) and not HAZARDS[kind]
 end
 
 -- Time Rifts (a separate mod) builds its boss's spawn group itself and marks

@@ -51,6 +51,13 @@ if os.getenv("BOSSES") == "1" then
   CONC = { [3]=6+2, [4]=5+3, [36]=2+3, [54]=1+3, [28]=1+3 }
   slots = {3,4,36,54,28}
 end
+if os.getenv("FOREST") == "1" then
+  -- the Living Forest: tree mouths (42) and tree arms (43) authored in most
+  -- rooms among grunts: hazards, never cloned, shuffled or sent as reinforcements
+  COST = { [3]=0x10000, [4]=0x14000, [42]=0x20000, [43]=0x20000 }
+  CONC = { [3]=6+3, [4]=5+3, [42]=4+3, [43]=4+3 }
+  slots = {3,4,42,43}
+end
 -- OUTSIDER=1: Goro's Lair. One regular type (15) authored across the area's
 -- groups and the only type the map preloads, so Shaolin Shuffle 0.7 appends an
 -- outsider to the preload list; the sim loads whatever it picked into the
@@ -209,6 +216,15 @@ if os.getenv("BOSSES") == "1" then
     {types={28}, delay=0},          -- Orochi with a scripted entrance: never cloned
   }
   loaded = {3,4,36,54,28,0xFFFFFFFF}
+end
+if os.getenv("FOREST") == "1" then
+  level = {
+    {types={3,3,42,4}, delay=0},
+    {types={42,43,3,3}, delay=0},
+    {types={43,4,4,42}, delay=10},
+    {types={3,42,43}, delay=0},
+  }
+  loaded = {3,4,42,43,0xFFFFFFFF,0xFFFFFFFF}
 end
 authored = {}
 local visits = 0
@@ -506,6 +522,16 @@ print("stuck groups:", stats.stuck or 0, "CRASHES (heap exhausted):", stats.cras
 print("failed:", stats.failed, "overflow:", stats.overflow, "max alive:", stats.maxalive)
 print("max writes:", H.max_writes, "max instr:", H.max_instr)
 print("script errors:", #H.failed) for _, e in ipairs(H.failed) do print("  ", e) end
+if os.getenv("FOREST") == "1" then
+  local own = { [42] = 0, [43] = 0 }
+  for _, g in ipairs(level) do for _, k in ipairs(g.types) do if own[k] then own[k] = own[k] + 1 end end end
+  local loads = stats.loads or 1
+  for k, n in pairs(own) do
+    assert((stats.types[k] or 0) <= n * loads, "hazard " .. k .. " spawned " .. (stats.types[k] or 0) .. " times, authored " .. n * loads)
+    assert(not (stats.changed_from or {})[k] and not (stats.changed_to or {})[k], "hazard " .. k .. " was re-typed")
+  end
+  print("hazards untouched")
+end
 if RIFT then
   local base = M + 49*GS
   local t = OUTSIDER and OWN[1] or 3

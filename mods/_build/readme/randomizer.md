@@ -1,4 +1,4 @@
-# Shaolin Shuffle 0.13.0
+# Shaolin Shuffle 0.13.2
 
 Changes which enemy types a room spawns, three ways:
 
@@ -40,6 +40,18 @@ two-slot characters are never outsiders.
 
 If you had Shaolin Shuffle (Wild) or (Chaos) installed, remove them; this
 mod replaces both.
+
+## 0.13.2: trees stay put
+
+The tree mouths and tree arms are never shuffled or traded between rooms (the
+same hazard list LDK uses, so neither mod moves or copies them).
+
+## 0.13.1: the Survival stages stay as authored
+
+Maps 161-191, the cut Survival stages and the versus arenas between them,
+are only reached through Time Rifts, which runs its fights there and adds
+to their load lists. Shuffle no longer adds an outsider there or mixes
+their rooms.
 
 ## 0.13.0: outsiders in full areas
 

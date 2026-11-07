@@ -34,6 +34,7 @@ LDK2, LDK3, LDK4 = PACK.format('ldk', 'ldk.lua'), PACK.format('ldk_x3', 'ldk.lua
 SHUFFLE = PACK.format('randomizer', 'randomizer.lua')
 RIFTS = PACK.format('time_rifts', 'time_rifts.lua')
 GAUNTLET = PACK.format('time_rifts', 'gauntlet.lua')
+POSTGAME = PACK.format('time_rifts', 'postgame.lua')
 
 # name, test, args, environment, text the output must contain
 CASES = [
@@ -72,6 +73,10 @@ CASES = [
     ('time_rifts_gauntlet_beaten', 'gauntlet.lua', [GAUNTLET, 'beaten'], {}, ()),
     ('time_rifts_gauntlet_portal', 'gauntlet.lua', [GAUNTLET, 'portal'], {}, ()),
     ('time_rifts_gauntlet_closed', 'gauntlet.lua', [GAUNTLET, 'closed'], {}, ()),
+    ('time_rifts_postgame_soul', 'postgame.lua', [POSTGAME, 'soul'], {}, ()),
+    ('time_rifts_postgame_soul_evicted', 'postgame.lua', [POSTGAME, 'soul_evicted'], {}, ()),
+    ('time_rifts_postgame_soul_failed', 'postgame.lua', [POSTGAME, 'soul_failed'], {}, ()),
+    ('time_rifts_postgame_shrine', 'postgame.lua', [POSTGAME, 'shrine'], {}, ()),
     ('upgrade', 'upgrade.lua', ['src/upgrade.lua'], {}, ()),
     ('upgrade_parts', 'upgrade_parts.lua', [PACK.format('mk_upgrade', 'upgrade.lua'),
                                             PACK.format('mk_upgrade', 'upgrade_ex.lua'), 'src/upgrade.lua'], {}, ()),
@@ -86,6 +91,8 @@ CASES = [
     ('sim_both_bosses', 'sim.lua', [LDK3, SHUFFLE], {'BOSSES': '1'}, SIM_CLEAN),
     ('sim_both_fatality', 'sim.lua', [LDK3, SHUFFLE], {'FATALITY': '1'}, SIM_CLEAN),
     ('sim_both_carry', 'sim.lua', [LDK3, SHUFFLE], {'CARRY': '1'}, SIM_CLEAN),
+    ('sim_ldk_forest', 'sim.lua', [LDK3], {'FOREST': '1'}, SIM_CLEAN + ('hazards untouched',)),
+    ('sim_both_forest', 'sim.lua', [LDK4, SHUFFLE], {'FOREST': '1'}, SIM_CLEAN + ('hazards untouched',)),
     ('sim_ldk_lair', 'sim.lua', [LDK3], {'LAIR': '1', 'CARRY': '1'}, SIM_CLEAN),
     ('sim_shuffle_outsider', 'sim.lua', [SHUFFLE], {'OUTSIDER': '1'}, SIM_CLEAN),
     ('sim_both_outsider_evict', 'sim.lua', [LDK3, SHUFFLE], {'OUTSIDER': '1', 'OUTSIDER_EVICT': '1'}, SIM_CLEAN),

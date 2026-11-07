@@ -1,4 +1,12 @@
-# Legendary Dark Knight Mode 3.11.3 (x2 / x3 / x4, with Boss Invasion)
+# Legendary Dark Knight Mode 3.11.4 (x2 / x3 / x4, with Boss Invasion)
+
+## 3.11.4: no tree clones in the Living Forest
+
+The Living Forest's tree mouths and tree arms were cloned like any enemy its
+rooms spawn more than once. They are hazards that are hard to kill, and a
+room that opens once its enemies are down stayed shut, which blocked the
+forest's progression. They are never cloned or sent as reinforcements now;
+the forest's own trees stay as the game places them.
 
 ## 3.11.3: Shaolin Shuffle's outsiders lost the trees
 
