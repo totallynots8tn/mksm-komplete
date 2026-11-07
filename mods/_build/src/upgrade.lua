@@ -1,4 +1,4 @@
--- Extended Upgrades 0.15.0: XP shop, Health, Stamina, fatality meter, weapons, EX moves and fatality inputs.
+-- Extended Upgrades 0.16.2: XP shop, Health, Stamina, fatality meter, weapons, EX moves and flare, fatality inputs, Travel.
 --
 -- Turns pause-menu Moves categories into the XP shop. Nothing new is added
 -- to the menu; existing rows get new text, costs and behaviour, and
@@ -25,8 +25,14 @@
 --     R2) does an EX move as its EX version, for extra stamina (the blue bar;
 --     the red orbs stay the fatality meter). L2 + an input without its EX
 --     stays vanilla (block), and L2 + R2 + a button stays free.
--- Team keeps its vanilla rows. See analysis/xp_shop/REPORT.md
--- (menu, weapons) and analysis/ex_specials/REPORT.md (EX).
+--   * Team -> Travel (0.16.0), for every character (Sub-Zero and Scorpion
+--     get the page too): Save opens a save statue's menu wherever you are,
+--     and a row per world (Tombs, Wasteland, Foundry, Wu Shi, Forest, Evil
+--     Monastery, the versus arenas, the cut Survival stages) loads the map
+--     it shows; left and right pick another. The team attacks' own rows
+--     (videos only: the story unlocks the attacks) are gone.
+-- See analysis/xp_shop/REPORT.md (menu, weapons) and
+-- analysis/ex_specials/REPORT.md (EX).
 -- Analysis: analysis/xp_shop/REPORT.md (sections 7, 9 and 11).
 --
 -- How the menu works (default.xbe):
@@ -198,18 +204,57 @@
 --     event: the recovery. Events: anim bank 0x6C03E0, list by anim at
 --     [[+0xC] + anim * 4], 16 bytes each (frame s16, type s16; type 0 ends;
 --     frame -2: at the end).
+--   * EX flare (0.16.0): an EX move starts with Liu Kang's flames on the
+--     player and its hits burn. A move's effects are its type-0x72 events
+--     (cond, then arg1 = op | part << 8 | effect << 16, arg2 = life << 16):
+--     op 3 plays an effect of the character's own pack on a body part
+--     (0x158590; effect & 0x7F, + 0x4000: the shared pack). Liu's (GAMEDATA
+--     file 0x17A2) put the shared pack's tex18 flames 38 and 41 on his
+--     arms and body. Packs: 0 global (file 0x10A), 2 shared (0x10D), both
+--     loaded once at boot (0xCF940), 1 the map's, 3 + type a character's
+--     (only while that character is loaded); an effect id is the index of
+--     its PARTICLE SETTINGS entry. We play them with the particleoffset
+--     command (0x1582A0 -> 0x1560E0): bank 0 global, 1 and 2 the target's
+--     own pack, 3 shared; flag 4 + args[12] attach the emitter to a body
+--     part (0x62039C: per entity 0x43 parts -> bones), flag 8 skips tying
+--     it to a trigger. The tint is modelflash's model flash (0x1575B0).
 --   * An EX row is bought through the combo purchase like the shop's other
 --     rows: the game's own special purchase would raise the R2 tier, so for
 --     a row on sale as its EX we answer IsSpecial (thunk 0x12B71) no.
+--   * Travel (0.16.0): a list draws any number of rows and scrolls (0x9E160),
+--     and the menu reads every child list through a node's +0x0C count and
+--     +0x14 pointer, so a category can point at a longer list. Only the menu
+--     player's character root is ever shown (0x9B500), and only the pause
+--     menu's code reads the tree, so the page's rows (and the list holding
+--     them) are leaves borrowed from the roots of characters nobody plays;
+--     the tree is a fresh copy after every map load. Opening the menu clears
+--     +0x08 of every node (0x9D520), so a list lives at +0x0C..+0x2C of a
+--     borrowed leaf: nine rows, Save and eight worlds. A root without Team
+--     gets its page through a longer category list made the same way.
+--     Input: the list's handler (thunk 0x116DB, cdecl (widget, action);
+--     actions from 0x92E10: 0 up, 1 down, 2 left, 3 right, 4 A, 6 B) ignores
+--     left and right, and the menu frame (0x93D40) then moves the focus to
+--     another widget unless the handler said it took them, so an after hook
+--     takes them on a Travel row. A on a row: CanPurchase says no, so the
+--     handler does nothing and the after hook acts. Travel writes the load
+--     request loadmap makes (both players' +0x3217, 0x5ACEE0 = 1, the map
+--     0x4FC160, the entry 0x4FC164, the flag 0x5ACEDC), served first thing
+--     in the next gameplay frame (0xCB780), and closes the pause menu
+--     (0x4EF42C, the +0x64 closed byte of the menu object 0x4EF3C8). Save
+--     closes it too and calls OpenSaveMenu (thunk 0x13E0E: ecx = 0x4EF3C8,
+--     0xA21B0) through the call gate on that frame, as a save statue's
+--     message 0x20C does (0xA54D0); the save menu runs its own frames and
+--     never re-enters the gate (0xC74E0 is called from 0xCB780 only).
 --   * Text: the strings are a pointer array at [0x5B04A4] (count [0x5AC508]).
 --     We write our strings over unused "(PH)" move-list placeholders, only where
 --     they fit, and point our rows at them. Every value we change is remembered,
 --     and put back if a reloaded text table no longer has room for ours.
 --   * Two scripts (0.12.0): build.py makes upgrade.lua (PART "shop": the menu,
 --     Health, Stamina, the fatality meter, weapons, fatalities) and upgrade_ex.lua (PART "ex": the
---     L2 remap, the move answers, EX stamina, damage, recovery and cancels)
---     from this file, each with callgate_lib.lua in front (only the shop
---     script returns the gate's hooks). A script that fails is switched off
+--     L2 remap, the move answers, EX stamina, damage, recovery, cancels and
+--     flare) from this file, each with callgate_lib.lua in front and its own
+--     gate (the shop's spawns weapons, the EX's plays effects; the gate runs
+--     one script's call a frame). A script that fails is switched off
 --     whole, so an EX error can no longer take Health and Stamina with it.
 --     They share nothing but game memory (the flag and shop bytes in the level row).
 local GAME_MANAGER  = 0x005ACEBC
@@ -312,6 +357,55 @@ local ARMS = {                      -- Platform becomes Weapons: a row per weapo
     failed = {},                    -- [map * 8 + row] = true: a spawn there never appeared
     pending = nil,                  -- { w, k, player, cost, at, map } until a spawn has appeared
 }
+local TRAVEL = {                    -- Team becomes Travel: Save, then a row per world (see Travel above)
+    TEAM = 465,                     -- "Team": its leaves hang directly off it (Liu Kang, Kung Lao only)
+    NAME = 1002, DESC = 1003,       -- (PH) texts: the page's name and description, the Save row's
+    SAVE = 1004, SAVE_DESC = 1005,  -- name and description, the map rows' description, and what
+    ROW_DESC = 699,                 -- the rows say instead when travel or saving can't happen now
+    NOT_NOW = 802, NO_SAVE = 803,   -- (all "...\nDescription\nKey Sequence" ones: 45-47 bytes in
+    LABELS = { 796, 797, 798, 799, 811, 812, 813, 814 },   -- English, longer in the other four), and
+                                    -- each world row's name
+    WORLDS = {                      -- map table indices, in the designers' order
+        { 0, 1, 2, 3, 4, 5, 6, 7, 8, 12, 15, 17, 19, 20, 24, 25, 30 },             -- Tombs
+        { 33, 41, 44, 45, 46, 47, 48 },                                             -- Wasteland
+        { 64, 65, 66, 67, 68, 69, 71, 72, 73, 74 },                                 -- Foundry
+        { 96, 97, 98, 99, 100, 101, 102, 103, 104, 106, 107, 108, 110 },            -- Wu Shi
+        { 128, 129, 130, 132, 135, 136, 137, 142, 143, 144, 146, 147 },             -- Forest
+        { 192, 193, 194, 195, 196, 197, 198, 199, 160 },                            -- Evil Monastery, Netherealm
+        { 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180, 181, 182, 183, 184, 185 },   -- versus arenas
+        { 161, 162, 163, 164, 165, 166, 167, 168, 169, 186, 187, 188, 190, 191 },   -- cut Survival stages
+    },
+    -- The entry a map is loaded at: 1, the one the game's own loadmaps use for
+    -- nearly every area, except Wu Shi - Map 01 (only ever entered at 2) and
+    -- Survival 31 (entry 0, the one stage whose entry-0 camera exists)
+    ENTRY = { [96] = 2, [190] = 0 },
+    STAGES = { 161, 191 },          -- cut Survival and versus stages: no saving; travel only out of
+                                    -- one Travel sent the players to (else it's a rift or the gauntlet)
+    DISPATCH = 0x000116DB,          -- the Moves list's input handler (0x9E580), cdecl (widget, action):
+    LEFT = 2, RIGHT = 3, PICK = 4,  -- D-pad left and right (it ignores them), A
+    CLOSE = 0x004EF42C,             -- byte: the pause menu (object 0x4EF3C8, +0x64) closes this frame
+    SAVE_MENU = 0x00013E0E,         -- OpenSaveMenu (0xA2300: 0xA21B0 on 0x4EF3C8), as a save statue
+    MAPS = 0x005020E8,              -- map table: map m's descriptor at + m * 4, its name at +0x18
+    LOAD = 0x005ACEDC, LOAD_ARG = 0x005ACEE0,   -- the load request (as loadmap makes it): the flag,
+    LOAD_MAP = 0x004FC160, LOAD_ENTRY = 0x004FC164, -- its third argument, the map and the entry,
+    LOADING = 0x3217,               -- and a byte on each player entity
+    IN_USE = 0x0051004C,            -- -> u16 per entity (12), non-zero while in use
+    TYPE = 0x1DFE,
+    CALM = { [42] = true, [43] = true, [70] = true },   -- no fight: tree mouth and arms, Smoke
+    SPAWNER = 0x006DBFB0,           -- spawn groups (50, 0xA6C apart); Time Rifts marks its own
+    RIFT = 0x54464952,              -- with this word at +0xA10 (as core.lua)
+    TRIGGERS = 0x00682020,          -- the map's triggers (as core.lua's fatality_area)
+    FATALITY_TESTS = { [0x00013382] = true, [0x000166B3] = true, [0x000145ED] = true },
+    pick = {},                      -- [world] = position of the map its row shows
+    pages = {},                     -- [root] = { cat, rows, list, roots }: its Travel page
+    taken = {},                     -- [node] = true: lent to a page
+    links = {},                     -- category and root fields that point at our lists
+    names = {},                     -- [map] = its designer name
+    came = nil,                     -- the map Travel last sent the players to
+    action = nil,                   -- { action, row } around one input call
+    root = nil,                     -- the root the last sync built a page for
+    fatal_key = nil, fatal = false, -- the trigger scan's last answer
+}
 local WEAPONS       = 0x005A3AC0    -- weapon manager: objects at +8, count at +0x56FC
 local W_STRIDE      = 0x27C
 local W_COUNT       = 0x56FC
@@ -381,6 +475,32 @@ local EXP = {                       -- EX power (one table: the game's Lua allow
     CANCEL_WAIT = 45,               -- frames a cancel press is held back at most
     FORCE = 2,                      -- frames a played-back cancel press is held
     OLD_FLAG = 23,                  -- where 0.11.3 kept the EX flags (the game's slots)
+    PARTICLES = 0x001582A0,         -- particleoffset command's exec: thiscall (event, target, from)
+    PARTICLE_CMD = 0x0050FFD0,      -- its command object (ecx)
+    CHAR = 0x72616863,              -- "char": a target block naming an entity by index (+0x10)
+    ENTITIES = 14,                  -- entity slots
+    FLASH = 0x266C,                 -- entity: model flash: mode, -, then r, g, b, frames (floats) from +8
+    -- The EX flare (see ex_flare): rows { bank, id, body part (-1: at the
+    -- entity, not attached), life in frames }. Liu Kang's flames are the
+    -- shared pack's 38 (darker) and 41 (brighter): tex18 fire that stays on
+    -- the part it is put on, as his own moves put it on his arms and body.
+    -- 100 is the shared burst fx_fire01, global 53 the burst fx_g_flam53.
+    -- The look goes by the EX button (the user kept all three, 2026-11-07):
+    -- X sets the arms on fire, Y the whole body (both renewed every `keep`
+    -- frames for as long as the EX chain lasts), B bursts with a tint.
+    LOOKS = {
+        [4] = { keep = 40, fx = { { 3, 38, 11, 45 }, { 3, 38, 14, 45 }, { 3, 38, 10, 45 }, { 3, 38, 13, 45 } } },
+        [5] = { keep = 40, fx = { { 3, 41, 8, 45 }, { 3, 41, 15, 45 }, { 3, 41, 11, 45 }, { 3, 41, 14, 45 },
+                       { 3, 41, 3, 45 }, { 3, 41, 6, 45 } } },
+        [3] = { fx = { { 3, 100, -1, 6 }, { 0, 53, -1, 3 } }, tint = { 255, 110, 0, 40 } },
+    },
+    LOOK = 4,                       -- the look of a press whose button isn't known
+    FLARE_GAP = 12,                 -- frames between two flares of one player at least
+    GRACE = 30,                     -- frames between two moves of an EX chain that keep it lit
+    BURN = { { 3, 41, 8, 30 }, { 3, 41, 15, 30 } },   -- an EX hit: Liu's burn (his moves put 41
+                                    -- on their victims' parts 1, 4, 8, 15), on the chest and head
+    BURN_EVERY = 12,                -- frames between two burns of one victim
+    QUEUE = 8,                      -- gate calls queued at most (a flare is dropped beyond)
 }
 
 local WEAPON_POPUP  = 698           -- (PH) text that takes our popup message
@@ -415,7 +535,10 @@ local LANGUAGES = {
       weapon = { "Weapons", "Summon a weapon to your side.", "Appears where you buy it.\nThrown, it returns.",
                  "Weapons for sale in\nthe Weapons menu." },
       weapons = { kama01 = "Kamas", sword = "Sword", broadsword = "Broadsword", axe = "Axe",
-                  hooksword01 = "Hook swords", shard = "Shard", shard1h = "Short shard" } },
+                  hooksword01 = "Hook swords", shard = "Shard", shard1h = "Short shard" },
+      travel = { "Travel", "Save, or travel to any map.", "Save game", "Opens the save menu.\nSave here",
+                 "Left/Right: pick a map.\nA: travel", "Fight, rift or fatality room.\nNot now",
+                 "Story areas only, no rifts.\nNot here" } },
     { tag = "Mejo", category = { "Mejoras", "Gasta EXP en salud y energ\237a." },
       health = { "Salud", "Salud +%d", "Vida m\225xima +%d,\nadem\225s de la del juego.",
                  "Salud extra, adem\225s de la del juego." },
@@ -430,7 +553,10 @@ local LANGUAGES = {
       weapon = { "Armas", "Invoca un arma a tu lado.", "Aparece donde la compras;\nlanzada, vuelve.",
                  "Armas a la venta en\nel men\250 Armas." },
       weapons = { kama01 = "Kamas", sword = "Espada", broadsword = "Mandoble", axe = "Hacha",
-                  hooksword01 = "Espadas gancho", shard = "Fragmento", shard1h = "Fragmento corto" } },
+                  hooksword01 = "Espadas gancho", shard = "Fragmento", shard1h = "Fragmento corto" },
+      travel = { "Viaje", "Guarda o viaja a cualquier mapa.", "Guardar partida",
+                 "Abre el men\250 de guardado.\nGuardar aqu\237", "Izq./Der.: elige un mapa.\nA: viajar",
+                 "Pelea, grieta o sala Fatality.\nAhora no", "Solo en la historia, sin grietas.\nAqu\237 no" } },
     { tag = "Verb", category = { "Verbesserungen", "EXP f\252r Leben und Ausdauer ausgeben." },
       health = { "Leben", "Leben +%d", "Max. Leben +%d,\nzus\228tzlich zum Spiel.",
                  "Mehr Leben, zus\228tzlich zum Spiel." },
@@ -445,7 +571,10 @@ local LANGUAGES = {
       weapon = { "Waffen", "Ruf eine Waffe zu dir.", "Erscheint am Kaufort,\nkehrt geworfen zur\252ck.",
                  "Waffen zu kaufen\nim Men\252 Waffen." },
       weapons = { kama01 = "Kamas", sword = "Schwert", broadsword = "Breitschwert", axe = "Axt",
-                  hooksword01 = "Hakenschwerter", shard = "Splitter", shard1h = "Kurzer Splitter" } },
+                  hooksword01 = "Hakenschwerter", shard = "Splitter", shard1h = "Kurzer Splitter" },
+      travel = { "Reisen", "Speichern oder zu jeder Karte.", "Spiel speichern",
+                 "\214ffnet das Speichermen\252.\nHier speichern", "Links/Rechts: Karte w\228hlen.\nA: reisen",
+                 "Kampf, Riss oder Fatality-Raum.\nJetzt nicht", "Nur in der Story, ohne Risse.\nHier nicht" } },
     { tag = "Pote", category = { "Potenziamenti", "Spendi EXP per salute ed energia." },
       health = { "Salute", "Salute +%d", "Salute max +%d,\noltre a quella del gioco.",
                  "Salute extra oltre a quella del gioco." },
@@ -460,7 +589,10 @@ local LANGUAGES = {
       weapon = { "Armi", "Evoca un'arma accanto a te.", "Appare dove la compri;\nlanciata, torna l\236.",
                  "Armi in vendita\nnel men\249 Armi." },
       weapons = { kama01 = "Kama", sword = "Spada", broadsword = "Spadone", axe = "Ascia",
-                  hooksword01 = "Spade uncinate", shard = "Frammento", shard1h = "Frammento corto" } },
+                  hooksword01 = "Spade uncinate", shard = "Frammento", shard1h = "Frammento corto" },
+      travel = { "Viaggio", "Salva o viaggia in ogni mappa.", "Salva partita",
+                 "Apre il men\249 di salvataggio.\nSalva qui", "Sinistra/Destra: la mappa.\nA: viaggia",
+                 "Lotta, frattura o stanza fatality.\nNon ora", "Solo nella storia, no fratture.\nNon qui" } },
     { tag = "Am\233l", category = { "Am\233liorations", "D\233pensez l'EXP en sant\233 et endurance." },
       health = { "Sant\233", "Sant\233 +%d", "Sant\233 max +%d,\nen plus de celle du jeu.",
                  "Sant\233 en plus de celle du jeu." },
@@ -475,7 +607,10 @@ local LANGUAGES = {
       weapon = { "Armes", "Invoque une arme pr\232s de toi.", "Appara\238t o\249 tu l'ach\232tes;\nlanc\233e, revient.",
                  "Armes \224 vendre dans\nle menu Armes." },
       weapons = { kama01 = "Kamas", sword = "\201p\233e", broadsword = "Claymore", axe = "Hache",
-                  hooksword01 = "\201p\233es crochets", shard = "\201clat", shard1h = "\201clat court" } },
+                  hooksword01 = "\201p\233es crochets", shard = "\201clat", shard1h = "\201clat court" },
+      travel = { "Voyage", "Sauvegarde ou voyage partout.", "Sauvegarder",
+                 "Ouvre le menu de sauvegarde.\nSauvegarder ici", "Gauche/Droite : une carte.\nA : voyager",
+                 "Combat, faille, salle fatality.\nPas ici", "Histoire seulement, sans faille.\nPas ici" } },
 }
 
 -- Each shop group takes over one Basic Moves group (source = its vanilla
@@ -691,6 +826,13 @@ local function place_text()
     for k, t in ipairs(ARMS.TYPES) do
         all[#all + 1] = { ARMS.ROWS[k], lang.weapons[t] }
     end
+    for i, at in ipairs({ TRAVEL.NAME, TRAVEL.DESC, TRAVEL.SAVE, TRAVEL.SAVE_DESC, TRAVEL.ROW_DESC, TRAVEL.NOT_NOW,
+                          TRAVEL.NO_SAVE }) do
+        all[#all + 1] = { at, lang.travel[i] }
+    end
+    for w = 1, #TRAVEL.WORLDS do
+        all[#all + 1] = { TRAVEL.LABELS[w], TRAVEL.label(w) }
+    end
     local result = true
     for _, t in ipairs(all) do
         local placed = put_text(t[1], t[2])
@@ -722,12 +864,21 @@ local function vanilla(addr)
     return now
 end
 
--- Puts every changed field back where it still holds our value.
+-- Puts every changed field back where it still holds our value, the Travel
+-- pages' list pointers first (a list must never outlive its rows), within
+-- this callback's budget: the rest waits for the next one.
 local function unpatch()
-    for addr, c in pairs(changed) do
-        if game.read_u32(addr) == c.now then game.write_u32(addr, c.was) end
+    for _, addr in ipairs(TRAVEL.links) do
+        local c = changed[addr]
+        if c and game.read_u32(addr) == c.now then game.write_u32(addr, c.was); writes = writes + 1 end
+        changed[addr] = nil
     end
-    changed = {}
+    TRAVEL.links, TRAVEL.pages, TRAVEL.taken = {}, {}, {}
+    for addr, c in pairs(changed) do
+        if writes >= BUDGET then resume = true return end
+        if game.read_u32(addr) == c.now then game.write_u32(addr, c.was); writes = writes + 1 end
+        changed[addr] = nil
+    end
 end
 
 -- The shop byte a level lives in: Health is shared (player 0's byte, bits
@@ -906,6 +1057,8 @@ end
 -- The shop kind, store and row index (1-n) when node is one of our shop rows.
 local function shop_row(node)
     if not ready or not plausible(node) or game.read_u32(node + 4) ~= 0 then return nil end
+    local travel = TRAVEL.row(node)
+    if travel then return "travel", nil, travel end
     local ex = ex_rows[node]
     if ex and ex.sale then return "ex", ex, ex.j end
     local g = game.read_u32(node + 0x10)
@@ -1154,14 +1307,18 @@ local function sync()
     local m = manager()
     local blob = game.read_u32(MPD)
     if m == nil or not plausible(blob) then return end
-    if blob ~= tree then changed = {}; tree = blob end     -- a fresh copy is vanilla
+    if blob ~= tree then                                   -- a fresh copy is vanilla
+        changed, tree = {}, blob
+        TRAVEL.links, TRAVEL.pages, TRAVEL.taken = {}, {}, {}
+    end
     area = scan_weapons()                                  -- the menu is paused: stable while it syncs
     local placed = place_text()
     if placed == false then ready = false; unpatch() return end
     if placed == nil then resume = true return end
     ready = true
     local root = menu_root(m, blob)
-    if root and not patch_root(m, root) then resume = true end
+    TRAVEL.root = root
+    if root and not (patch_root(m, root) and TRAVEL.build(m, blob, root)) then resume = true end
 end
 
 -- Weapons row k can be bought: nobody holds its weapon, and it lies in the
@@ -1248,7 +1405,7 @@ end
 -- and its cost really is ours.
 local function can_buy(node, kind, store, k)
     local m = manager()
-    if m == nil then return false end
+    if m == nil or kind == "travel" then return false end   -- (Travel rows act on A themselves)
     local cost = (kind == "fatality" and FATALITY_COST) or (kind == "weapon" and ARMS.PRICES[k])
         or (kind == "meter" and METER.PRICES[k]) or (kind == "ex" and EX_PRICES[k]) or store.rows[k].cost
     if game.read_u32(node + 0x28) ~= cost then return false end
@@ -1353,6 +1510,267 @@ local function apply_purchase(m, kind, store, k, node)
     end                                     -- (the Fatality meter's: every gain from now on)
 end
 
+-- A map's designer name ("Wu Shi - Map 07"), read once from the map table.
+function TRAVEL.name(map)
+    local known = TRAVEL.names[map]
+    if known then return known end
+    local d = game.read_u32(TRAVEL.MAPS + map * 4)
+    local p = plausible(d) and game.read_u32(d + 0x18) or 0
+    local s = {}
+    if plausible(p - p % 4) then                    -- (a string needs no alignment)
+        for k = 0, 23 do                            -- (the longest is 22: "Evil Monastery - Map 8")
+            local b = game.read_u8(p + k)
+            if b == 0 then break end
+            s[#s + 1] = string.char(b)
+        end
+    end
+    local name = table.concat(s)
+    while name:sub(-1) == " " or name:sub(-1) == "-" do name = name:sub(1, -2) end   -- "Survival 2 -"
+    if name == "" then name = "Map" end
+    TRAVEL.names[map] = name
+    return name
+end
+
+-- World row w's name: the map it travels to and its number, padded with
+-- spaces to 34 bytes (the longest is 32; the placeholders hold 45), so every
+-- map's name fits where the last one was (put_text measures the string in
+-- place). A row starts at the map the players are in when it is one of its
+-- world's.
+function TRAVEL.label(w)
+    local list, i = TRAVEL.WORLDS[w], TRAVEL.pick[w]
+    if i == nil then
+        i = 1
+        local here = game.read_u32(MAP)
+        for j, map in ipairs(list) do
+            if map == here then i = j end
+        end
+        TRAVEL.pick[w] = i
+    end
+    local s = "< " .. TRAVEL.name(list[i]) .. " (" .. list[i] .. ") >"
+    return s .. string.rep(" ", 34 - #s)
+end
+
+-- Node's place on the Travel page the last sync was for (1: Save, then the
+-- worlds), or nil.
+function TRAVEL.row(node)
+    local page = TRAVEL.root and TRAVEL.pages[TRAVEL.root]
+    if page == nil then return nil end
+    for k, r in ipairs(page.rows) do
+        if r == node then return k end
+    end
+    return nil
+end
+
+-- A fight is on: someone besides the players is up and alive (the Living
+-- Forest's tree mouth and arms and Smoke don't count).
+function TRAVEL.fight()
+    local flags = game.read_u32(TRAVEL.IN_USE)
+    if flags < 0x10000 then return false end
+    for i = 2, 11 do
+        local e = ENTITY + i * ENTITY_STRIDE
+        if game.read_u16(flags + i * 2) ~= 0 and not TRAVEL.CALM[game.read_u16(e + TRAVEL.TYPE)] then
+            local actor = game.read_u32(e + ACTOR)
+            local hp = plausible(actor) and game.read_u32(actor + ACTOR_HP) or 0
+            if hp > 0 and hp < 0x80000000 then return true end
+        end
+    end
+    return false
+end
+
+-- A Time Rift runs here: it marks its spawn group, and clears the mark when
+-- it ends (time_rifts_body.lua, postgame_body.lua).
+function TRAVEL.rift()
+    for g = 0, 49 do
+        if game.read_u32(TRAVEL.SPAWNER + g * 0xA6C + 0xA10) == TRAVEL.RIFT then return true end
+    end
+    return false
+end
+
+-- A fatality tutorial room, told as core.lua's fatality_area does: one of the
+-- map's triggers tests isfatalityfull, fatalityover or fatalitytutor.
+-- Remembered per trigger table.
+function TRAVEL.fatality_room()
+    local mgr = game.read_u32(TRAVEL.TRIGGERS)
+    if not plausible(mgr) then return false end
+    local count, commands = game.read_u32(mgr + 0xA8C0), game.read_u32(mgr + 0x1254C)
+    local key = mgr * 1000 + count
+    if key == TRAVEL.fatal_key then return TRAVEL.fatal end
+    TRAVEL.fatal_key, TRAVEL.fatal = key, false
+    if count > 200 or commands > 200 then return false end
+    for index = 0, count - 1 do
+        local rec = mgr + index * 0xD8
+        local n, slots = game.read_u32(rec + 0x58), game.read_u32(rec + 0x5C)
+        if n > 0 and n <= 12 and plausible(slots) then
+            for j = 0, n - 1 do
+                local slot = game.read_u32(slots + j * 4)
+                local object = slot <= commands and game.read_u32(mgr + slot * 24 + 0x11C00) or 0
+                local vtable = plausible(object) and game.read_u32(object) or 0
+                if plausible(vtable) and TRAVEL.FATALITY_TESTS[game.read_u32(vtable)] then
+                    TRAVEL.fatal = true
+                    return true
+                end
+            end
+        end
+    end
+    return false
+end
+
+-- Whether the players can't travel (save: can't save) right now: no load
+-- may be on its way and no Time Rift running; saves only in story areas;
+-- travel not in a fight or a fatality room, and from a cut stage only when
+-- Travel sent them there (else it is the gauntlet's or a postgame rift's),
+-- but then at any time: a stage's enemies may be out of reach (live: an
+-- Oni Warlord in the versus arena 170). The pause menu itself never opens
+-- in a cutscene (0x9A9C0).
+function TRAVEL.blocked(save)
+    if manager() == nil or game.read_u8(TRAVEL.LOAD) ~= 0 or TRAVEL.rift() then return true end
+    local map = game.read_u32(MAP)
+    local stage = map >= TRAVEL.STAGES[1] and map <= TRAVEL.STAGES[2]
+    if save then return stage end
+    if stage then return map ~= TRAVEL.came end
+    return TRAVEL.fight() or TRAVEL.fatality_room()
+end
+
+-- Nodes for root's Travel page: Team itself (Liu Kang, Kung Lao) or, for a
+-- root without Team (Sub-Zero, Scorpion), a borrowed leaf added after its
+-- categories. The rows, and the lists that hold them, are leaves borrowed
+-- from the roots of characters nobody plays: the menu shows only the menu
+-- player's root (0x9B500), and only its own code reads the tree. Nil when
+-- there aren't enough.
+function TRAVEL.plan(m, blob, root)
+    local cat = leaf_category(root, TRAVEL.TEAM, TRAVEL.NAME, 1)
+    local n = #TRAVEL.WORLDS + 1                    -- Save, then a row per world
+    local need = n + (cat and 1 or 3)               -- + their list (+ the page and the root's longer list)
+    local playing = { [char_of(m, 0)] = true }
+    if game.read_u32(m + GAME_MODE) == 1 then playing[char_of(m, 1)] = true end
+    local roots, list = game.read_u32(blob + 0x0C), game.read_u32(blob + 0x10)
+    if roots > 8 or not plausible(list) then return nil end
+    local stack, found, steps = {}, {}, 0
+    for r = roots - 1, 0, -1 do
+        local other = game.read_u32(list + r * 4)
+        if plausible(other) and other ~= root and not playing[game.read_u32(other + 0x18)] then
+            stack[#stack + 1] = other
+        end
+    end
+    while #stack > 0 and #found < need and steps < 300 do
+        local node = table.remove(stack)
+        steps = steps + 1
+        local count, kids = game.read_u32(node + 0x0C), game.read_u32(node + 0x14)
+        if game.read_u32(node + 4) == 0 and count == 0 then
+            if not TRAVEL.taken[node] then found[#found + 1] = node end
+        elseif count <= 16 and plausible(kids) then
+            for i = count - 1, 0, -1 do
+                local c = game.read_u32(kids + i * 4)
+                if plausible(c) then stack[#stack + 1] = c end
+            end
+        end
+    end
+    if #found < need then return nil end
+    local page = { rows = {}, list = found[n + 1], cat = cat or found[n + 2], roots = (not cat) and found[n + 3] or nil }
+    for k = 1, n do page.rows[k] = found[k] end
+    for _, node in ipairs(found) do TRAVEL.taken[node] = true end
+    return page
+end
+
+-- Fields of node that point at one of our lists: unpatch puts them back first.
+function TRAVEL.link(node)
+    for _, addr in ipairs({ node + 0x0C, node + 0x14 }) do
+        local known = false
+        for _, a in ipairs(TRAVEL.links) do
+            if a == addr then known = true end
+        end
+        if not known then TRAVEL.links[#TRAVEL.links + 1] = addr end
+    end
+end
+
+-- Root's Travel page: the rows first, then the list that holds them, then
+-- the fields pointing at that list, so a sync that runs out of budget may
+-- stop anywhere and the menu still reads a whole tree. False when it did.
+function TRAVEL.build(m, blob, root)
+    local page = TRAVEL.pages[root]
+    if page == nil then
+        page = TRAVEL.plan(m, blob, root)
+        if page == nil then return true end         -- nothing to borrow: Team stays the game's
+        TRAVEL.pages[root] = page
+    end
+    local no_trip, no_save, cat = TRAVEL.blocked(false), TRAVEL.blocked(true), page.cat
+    for k, node in ipairs(page.rows) do
+        local name = k == 1 and TRAVEL.SAVE or TRAVEL.LABELS[k - 1]
+        local desc = (k == 1 and (no_save and TRAVEL.NO_SAVE or TRAVEL.SAVE_DESC))
+            or (no_trip and TRAVEL.NOT_NOW or TRAVEL.ROW_DESC)
+        if not (patch(node + 0x10, cat) and patch(node + 0x18, name) and patch(node + 0x1C, desc)
+                and patch(node + 0x20, 0) and patch(node + 0x24, 0) and patch(node + 0x28, 0)
+                and patch(node + 0x2C, 1)) then
+            return false
+        end
+    end
+    -- a list starts at +0x0C of its node: opening the menu clears +0x08 of
+    -- every node (0x9D520), and +0x0C to +0x2C hold nine
+    for k, node in ipairs(page.rows) do
+        if not patch(page.list + 0x08 + k * 4, node) then return false end
+    end
+    local count = 0
+    if page.roots then
+        count = vanilla(root + 0x0C)
+        local kids = vanilla(root + 0x14)
+        if count > 8 or not plausible(kids) then return true end
+        for i = 0, count - 1 do
+            if not patch(page.roots + 0x0C + i * 4, game.read_u32(kids + i * 4)) then return false end
+        end
+        if not (patch(page.roots + 0x0C + count * 4, cat) and patch(cat + 0x04, 1) and patch(cat + 0x10, root)
+                and patch(cat + 0x28, 0) and patch(cat + 0x2C, 0)) then
+            return false
+        end
+    end
+    TRAVEL.link(cat)
+    if not (patch(cat + 0x18, TRAVEL.NAME) and patch(cat + 0x1C, TRAVEL.DESC)
+            and patch(cat + 0x14, page.list + 0x0C) and patch(cat + 0x0C, #page.rows)) then
+        return false
+    end
+    if page.roots then
+        TRAVEL.link(root)
+        if not (patch(root + 0x14, page.roots + 0x0C) and patch(root + 0x0C, count + 1)) then return false end
+    end
+    return true
+end
+
+-- The Moves list's input on a Travel row (true: handled, so the game skips
+-- its move to another widget): left and right show the world's previous or
+-- next map, A travels there (the game's load request, as loadmap makes it,
+-- served on the first frame after the pause) or, on Save, opens the save
+-- statue's menu on that frame (through the call gate).
+function TRAVEL.press(action, node)
+    local k = ready and TRAVEL.row(node)
+    if not k then return false end
+    writes = 0
+    if action == TRAVEL.LEFT or action == TRAVEL.RIGHT then
+        local w = k - 1
+        if w >= 1 then
+            local i = (TRAVEL.pick[w] or 1) + (action == TRAVEL.RIGHT and 1 or -1)
+            TRAVEL.pick[w] = (i - 1) % #TRAVEL.WORLDS[w] + 1
+            put_text(TRAVEL.LABELS[w], TRAVEL.label(w))
+        end
+        return true
+    end
+    if action ~= TRAVEL.PICK then return false end
+    if k == 1 then
+        if not TRAVEL.blocked(true) then
+            game.write_u8(TRAVEL.CLOSE, 1)
+            callgate.call(TRAVEL.SAVE_MENU, {})
+        end
+    elseif not TRAVEL.blocked(false) then
+        local map = TRAVEL.WORLDS[k - 1][TRAVEL.pick[k - 1] or 1]
+        for p = 0, 1 do game.write_u8(ENTITY + p * ENTITY_STRIDE + TRAVEL.LOADING, 1) end
+        game.write_u32(TRAVEL.LOAD_ARG, 1)
+        game.write_u32(TRAVEL.LOAD_MAP, map)
+        game.write_u32(TRAVEL.LOAD_ENTRY, TRAVEL.ENTRY[map] or 1)
+        game.write_u8(TRAVEL.LOAD, 1)
+        game.write_u8(TRAVEL.CLOSE, 1)
+        TRAVEL.came = map
+    end
+    return true
+end
+
 -- Before the Moves list opens: in an area (map) not announced yet this
 -- session whose weapons one can afford, the abilities popup will show our
 -- message (the game shows it when the flag is set and anything is for sale).
@@ -1440,6 +1858,10 @@ local exs = {                       -- EX power state
     cancel = {},                    -- [player + 1] = { button, at, go }: a cancel press held back
     force = {},                     -- [player + 1] = { button, till }: a cancel press played back
     events = {}, map = nil,         -- [anim] = its last event frame (false: unknown), per map
+    flared = {},                    -- [player + 1] = frame of their last flare (while lit)
+    lit = {},                       -- [player + 1] = last frame they were in a lit move
+    again = {},                     -- [player + 1] = frame of their last press of the EX button
+    burnt = {},                     -- [victim entity] = frame of its last EX hit flame
     -- GetLevel's player and caller, SlotLevel's arguments and caller
     ex_player = nil, ex_from = nil, lv_player = nil, lv_flags = nil, lv_from = nil,
 }
@@ -1541,6 +1963,7 @@ local function ex_remap(obj)
         if now and not down[b[1]] and ex_bits(game.read_u8(row + EX_FLAG + b[2])) ~= 0 then fresh = b[1] end
         down[b[1]] = now
     end
+    if fresh and fresh == exs.button[i] then exs.again[i] = frame end   -- (a chain press: the flare)
     local lt_held = game.read_u8(obj + J_LT) >= LT_MIN
     local rt_held = game.read_u8(obj + J_RT) ~= 0
     local cancel = exs.cancel[i]
@@ -1617,6 +2040,40 @@ local function charge_ex()
     game.write_u32(rec + STAMINA_NOW, f32_from(left > 0 and left or 0))
 end
 
+-- The EX flare: effects on entity `index`, through the game's own
+-- particleoffset command (its trigger scripts' effects), one gate call a
+-- frame. A row's effect comes from the global (bank 0) or shared (bank 3)
+-- pack, both loaded at boot for everyone, for its life in frames. With
+-- flag 4 and a body part (args[12]; Liu's move events use 11 and 14 for
+-- the hands, 10 and 13 the forearms, 8 the chest, 15 the head, 3 and 6 the
+-- feet) the effect follows that part of the "char" target; without, it
+-- stays where the entity stood. Flag 8: no trigger owns it. A flare that
+-- would queue behind EXP.QUEUE calls is dropped instead of played late.
+local function ex_flare(index, rows)
+    if callgate.pending() >= EXP.QUEUE then return end
+    local e = ENTITY + index * ENTITY_STRIDE
+    for _, r in ipairs(rows) do
+        local attach = r[3] >= 0
+        callgate.call(EXP.PARTICLES, {
+            ecx = EXP.PARTICLE_CMD,
+            args = { callgate.block{ 0, 13, callgate.block{ r[1], r[2], r[4], 0, 0, 0, 0, 0,
+                         attach and 12 or 8, 0, 0, 0, attach and r[3] or 0 } },
+                     callgate.block{ EXP.CHAR, 0, 0, 0, index },
+                     callgate.block{ 0, game.read_u32(e + POSITION), game.read_u32(e + POSITION + 4),
+                                     game.read_u32(e + POSITION + 8) } } })
+    end
+end
+
+-- A look's tint: the model flash the game's modelflash command and its hit
+-- flashes use (fading from r, g, b over its frames), unless one is on.
+local function ex_tint(p, tint)
+    local f = ENTITY + p * ENTITY_STRIDE + EXP.FLASH
+    local left = f32_to(game.read_u32(f + 0x14))
+    if left == nil or left > 0 then return end
+    game.write_u32(f, 0)
+    for k = 1, 4 do game.write_u32(f + 4 + k * 4, f32_from(tint[k])) end
+end
+
 -- Once a frame, before the animations advance: a player in an EX move
 -- (latched from a paid press) speeds up once its last event has played, or,
 -- with a cancel held back, the move ends right there and the press plays
@@ -1632,6 +2089,28 @@ local function ex_tick()
             exs.move[i] = nil
         elseif anim ~= exs.move[i] then           -- a new move: EX if just pressed
             exs.move[i] = (press and frame - press <= EX_WINDOW) and anim or nil
+        end
+        -- The flare: lit from an EX move's start, and through the EX chain's
+        -- next moves (L2 still held; idle GRACE frames at most between two),
+        -- paid or not. It flares as it lights, then again on a paid press,
+        -- on a press of the chain's button and, for a kept look, every
+        -- look.keep frames; never twice within FLARE_GAP frames.
+        local lit = exs.lit[i]
+        if exs.move[i] or (lit and ex_chain[i] and game.read_u32(e + EXP.STATE) == 6 and anim < 0x10000) then
+            exs.lit[i] = frame
+        elseif lit and (not ex_chain[i] or frame < lit or frame - lit > EXP.GRACE) then
+            exs.lit[i], exs.flared[i] = nil, nil
+        end
+        if exs.lit[i] == frame then
+            local look = EXP.LOOKS[exs.button[i]] or EXP.LOOKS[EXP.LOOK]
+            local last, again = exs.flared[i], exs.again[i]
+            if last == nil or frame < last or (frame - last >= EXP.FLARE_GAP
+                    and ((press and press > last) or (again and again > last)
+                         or (look.keep and frame - last >= look.keep))) then
+                exs.flared[i] = frame
+                ex_flare(p, look.fx)
+                if look.tint then ex_tint(p, look.tint) end
+            end
         end
         local cancel = exs.cancel[i]
         if cancel and cancel.go then cancel = nil end
@@ -1668,7 +2147,15 @@ local function ex_hit(ctx)
         local press = exs.press[p]
         if exs.move[p] or (press and frame >= press and frame - press <= EXP.HIT_FRAMES) then live = true end
     end
-    if live and game.read_u32(ctx.esp + 0xC) >= 0x80000000 then exs.hit = victim end
+    if not live or game.read_u32(ctx.esp + 0xC) < 0x80000000 then return end
+    exs.hit = victim
+    -- the hit burns: Liu's flame on the victim, at most once per EXP.BURN_EVERY
+    local off, last = victim - ENTITY, exs.burnt[victim]
+    if off > 0 and off % ENTITY_STRIDE == 0 and off // ENTITY_STRIDE < EXP.ENTITIES
+            and (last == nil or frame < last or frame - last >= EXP.BURN_EVERY) then
+        exs.burnt[victim] = frame
+        ex_flare(off // ENTITY_STRIDE, EXP.BURN)
+    end
 end
 
 -- TakeDamage: an EX hit (see ex_hit) does EXP.DAMAGE / 2 times the damage.
@@ -1735,7 +2222,19 @@ local shop_hooks = {
         after = function(ctx)
             local node = asked
             asked = nil
-            if node and shop_row(node) then set_al(ctx, 1) end
+            local kind = node and shop_row(node)
+            if kind and kind ~= "travel" then set_al(ctx, 1) end
+        end,
+    },
+    {
+        -- The Moves list's input (cdecl: widget, action): on a Travel row,
+        -- left, right and A are ours (A's purchase check already said no)
+        address = TRAVEL.DISPATCH,
+        before = function(ctx) TRAVEL.action = { game.read_u32(ctx.esp + 8), game.read_u32(SELECTED) } end,
+        after = function(ctx)
+            local a = TRAVEL.action
+            TRAVEL.action = nil
+            if a and TRAVEL.press(a[1], a[2]) then set_al(ctx, 1) end
         end,
     },
     {
@@ -1896,7 +2395,8 @@ local ex_hooks = {
 }
 
 -- (no loop here: the main chunk is near the game's Lua limit of 200 locals)
-callgate.target(ARMS.SPAWN)
+if PART ~= "ex" then callgate.target(ARMS.SPAWN); callgate.target(TRAVEL.SAVE_MENU) end
+if PART ~= "shop" then callgate.target(EXP.PARTICLES) end
 if PART == "shop" then return callgate.hooks(shop_hooks) end
-if PART == "ex" then return ex_hooks end
+if PART == "ex" then return callgate.hooks(ex_hooks) end
 return callgate.hooks(table.move(ex_hooks, 1, #ex_hooks, #shop_hooks + 1, shop_hooks))

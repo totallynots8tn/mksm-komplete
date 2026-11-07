@@ -1186,6 +1186,126 @@ assert(H.r8(Y_PAD) == 0xFF, "cancel held back in an anim whose last event is unk
 H.w32(E0 + 0x1E04, 0); anim_tick(); pad(0, {})
 H.w8(MGR + 0x1C4 + 19, 0); H.w8(MGR + 0x1C4 + 20, 0)
 
+-- EX flare (0.16.0): an EX move starts with Liu's flames, through the gate
+-- (particleoffset, one call a frame): the X look puts the shared flame 38
+-- on both hands and forearms; once per press, however many anims the move
+-- has. Its hits burn the victim (41 on the chest), once per 12 frames. The
+-- B look is a burst where Liu stands (not attached) and an orange tint,
+-- which leaves a flash already on alone.
+local PARTICLES, PCMD = 0x1582A0, 0x50FFD0
+local played = {}
+local function fx_frames(n)                             -- frames of the gate, particleoffset calls kept
+    for _ = 1, n do
+        H.invoke(m, PRE_GATE, { esp = GATE_ESP }, nil)
+        local target = H.r32(H.r32(SINGLETON) + 0x18)
+        local ctx = { esp = GATE_ESP - 4, ecx = SINGLETON, eax = 0 }
+        H.w32(GATE_ESP - 4, GATE_RET)
+        H.invoke(m, target, ctx, function(c)
+            if target ~= PARTICLES then c.esp = c.esp + 4 return end
+            local ev, tg, from = H.r32(c.esp + 4), H.r32(c.esp + 8), H.r32(c.esp + 12)
+            local row = { ecx = c.ecx, n = H.r32(ev + 4), char = H.r32(tg), index = H.r32(tg + 0x10),
+                          x = H.rf32(from + 4), y = H.rf32(from + 8), z = H.rf32(from + 12) }
+            for k = 0, 12 do row[k] = H.r32(H.r32(ev + 8) + k * 4) end
+            played[#played + 1] = row
+            c.esp = c.esp + 4 + 12                      -- thiscall, ret 0xC
+        end)
+        assert(ctx.esp == GATE_ESP, string.format("esp off after the gate call: %+d", ctx.esp - GATE_ESP))
+        H.invoke(m, POST_GATE, { esp = GATE_ESP - 4 }, nil)
+        assert(H.r32(SINGLETON) == VTABLE, "vtable left swapped after the frame")
+        assert(#H.failed == 0, H.failed[1])
+    end
+end
+fx_frames(20)                                           -- the flares and burns of the tests above,
+assert(#played >= 4 and #played <= 8 + 6, "earlier EX moves and hits: " .. #played .. " effects")  -- capped
+fx_frames(2)
+assert(#played <= 8 + 6, "the queue didn't drain")
+played = {}
+H.w8(MGR + 0x1C4 + 19, 0x8B); H.w8(MGR + 0x1C4 + 21, 0x81)   -- X's moves 1, 2, 4 and B's move 1: EX
+H.wf32(E0 + 0x80, 250); H.wf32(E0 + 0x84, 57); H.wf32(E0 + 0x88, -30)
+H.wf32(NOW0, 100); frame(5000); pad(0, {})
+frame(5001); pad(0, { [LT] = 0xFF, [X] = 0xFF })
+fx_frames(1)
+assert(#played == 0, "flare before the EX move started")
+in_move(ANIM, 1); anim_tick()
+fx_frames(6)
+assert(#played == 4, "X look: " .. #played .. " effects, not 4")
+for k, part in ipairs({ 11, 14, 10, 13 }) do
+    local r = played[k]
+    assert(r.ecx == PCMD and r.n == 13 and r[0] == 3 and r[1] == 38 and r[2] == 45 and r[6] == 0
+        and r[8] == 12 and r[12] == part and r.char == 0x72616863 and r.index == 0
+        and r.x == 250 and r.y == 57 and r.z == -30, "X look effect " .. k)
+end
+in_move(ANIM + 2, 1); anim_tick(); fx_frames(2)
+assert(#played == 4, "a second flare for one press")
+frame(5003); assert(hit(ENEMY, 40) == 200, "EX hit not 5x with the flare")
+fx_frames(3)
+assert(#played == 6 and played[5][0] == 3 and played[5][1] == 41 and played[5][2] == 30 and played[5][8] == 12
+    and played[5][12] == 8 and played[5].index == 5 and played[6][12] == 15, "the EX hit didn't burn")
+frame(5010); hit(ENEMY, 40); fx_frames(3)
+assert(#played == 6, "burnt twice within 12 frames")
+frame(5015); hit(ENEMY, 40); fx_frames(3)
+assert(#played == 8, "no burn 12 frames later")
+hit(E0 + 0x3238, 40); fx_frames(3)
+assert(#played == 8, "a player burnt")
+H.w32(E0 + 0x1E04, 0); anim_tick(); pad(0, {})
+H.wf32(NOW0, 100); frame(5100); pad(0, { [LT] = 0xFF, [B] = 0xFF })
+in_move(ANIM, 1); anim_tick(); fx_frames(3)
+assert(#played == 10 and played[9][0] == 3 and played[9][1] == 100 and played[9][8] == 8 and played[9][12] == 0
+    and played[10][0] == 0 and played[10][1] == 53 and played[10].x == 250, "B look: the burst")
+assert(H.r32(E0 + 0x266C) == 0 and H.rf32(E0 + 0x2674) == 255 and H.rf32(E0 + 0x2678) == 110
+    and H.rf32(E0 + 0x267C) == 0 and H.rf32(E0 + 0x2680) == 40, "B look: the tint")
+H.w32(E0 + 0x1E04, 0); anim_tick(); pad(0, {})
+H.wf32(E0 + 0x2680, 7); H.wf32(E0 + 0x2674, 1)               -- a flash of the game's still on
+H.wf32(NOW0, 100); frame(5200); pad(0, { [LT] = 0xFF, [B] = 0xFF })
+in_move(ANIM, 1); anim_tick(); fx_frames(3)
+assert(#played == 12 and H.rf32(E0 + 0x2674) == 1 and H.rf32(E0 + 0x2680) == 7, "tint over the game's flash")
+H.w32(E0 + 0x1E04, 0); anim_tick(); pad(0, {})
+-- The flare lasts the whole EX chain (the user: L2 + X, X keeps the arms
+-- burning): X's flames are renewed every 40 frames while the chain's moves
+-- play, and each press of the chain's button flares again (12 frames apart
+-- at least), paid or not, while L2 stays held, past the EX window too. Idle
+-- for over 30 frames, or L2 let go, puts it out. B bursts on each press only.
+played = {}
+frame(6000); pad(0, {}); anim_tick()
+H.wf32(NOW0, 100); frame(6001); pad(0, { [LT] = 0xFF, [X] = 0xFF })
+in_move(ANIM, 1); anim_tick(); fx_frames(5)
+assert(#played == 4, "chain: the first flare")
+frame(6020); pad(0, { [LT] = 0xFF }); anim_tick(); fx_frames(1)
+assert(#played == 4, "chain: flared with no press")
+H.wf32(NOW0, 0)                                          -- the next X isn't paid
+frame(6030); pad(0, { [LT] = 0xFF, [X] = 0xFF })
+in_move(ANIM + 3, 1); anim_tick(); fx_frames(5)
+assert(#played == 8 and played[5][1] == 38, "chain: the second X didn't flare")
+frame(6045); anim_tick(); fx_frames(5)
+assert(#played == 8, "chain: flared again too soon")
+frame(6070); anim_tick(); fx_frames(5)
+assert(#played == 12, "chain: X's flames not renewed after 40 frames")
+frame(6100); pad(0, { [LT] = 0xFF }); anim_tick()
+frame(6110); pad(0, { [LT] = 0xFF, [X] = 0xFF })        -- a third X, past the EX window
+in_move(ANIM + 4, 1); anim_tick(); fx_frames(5)
+assert(#played == 16, "chain: the third X didn't flare")
+H.w32(E0 + 0x1E04, 0); frame(6120); anim_tick()          -- idle, L2 still held
+in_move(ANIM + 5, 1); frame(6140); anim_tick(); fx_frames(5)
+assert(#played == 16, "chain: a move after 20 idle frames flared without a press")
+frame(6150); pad(0, { [LT] = 0xFF }); frame(6151); pad(0, { [LT] = 0xFF, [X] = 0xFF }); anim_tick(); fx_frames(5)
+assert(#played == 20, "chain: a press after a short pause didn't flare")
+H.w32(E0 + 0x1E04, 0); frame(6160); anim_tick()
+frame(6200); anim_tick()                                 -- 40 idle frames: out
+frame(6201); pad(0, { [LT] = 0xFF }); frame(6202); pad(0, { [LT] = 0xFF, [X] = 0xFF })
+in_move(ANIM + 6, 1); anim_tick(); fx_frames(5)
+assert(#played == 20, "chain: flared after it went out")
+pad(0, {}); H.w32(E0 + 0x1E04, 0); anim_tick()           -- L2 let go
+H.wf32(NOW0, 100); frame(6300); pad(0, { [LT] = 0xFF, [B] = 0xFF })
+in_move(ANIM, 1); anim_tick(); fx_frames(3)
+assert(#played == 22 and played[21][1] == 100, "chain: B's first burst")
+frame(6345); anim_tick(); fx_frames(3)
+assert(#played == 22, "chain: B renewed without a press")
+frame(6346); pad(0, { [LT] = 0xFF }); frame(6350); pad(0, { [LT] = 0xFF, [B] = 0xFF })
+in_move(ANIM + 1, 1); anim_tick(); fx_frames(3)
+assert(#played == 24 and played[23][1] == 100, "chain: B's next press didn't burst")
+H.w32(E0 + 0x1E04, 0); anim_tick(); pad(0, {})
+H.w8(MGR + 0x1C4 + 19, 0); H.w8(MGR + 0x1C4 + 21, 0)
+
 -- 15. Spanish (the game's own placeholders: 54-62 bytes): strings in cp1252
 local es = with_gate(arg[1])
 local function put(i, s)
@@ -1198,7 +1318,8 @@ for _, i in ipairs({ 574, 598 }) do placeholder(i, 62) end
 for _, i in ipairs({ 581, 582, 583, 584, 593, 594, 599, 601, 602, 603, 604, 611, 612, 613,
                      614, 616, 617, 618, 619, 683, 684, 693, 694, 696, 697, 698, 699,
                      701, 702, 703, 704, 711, 712, 718, 719, 783, 784, 816, 817, 818, 819,
-                     794, 801, 985, 986, 996, 1020, 1021, 1047, 1051 }) do
+                     794, 801, 985, 986, 996, 1020, 1021, 1047, 1051,
+                     1002, 1003, 1004, 1005, 802, 803, 796, 797, 798, 799, 811, 812, 813, 814 }) do
     placeholder(i, 56)
 end
 for _, i in ipairs({ 596, 597 }) do placeholder(i, 54) end
@@ -1251,7 +1372,8 @@ os.remove(tmp)
 for _, i in ipairs({ 574, 598, 581, 582, 583, 584, 593, 594, 596, 597, 599, 601, 602, 603, 604,
                      611, 612, 613, 614, 616, 617, 618, 619, 683, 684, 693, 694, 696, 697, 698, 699,
                      701, 702, 703, 704, 711, 712, 718, 719, 783, 784, 816, 817, 818, 819,
-                     794, 801, 985, 986, 996, 1020, 1021, 1047, 1051 }) do
+                     794, 801, 985, 986, 996, 1020, 1021, 1047, 1051,
+                     1002, 1003, 1004, 1005, 802, 803, 796, 797, 798, 799, 811, 812, 813, 814 }) do
     placeholder(i, 56)
 end
 H.w8(SHOP0, 0x81)
@@ -1317,6 +1439,12 @@ do
                    [816] = J, [817] = J, [818] = J, [819] = J, [1020] = K, [1021] = K,
                    [701] = L, [702] = L, [703] = L, [704] = L, [711] = F, [712] = F, [794] = F,
                    [985] = N, [986] = N, [996] = N, [801] = O, [1047] = Q, [1051] = Q }
+    -- Travel's: their English lengths for all five (the other four are
+    -- longer in every placeholder of this kind measured above)
+    for _, i in ipairs({ 1002, 1003, 1004, 1005, 796, 797, 798, 799, 811, 812, 813, 814 }) do
+        caps[i] = { 45, 45, 45, 45, 45 }
+    end
+    caps[699], caps[802], caps[803] = { 47, 47, 47, 47, 47 }, { 46, 46, 46, 46, 46 }, { 46, 46, 46, 46, 46 }
     local langs = { { "Upgrade", "Upgrades", "Meter refill +3", "Fatality meter", "Axe" },
                     { "Mejorar", "Mejoras", "Recarga de medidor +3", "Medidor de Fatality", "Hacha" },
                     { "Verbessern", "Verbesserungen", "Anzeige auff\252llen +3", "Fatality-Anzeige", "Axt" },
@@ -1339,6 +1467,368 @@ do
         assert(text(1020) == want[4] and text(703) == want[5], want[2] .. " Skill or Platform: " .. text(1020))
     end
 end
+
+assert(#H.failed == 0, H.failed[1])
+
+-- 21. Travel (0.16.0): Team becomes Travel, a Save row and a row per world
+-- whose map left and right change and A loads. The rows, and the list that
+-- holds them, are leaves borrowed from characters nobody plays; Sub-Zero and
+-- Scorpion, who have no Team, get the page after their own categories. Each
+-- part runs on a fresh tree (the game copies a new one at every map load).
+-- (A function of its own: the main chunk is near Lua's 200 locals.)
+;(function()
+    local NAMES = {
+    [0] = "Tombs - Map 1", [1] = "Tombs - Map 2", [2] = "Tombs - Map 3", [3] = "Tombs - Map 4",
+    [4] = "Tombs - Map 5", [5] = "Tombs - Map 6", [6] = "Tombs - Map 7", [7] = "Tombs - Map 8",
+    [8] = "Tombs - Map 9", [12] = "Tombs - Map 13", [15] = "Tombs - Map 16", [17] = "Tombs - Map 18",
+    [19] = "Tombs - Map 20", [20] = "Tombs - Map 21", [24] = "Tombs - Map 25", [25] = "Tombs - Map 26",
+    [30] = "Tombs - Map 31", [33] = "Wasteland - Map 2", [41] = "Wasteland - Map 10", [44] = "Wasteland - Map 13",
+    [45] = "Wasteland - Map 14", [46] = "Wasteland - Map 15", [47] = "Wasteland - Map 16",
+    [48] = "Wasteland - Map 17", [64] = "Foundry - Map 1", [65] = "Foundry - Map 2", [66] = "Foundry - Map 3",
+    [67] = "Foundry - Map 4", [68] = "Foundry - Map 5", [69] = "Foundry - Map 6", [71] = "Foundry - Map 8",
+    [72] = "Foundry - Map 9", [73] = "Foundry - Map 10", [74] = "Foundry - Map 11", [96] = "Wu Shi - Map 01",
+    [97] = "Wu Shi - Map 02", [98] = "Wu Shi - Map 03", [99] = "Wu Shi - Map 04", [100] = "Wu Shi - Map 05",
+    [101] = "Wu Shi - Map 06", [102] = "Wu Shi - Map 07", [103] = "Wu Shi - Map 08", [104] = "Wu Shi - Map 09",
+    [106] = "Wu Shi - Map 11", [107] = "Wu Shi - Map 12", [108] = "Wu Shi - Map 13", [110] = "Wu Shi - Map 15",
+    [128] = "Forest - Map 1", [129] = "Forest - Map 2", [130] = "Forest - Map 3", [132] = "Forest - Map 5",
+    [135] = "Forest - Map 8", [136] = "Forest - Map 9", [137] = "Forest - Map 10", [142] = "Forest - Map 15",
+    [143] = "Forest - Map 16", [144] = "Forest - Map 17", [146] = "Forest - Map 19", [147] = "Forest - Map 20",
+    [192] = "Evil Monastery - Map 1", [193] = "Evil Monastery - Map 2", [194] = "Evil Monastery - Map 3",
+    [195] = "Evil Monastery - Map 4", [196] = "Evil Monastery - Map 5", [197] = "Evil Monastery - Map 6",
+    [198] = "Evil Monastery - Map 7", [199] = "Evil Monastery - Map 8", [160] = "Netherealm - Map 1",
+    [170] = "The Wastelands", [171] = "The Kombat Crag", [172] = "The Pit", [173] = "The Dead Pool",
+    [174] = "Kombat Tomb", [175] = "The Portal", [176] = "Goro's Lair", [177] = "The Tower",
+    [178] = "The Living Forest", [179] = "Warrior Shrine", [180] = "Rooftops", [181] = "The Ice Falls",
+    [182] = "Kahn's Arena", [183] = "Wu-shi Arena", [184] = "Shokan Shrine", [185] = "The Armory",
+    [161] = "Survival 2 -", [162] = "Survival 3 -", [163] = "Survival 4 -", [164] = "Survival 5 -",
+    [165] = "Survival 6 -", [166] = "Survival 7 -", [167] = "Vs 8 -", [168] = "Practice Map 9 -",
+    [169] = "Survival 10 -", [186] = "Survival 27 -", [187] = "Survival 28 -", [188] = "Survival 29 -",
+    [190] = "Survival 31 -", [191] = "Survival 32 -",
+    }
+    local DESCS, NAME_STR = 0x80600000, 0x80610000          -- the map table's descriptors and names
+    for map, name in pairs(NAMES) do
+        H.w32(0x5020E8 + map * 4, DESCS + map * 0x40)
+        H.w32(DESCS + map * 0x40 + 0x18, NAME_STR + map * 0x20)
+        for c = 1, #name do H.w8(NAME_STR + map * 0x20 + c - 1, name:byte(c)) end
+        H.w8(NAME_STR + map * 0x20 + #name, 0)
+    end
+    local NAME, DESC, SAVE, SAVE_DESC, ROW_DESC, NOT_NOW, NO_SAVE = 1002, 1003, 1004, 1005, 699, 802, 803
+    local LABELS = { 796, 797, 798, 799, 811, 812, 813, 814 }
+    local function label(i) return (text(i):gsub(" +$", "")) end   -- (labels are padded with spaces)
+    -- every placeholder fresh; Travel's at their English lengths (the
+    -- shortest of the five languages)
+    local CAP = { [NAME] = 45, [DESC] = 45, [SAVE] = 45, [SAVE_DESC] = 45, [ROW_DESC] = 47, [NOT_NOW] = 46,
+                  [NO_SAVE] = 46 }
+    for _, i in ipairs(LABELS) do CAP[i] = 45 end
+    local function fresh_texts()
+        for i = 0, 1750 do placeholder(i, CAP[i] or 60) end
+        put(455, "Upgrade")
+    end
+    local IN_USE, ENTITIES, RIFTS, TRIGGERS = 0x80650000, 0x5D1AB8, 0x6DBFB0, 0x682020
+    local LOAD, LOAD_ARG, LOAD_MAP, LOAD_ENTRY, CLOSE = 0x5ACEDC, 0x5ACEE0, 0x4FC160, 0x4FC164, 0x4EF42C
+    H.w32(0x51004C, IN_USE)
+    local function calm()                                    -- nobody up, no rift, no trigger table, no load
+        for i = 0, 11 do H.w16(IN_USE + i * 2, 0) end
+        H.w16(IN_USE, 1); H.w16(IN_USE + 2, 1)                 -- the players
+        for g = 0, 49 do H.w32(RIFTS + g * 0xA6C + 0xA10, 0) end
+        H.w32(TRIGGERS, 0); H.w8(LOAD, 0); H.w8(CLOSE, 0)
+    end
+    -- Liu Kang (Team, Combos), Kung Lao (Basic Moves: 12 rows), Sub-Zero (six
+    -- categories, no Team), Scorpion (Fatalities)
+    local function build_tree(blob)
+        local t = { nodes = {}, known = {} }
+        local function mk(kind, name, parent, n)
+            local p = node(kind, name, parent, n)
+            t.nodes[#t.nodes + 1] = p; t.known[p] = true
+            return p
+        end
+        t.lk = mk(3, 0, nil, 3)
+        t.combos = mk(1, 463, t.lk, 2); t.team = mk(1, 465, t.lk, 2)
+        child(t.lk, 0, t.combos); child(t.lk, 1, t.team)
+        local lk_basic = mk(2, 402, t.lk, 3); child(t.lk, 2, lk_basic)
+        for j = 1, 3 do
+            local g = mk(1, 402 + j, lk_basic, 4); child(lk_basic, j - 1, g)
+            for k = 1, 4 do child(g, k - 1, mk(0, 480 + j * 4 + k, g, 0)) end
+        end
+        t.gear = {}
+        for k = 1, 2 do
+            t.gear[k] = mk(0, 1021 + k, t.team, 0); child(t.team, k - 1, t.gear[k]); H.w32(t.gear[k] + 0x2C, 1)
+            child(t.combos, k - 1, mk(0, 920 + k, t.combos, 0))
+        end
+        t.kl = mk(3, 1, nil, 1)
+        local basic = mk(2, 402, t.kl, 3); child(t.kl, 0, basic)
+        t.kl_leaves = {}
+        for j = 1, 3 do
+            local g = mk(1, 402 + j, basic, 4); child(basic, j - 1, g)
+            for k = 1, 4 do
+                local l = mk(0, 480 + j * 4 + k, g, 0); child(g, k - 1, l); t.kl_leaves[l] = true
+            end
+        end
+        t.sz = mk(3, 0x58, nil, 6)
+        t.sz_cats = {}
+        for i, name in ipairs({ 402, 461, 463, 462, 464, 400 }) do
+            local c = mk(1, name, t.sz, 3); child(t.sz, i - 1, c); t.sz_cats[i] = c
+            for k = 1, 3 do child(c, k - 1, mk(0, 2000 + i * 10 + k, c, 0)) end
+        end
+        t.sc = mk(3, 0x52, nil, 1)
+        local sf = mk(1, 400, t.sc, 2); child(t.sc, 0, sf)
+        for k = 1, 2 do child(sf, k - 1, mk(0, 2100 + k, sf, 0)) end
+        H.w32(blob + 8, #t.nodes); H.w32(blob + 0x0C, 4); H.w32(blob + 0x10, blob + 0x20)
+        for i, r in ipairs({ t.lk, t.kl, t.sz, t.sc }) do H.w32(blob + 0x1C + i * 4, r) end
+        H.w32(0x4EFA88, blob)
+        return t
+    end
+    -- what the menu reads from a root down: every list holds known nodes
+    local function whole(t, root)
+        local stack = { root }
+        while #stack > 0 do
+            local n = table.remove(stack)
+            if H.r32(n + 4) ~= 0 then
+                local count, kids = H.r32(n + 0x0C), H.r32(n + 0x14)
+                assert(count <= 16, string.format("%X lists %d", n, count))
+                for i = 0, count - 1 do
+                    local c = H.r32(kids + i * 4)
+                    assert(t.known[c], string.format("%X lists %X, not a node", n, c))
+                    stack[#stack + 1] = c
+                end
+            end
+        end
+    end
+    -- opening the menu (0x9D520) clears +0x08 of every node
+    local function menu_open(t) for _, n in ipairs(t.nodes) do H.w32(n + 8, 0) end end
+    local function sync_all(shop, t, root, budget_calls)
+        H.invoke(shop, SYNC, {}, nil)
+        for _ = 1, budget_calls or 12 do
+            whole(t, root)
+            ask_with(shop, CAN, t.gear[1], 0)
+        end
+        assert(#H.failed == 0, H.failed[1])
+        menu_open(t)
+        whole(t, root)
+    end
+    local function press(shop, action, row)
+        H.w32(0x4EFB38, row)
+        local ctx = { esp = 0xD0000200, eax = 0 }
+        H.w32(ctx.esp, 0x93D99); H.w32(ctx.esp + 4, 0x4EEF68); H.w32(ctx.esp + 8, action)
+        H.invoke(shop, 0x116DB, ctx, nil)
+        assert(#H.failed == 0, H.failed[1])
+        return ctx.eax & 0xFF
+    end
+    local function rows_of(cat)
+        local list, out = H.r32(cat + 0x14), {}
+        for k = 1, H.r32(cat + 0x0C) do out[k] = H.r32(list + (k - 1) * 4) end
+        return out
+    end
+
+    -- a. Liu Kang in Wu Shi - Map 07 (102), single player: his Team is the
+    -- page, and its nine rows (and their list) are Kung Lao's leaves
+    fresh_texts(); calm()
+    H.w32(MGR + 0x88, 0); H.w32(MGR + 0xCC, 0); H.w32(MGR + 0xD0, 1); H.w32(0x4EFA60, 0); H.w32(MAP, 102)
+    local t = build_tree(0x80700000)
+    local shop = with_gate(arg[1])
+    sync_all(shop, t, t.lk)
+    assert(H.r32(t.team + 0x18) == NAME and text(NAME) == "Travel" and H.r32(t.team + 0x1C) == DESC
+        and text(DESC) == "Save, or travel to any map.", "the page's name")
+    assert(H.r32(t.team + 0x0C) == 9, "rows: " .. H.r32(t.team + 0x0C))
+    local row = rows_of(t.team)
+    local list = H.r32(t.team + 0x14) - 0x0C
+    assert(t.kl_leaves[list], "the list isn't a borrowed leaf")
+    for k = 1, 9 do
+        local r = row[k]
+        assert(t.kl_leaves[r] and r ~= list, "row " .. k .. " isn't a borrowed leaf")
+        assert(H.r32(r + 4) == 0 and H.r32(r + 0x10) == t.team and H.r32(r + 0x28) == 0 and H.r32(r + 0x2C) == 1
+            and H.r32(r + 0x20) == 0 and H.r32(r + 0x24) == 0, "row " .. k .. " fields")
+    end
+    assert(H.r32(row[1] + 0x18) == SAVE and text(SAVE) == "Save game" and H.r32(row[1] + 0x1C) == SAVE_DESC
+        and text(SAVE_DESC) == "Opens the save menu.\nSave here", "the Save row")
+    for w = 1, 8 do
+        assert(H.r32(row[w + 1] + 0x18) == LABELS[w] and H.r32(row[w + 1] + 0x1C) == ROW_DESC, "world row " .. w)
+    end
+    assert(label(LABELS[1]) == "< Tombs - Map 1 (0) >" and label(LABELS[4]) == "< Wu Shi - Map 07 (102) >"
+        and label(LABELS[6]) == "< Evil Monastery - Map 1 (192) >" and label(LABELS[8]) == "< Survival 2 (161) >",
+        "labels: " .. label(LABELS[4]) .. " / " .. label(LABELS[8]))
+    assert(text(ROW_DESC) == "Left/Right: pick a map.\nA: travel", "row description")
+    assert(H.r32(t.gear[1] + 0x18) == 1022 and H.r32(t.combos + 0x18) == 463 and H.r32(t.combos + 0x0C) == 2,
+        "Liu Kang's own nodes changed")
+    -- the rows are no shop rows: no purchase, not routed as a combo
+    for _, from in ipairs({ TO_BUY, FOR_ANY, DESCRIPTION, PREVIEW }) do
+        assert(ask_with(shop, CAN, row[1], 1, from) == 0 and ask_with(shop, CAN, row[5], 1, from) == 0,
+            "a Travel row for sale")
+    end
+    assert(ask_with(shop, COMBO, row[5], 0) == 0, "a Travel row routed as a combo")
+
+    -- b. left and right pick the world's maps, wrapping; up, down and B stay
+    -- the game's, and so does any other row
+    assert(press(shop, 3, row[5]) == 1 and label(LABELS[4]) == "< Wu Shi - Map 08 (103) >", "right")
+    assert(press(shop, 2, row[5]) == 1 and press(shop, 2, row[5]) == 1
+        and label(LABELS[4]) == "< Wu Shi - Map 06 (101) >", "left: " .. label(LABELS[4]))
+    assert(press(shop, 2, row[2]) == 1 and label(LABELS[1]) == "< Tombs - Map 31 (30) >", "left wraps")
+    assert(press(shop, 3, row[2]) == 1 and label(LABELS[1]) == "< Tombs - Map 1 (0) >", "right wraps")
+    assert(press(shop, 3, row[1]) == 1, "right on Save not taken")
+    for _, action in ipairs({ 0, 1, 6, 8 }) do
+        assert(press(shop, action, row[5]) == 0, "action " .. action .. " taken")
+    end
+    assert(press(shop, 3, t.gear[1]) == 0 and press(shop, 4, t.combos) == 0, "another row's input taken")
+    assert(H.r8(LOAD) == 0 and H.r8(CLOSE) == 0, "something loaded")
+
+    -- c. A travels: the load request (map, entry 1, both players flagged,
+    -- the portal argument) and the pause menu closes
+    H.w8(0x5D1AB8 + 0x3217, 0); H.w8(0x5D1AB8 + 0x3238 + 0x3217, 0); H.w32(LOAD_ARG, 0)
+    assert(press(shop, 4, row[5]) == 1, "A not taken")
+    assert(H.r8(LOAD) == 1 and H.r32(LOAD_MAP) == 101 and H.r32(LOAD_ENTRY) == 1 and H.r32(LOAD_ARG) == 1
+        and H.r8(0x5D1AB8 + 0x3217) == 1 and H.r8(0x5D1AB8 + 0x3238 + 0x3217) == 1 and H.r8(CLOSE) == 1,
+        "load request")
+    -- a load on its way: nothing more
+    H.w8(CLOSE, 0); H.w32(LOAD_MAP, 0)
+    assert(press(shop, 4, row[3]) == 1 and H.r32(LOAD_MAP) == 0 and H.r8(CLOSE) == 0, "travelled twice")
+    calm()
+    -- Wu Shi - Map 01 loads at entry 2, Survival 31 at 0
+    for _ = 1, 5 do press(shop, 2, row[5]) end
+    assert(label(LABELS[4]) == "< Wu Shi - Map 01 (96) >", "Wu Shi 01: " .. label(LABELS[4]))
+    press(shop, 4, row[5])
+    assert(H.r32(LOAD_MAP) == 96 and H.r32(LOAD_ENTRY) == 2, "Wu Shi 01's entry")
+    calm()
+    press(shop, 2, row[9]); press(shop, 2, row[9])
+    assert(label(LABELS[8]) == "< Survival 31 (190) >", "Survival 31: " .. label(LABELS[8]))
+    press(shop, 4, row[9])
+    assert(H.r32(LOAD_MAP) == 190 and H.r32(LOAD_ENTRY) == 0, "Survival 31's entry")
+    calm()
+
+    -- d. Save: the pause menu closes and, on the next frame, the call gate
+    -- calls OpenSaveMenu (thunk 0x13E0E) with no arguments
+    H.w32(INSTANCE, SINGLETON); H.w32(SINGLETON, VTABLE); H.w32(VTABLE + 0x18, VANILLA_SLOT)
+    local function frame(expect_save)
+        H.invoke(shop, PRE_GATE, { esp = GATE_ESP }, nil)
+        local target = H.r32(H.r32(SINGLETON) + 0x18)
+        local ctx, opened = { esp = GATE_ESP - 4, ecx = SINGLETON, eax = 0 }, false
+        H.w32(GATE_ESP - 4, GATE_RET)
+        H.invoke(shop, target, ctx, function(c) opened = target == 0x13E0E; c.esp = c.esp + 4 end)
+        H.invoke(shop, POST_GATE, { esp = GATE_ESP - 4 }, nil)
+        assert(#H.failed == 0, H.failed[1])
+        assert(opened == expect_save and ctx.esp == GATE_ESP and H.r32(SINGLETON) == VTABLE, "gate frame")
+    end
+    assert(press(shop, 4, row[1]) == 1 and H.r8(CLOSE) == 1 and H.r8(LOAD) == 0, "Save didn't close the menu")
+    frame(true)
+    frame(false)                                            -- once
+    calm()
+
+    -- e. what blocks: a fight (someone up and alive; not Smoke, not a dead
+    -- one) stops travel, not saving; a Time Rift and a load stop both; a
+    -- fatality room stops travel; a cut stage Travel didn't send them to
+    -- stops both, one it did stops saving only
+    local E2 = ENTITIES + 2 * 0x3238
+    H.w16(IN_USE + 4, 1); H.w16(E2 + 0x1DFE, 70); H.w32(E2 + 0x200, 0x80402000); H.w32(0x80402000 + 0x368, 666)
+    sync_all(shop, t, t.lk, 2)
+    assert(H.r32(row[5] + 0x1C) == ROW_DESC, "Smoke counts as a fight")
+    H.w16(E2 + 0x1DFE, 14); H.w32(0x80402000 + 0x368, 0)
+    sync_all(shop, t, t.lk, 2)
+    assert(H.r32(row[5] + 0x1C) == ROW_DESC, "a dead enemy counts as a fight")
+    H.w32(0x80402000 + 0x368, 80)
+    sync_all(shop, t, t.lk, 2)
+    assert(H.r32(row[5] + 0x1C) == NOT_NOW and text(NOT_NOW) == "Fight, rift or fatality room.\nNot now"
+        and H.r32(row[1] + 0x1C) == SAVE_DESC, "a fight")
+    assert(press(shop, 4, row[5]) == 1 and H.r8(LOAD) == 0 and H.r8(CLOSE) == 0, "travelled in a fight")
+    assert(press(shop, 4, row[1]) == 1 and H.r8(CLOSE) == 1, "no saving in a fight")
+    frame(true)
+    calm()
+    H.w32(RIFTS + 7 * 0xA6C + 0xA10, 0x54464952)
+    sync_all(shop, t, t.lk, 2)
+    assert(H.r32(row[5] + 0x1C) == NOT_NOW and H.r32(row[1] + 0x1C) == NO_SAVE
+        and text(NO_SAVE) == "Story areas only, no rifts.\nNot here", "a rift")
+    assert(press(shop, 4, row[1]) == 1 and press(shop, 4, row[5]) == 1 and H.r8(CLOSE) == 0, "acted in a rift")
+    calm()
+    local TRIG = 0x80660000                                  -- one trigger testing fatalitytutor
+    H.w32(TRIGGERS, TRIG); H.w32(TRIG + 0xA8C0, 1); H.w32(TRIG + 0x1254C, 4)
+    H.w32(TRIG + 0x58, 1); H.w32(TRIG + 0x5C, TRIG + 0x100); H.w32(TRIG + 0x100, 2)
+    H.w32(TRIG + 2 * 24 + 0x11C00, TRIG + 0x200); H.w32(TRIG + 0x200, TRIG + 0x300); H.w32(TRIG + 0x300, 0x145ED)
+    sync_all(shop, t, t.lk, 2)
+    assert(H.r32(row[5] + 0x1C) == NOT_NOW and H.r32(row[1] + 0x1C) == SAVE_DESC, "a fatality room")
+    calm()
+    H.w32(MAP, 190)                                         -- Survival 31: Travel sent them (c)
+    sync_all(shop, t, t.lk, 2)
+    assert(H.r32(row[5] + 0x1C) == ROW_DESC and H.r32(row[1] + 0x1C) == NO_SAVE, "a stage Travel sent them to")
+    H.w16(IN_USE + 4, 1); H.w16(E2 + 0x1DFE, 36); H.w32(0x80402000 + 0x368, 550)   -- an Oni Warlord up
+    sync_all(shop, t, t.lk, 2)
+    assert(H.r32(row[5] + 0x1C) == ROW_DESC, "trapped in a stage Travel sent them to")
+    H.w16(IN_USE + 4, 0)
+    H.w32(MAP, 187)                                         -- Survival 28: the gauntlet's
+    sync_all(shop, t, t.lk, 2)
+    assert(H.r32(row[5] + 0x1C) == NOT_NOW and H.r32(row[1] + 0x1C) == NO_SAVE, "the gauntlet's stage")
+    assert(press(shop, 4, row[5]) == 1 and H.r8(LOAD) == 0, "travelled from the gauntlet")
+    H.w32(MAP, 102)
+    sync_all(shop, t, t.lk, 2)
+    assert(H.r32(row[5] + 0x1C) == ROW_DESC and H.r32(row[1] + 0x1C) == SAVE_DESC, "blocked after the gauntlet")
+
+    -- f. a text table without room for the labels: the page goes first (its
+    -- list pointers), then everything else; Team is the game's again
+    placeholder(LABELS[3], 10)
+    H.invoke(shop, SYNC, {}, nil)
+    for _ = 1, 4 do ask_with(shop, CAN, t.gear[1], 0) end
+    assert(#H.failed == 0, H.failed[1])
+    assert(H.r32(t.team + 0x18) == 465 and H.r32(t.team + 0x0C) == 2 and H.r32(t.team + 0x14) == t.team + 0x30
+        and H.r32(row[1] + 0x18) ~= SAVE and H.r32(row[1] + 0x10) ~= t.team, "Team not put back")
+    whole(t, t.lk); whole(t, t.kl)
+    assert(press(shop, 3, row[5]) == 0, "a put-back row still takes input")
+
+    -- g. Sub-Zero, in co-op with Kung Lao (so only Liu Kang's and Scorpion's
+    -- leaves are borrowed): his page comes after his six categories
+    fresh_texts(); calm()
+    H.w32(MGR + 0x88, 1); H.w32(MGR + 0xCC, 0x58); H.w32(MGR + 0xD0, 1)
+    t = build_tree(0x80740000)
+    shop = with_gate(arg[1])
+    sync_all(shop, t, t.sz)
+    assert(H.r32(t.sz + 0x0C) == 7, "Sub-Zero's categories: " .. H.r32(t.sz + 0x0C))
+    local cats = rows_of(t.sz)
+    for i = 1, 6 do assert(cats[i] == t.sz_cats[i], "Sub-Zero's category " .. i .. " moved") end
+    local page = cats[7]
+    assert(H.r32(page + 4) == 1 and H.r32(page + 0x10) == t.sz and H.r32(page + 0x18) == NAME
+        and H.r32(page + 0x0C) == 9, "Sub-Zero's page")
+    row = rows_of(page)
+    for k = 1, 9 do
+        assert(not t.kl_leaves[row[k]] and H.r32(row[k] + 0x10) == page, "row " .. k .. " borrowed from a player")
+    end
+    assert(H.r32(row[1] + 0x18) == SAVE and H.r32(row[5] + 0x18) == LABELS[4], "Sub-Zero's rows")
+    H.w32(MAP, 102)
+    assert(press(shop, 4, row[5]) == 1 and H.r32(LOAD_MAP) == 102, "Sub-Zero travels")
+    calm()
+    -- the labels have no room any more: his root gets its own list back first
+    placeholder(LABELS[1], 10)
+    H.invoke(shop, SYNC, {}, nil)
+    for _ = 1, 4 do ask_with(shop, CAN, t.gear[1], 0) end
+    assert(#H.failed == 0, H.failed[1])
+    assert(H.r32(t.sz + 0x0C) == 6 and H.r32(t.sz + 0x14) == t.sz + 0x30 and H.r32(page + 4) == 0,
+        "Sub-Zero's root not put back")
+    whole(t, t.sz); whole(t, t.lk)
+
+    -- h. a write budget too small for one callback: every callback in
+    -- between leaves the menu a whole tree, and the page comes up in the end
+    local small = assert(io.open(arg[1], "rb")):read("a"):gsub("local BUDGET        = 200", "local BUDGET        = 40")
+    local tmp = os.tmpname()
+    assert(io.open(tmp, "wb")):write(small):close()
+    for _, who in ipairs({ 0, 0x58 }) do
+        fresh_texts(); calm()
+        H.w32(MGR + 0x88, 0); H.w32(MGR + 0xCC, who)
+        t = build_tree(who == 0 and 0x80780000 or 0x807C0000)
+        local tiny = with_gate(tmp)
+        local root = who == 0 and t.lk or t.sz
+        sync_all(tiny, t, root, 80)
+        local cat = who == 0 and t.team or rows_of(t.sz)[7]
+        assert(H.r32(cat + 0x18) == NAME and H.r32(cat + 0x0C) == 9 and H.r32(rows_of(cat)[9] + 0x18) == LABELS[8],
+            "the page never finished with a small budget")
+        -- and taken down over several callbacks: the lists' pointers go first
+        placeholder(LABELS[2], 10)
+        H.invoke(tiny, SYNC, {}, nil)
+        for _ = 1, 40 do
+            whole(t, root)
+            ask_with(tiny, CAN, t.gear[1], 0)
+        end
+        assert(#H.failed == 0, H.failed[1])
+        whole(t, root)
+        assert(H.r32(cat + 0x18) ~= NAME and H.r32(root + 0x0C) == (who == 0 and 3 or 6)
+            and H.r32(t.team + 0x0C) == 2 and H.r32(t.team + 0x14) == t.team + 0x30, "not taken down")
+    end
+    os.remove(tmp)
+end)()
 
 assert(#H.failed == 0, H.failed[1])
 print("errors", #H.failed, "first sync writes", first_writes, "max_instr", H.max_instr)

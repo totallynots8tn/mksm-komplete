@@ -1,4 +1,4 @@
-# Extended Upgrades: XP Shop 0.15.0 (preview, experimental)
+# Extended Upgrades: XP Shop 0.16.2 (preview, experimental)
 
 The XP shop spends XP in the game's own upgrade menu, on the game's own menu
 entries. Nothing new is added to the menu, and everything it sells comes **on
@@ -11,7 +11,8 @@ Pause > Moves > **Basic Moves** becomes **Upgrades**, **Skill** becomes
 can be bought a second time as its **EX** move, and the **Fatalities** you
 haven't discovered can be bought. Skill's and Platform's own rows only
 showed what you have: the techniques and platform abilities keep working,
-they just aren't listed any more. Combos and Team are unchanged.
+they just aren't listed any more. **Team** becomes **Travel** (see below).
+Combos are unchanged.
 
 | Category | Row | Cost | Effect |
 | --- | --- | --- | --- |
@@ -72,6 +73,11 @@ they just aren't listed any more. Combos and Team are unchanged.
   An EX move is stronger: its hits on enemies do 5x damage, and once its
   last hit or projectile is out it recovers three times as fast. (A fireball
   that lands up to about a second and a half after the press still counts.)
+  It looks the part too, with Liu Kang's own flames (the fire his moves
+  put on his arms and body, for either monk): an X EX sets your arms on
+  fire, a Y EX your whole body, and both keep burning for as long as you
+  chain the move (L2 still held); a B EX bursts into flames with an orange
+  glow on every press. Its hits set what they hit on fire for a moment.
   Each co-op player buys their own.
   **EX cancels:** during an EX move, L2 + *another* button with an EX (say
   L2 + Y into L2 + X) is held until the first move's last hit or fireball is
@@ -96,6 +102,28 @@ they just aren't listed any more. Combos and Team are unchanged.
   are saved like any other progress. Uninstalling keeps the counters but the
   effects stop: health and stamina go back to the game's own values on the
   next area.
+- **Travel** (was Team; every character has it, Sub-Zero and Scorpion
+  too): the first row, **Save game**, opens the save statue's own save menu
+  right where you are; pick a slot and save as usual, and the game goes on
+  when it closes. Below it, one row per world: Tombs, Wasteland, Foundry,
+  Wu Shi, Forest, Evil Monastery (with the Netherealm), the versus arenas
+  and the cut Survival stages. A row shows a map, as `< Wu Shi - Map 07 (102) >`
+  (the designers' name and the map's number); **D-pad left/right** shows the
+  world's previous or next map, and **A** loads it, at the entrance the game's
+  own doors use. A row starts at the map you are in.
+  - Travel waits until a fight is over (anyone besides the players still
+    up), and doesn't work in a fatality room, during a Time Rift, or in a cut
+    stage you didn't travel to yourself (the Survival gauntlet). From a stage
+    or versus arena Travel sent you to, you can always leave, fight or not.
+    Saving works in fights, but only in story areas and never during a Time
+    Rift. When either can't happen, its rows say so.
+  - The cut stages are unfinished: some have no way out, and the way out of
+    others crashes the game (Survival 2's door, for one). Leave them with
+    Travel. Survival 5 has no camera.
+  - The two team-attack rows that Team showed are gone; the attacks
+    themselves are unchanged (the story unlocks them).
+  - A save made away from a statue loads at the entrance of the area you
+    saved in.
 - **From 0.3.0:** the Energy rows that raised the meter's level and the Weapons
   store are gone. Weapons bought in 0.3.0 are not refunded and read as
   nothing bought here.
@@ -114,6 +142,21 @@ Combo extenders, in a menu entry that already exists. The reverse-engineering is
 `analysis/xp_shop/REPORT.md` in the project repository.
 
 ## Changelog
+
+- **0.16.2:** one build with both 0.16.x test builds: Travel and the 0.16.1
+  flare.
+
+- **0.16.1:** the flames last the whole EX chain (L2 + X, X, X keeps the
+  arms burning; each press of the chain flares again), not just its first
+  move.
+
+- **0.16.0:** Team becomes **Travel**: save anywhere in the story, and a row
+  per world loads any of 98 maps (left and right pick it, A goes). Sub-Zero
+  and Scorpion get the page too. The team-attack rows are gone.
+  EX flare: an EX move starts with Liu Kang's flames on the
+  player, played by the game's own effect command, and its hits burn. The
+  look goes by the EX button: X flaming arms, Y the whole body aflame, B a
+  fire burst with an orange glow.
 
 - **0.15.0:** the Fatality meter upgrades also make fatality mode last
   longer: its drain runs at 6/7, 3/4, 2/3 and 3/5 speed at +1 to +4 (at +4 a
